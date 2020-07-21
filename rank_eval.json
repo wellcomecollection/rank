@@ -1,0 +1,122 @@
+{
+  "requests": [
+    {
+      "id": "title_stim",
+      "template_id": "multi_match",
+      "params": {
+        "query": "stIm"
+      },
+      "ratings": [
+        {
+          "_id": "e8qxq5mv",
+          "_index": "works-20200717",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "id": "title_odnb",
+      "template_id": "multi_match",
+      "params": {
+        "query": "Oxford dictionary of national biography"
+      },
+      "ratings": [
+        {
+          "_id": "ruedafcw",
+          "_index": "works-20200717",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "id": "title_piggle",
+      "template_id": "multi_match",
+      "params": {
+        "query": "The Piggle"
+      },
+      "ratings": [
+        {
+          "_id": "vp7q52gs",
+          "_index": "works-20200717",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "id": "title_dasneue",
+      "template_id": "multi_match",
+      "params": {
+        "query": "Das neue Naturheilverfahren"
+      },
+      "ratings": [
+        {
+          "_id": "enmqpymp",
+          "_index": "works-20200717",
+          "rating": 3
+        },
+        {
+          "_id": "execg22x",
+          "_index": "works-20200717",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "id": "title_dasneue",
+      "template_id": "multi_match",
+      "params": {
+        "query": "bills of mortality"
+      },
+      "ratings": [
+        {
+          "_id": "zc9qb3t9",
+          "_index": "works-20200717",
+          "rating": 3
+        }
+      ]
+    }
+  ],
+  "metric": {
+    "precision": {
+      "relevant_rating_threshold": 3,
+      "k": 1
+    }
+  },
+  "templates": [
+    {
+      "id": "multi_match",
+      "template": {
+        "source": {
+          "query": {
+            "multi_match": {
+              "query": "{{query}}",
+              "type": "best_fields",
+              "operator": "and",
+              "fields": [
+                "canonicalId.text^1000",
+                "sourceIdentifier.value.text^1000",
+                "data.otherIdentifiers.value.text^1000",
+                "data.items.id.canonicalId.text^1000",
+                "data.items.id.sourceIdentifier.value.text^1000",
+                "data.items.id.otherIdentifiers.value.text^1000",
+                "data.title^100",
+                "data.title.english^100",
+                "data.title.shingles^100",
+                "data.alternativeTitles^100",
+                "data.subjects.concepts.label^10",
+                "data.genres.concepts.label^10",
+                "data.contributors.agent.labe^10",
+                "data.production.*.label^10",
+                "data.description",
+                "data.physicalDescription",
+                "data.language.label",
+                "data.edition",
+                "data.notes.content"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}
