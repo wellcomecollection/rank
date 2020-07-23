@@ -1,8 +1,11 @@
 import rankEval from "../rank_eval.json";
 import { useState } from "react";
 
-type DocProps = { _id: string; _index: string };
+type RankEvalResp = {
+  details: any;
+};
 
+type DocProps = { _id: string; _index: string };
 const Doc = (doc: DocProps) => {
   return (
     <a href={`https://wellcomecollection.org/works/${doc._id}`}>{doc._id}</a>
@@ -10,7 +13,7 @@ const Doc = (doc: DocProps) => {
 };
 
 const Index = () => {
-  const [results, setResults] = useState();
+  const [results, setResults] = useState<RankEvalResp | undefined>();
   return (
     <div
       style={{
@@ -103,7 +106,7 @@ const Index = () => {
             type="button"
             onClick={async () => {
               const resp = await fetch("./api/rank");
-              const json = await resp.json();
+              const json: RankEvalResp = await resp.json();
               setResults(json);
             }}
           >
