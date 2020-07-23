@@ -3,7 +3,7 @@ import rankEval from "../../rank_eval.json";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { ES_USER, ES_PASSWORD, ES_URL } = process.env;
-  const rankEvalEnpoint = `https://${ES_URL}/_rank_eval`;
+  const rankEvalEnpoint = `https://${ES_URL}/works-20200717/_rank_eval`;
   const resp = await fetch(rankEvalEnpoint, {
     method: "POST",
     body: JSON.stringify(rankEval),
