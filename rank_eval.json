@@ -4,7 +4,7 @@
       "id": "title_stim",
       "template_id": "multi_match",
       "params": {
-        "query": "stIm"
+        "query": "stim"
       },
       "ratings": [
         {
