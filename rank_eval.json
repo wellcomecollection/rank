@@ -50,11 +50,6 @@
       },
       "ratings": [
         {
-          "_id": "enmqpymp",
-          "_index": "works-20200717",
-          "rating": 3
-        },
-        {
           "_id": "execg22x",
           "_index": "works-20200717",
           "rating": 3
@@ -62,7 +57,7 @@
       ]
     },
     {
-      "id": "title_dasneue",
+      "id": "title_bom",
       "template_id": "multi_match",
       "params": {
         "query": "bills of mortality"
@@ -94,7 +89,7 @@
                   "prefix": {
                     "data.title.keyword": {
                       "value": "{{query}}",
-                      "boost": 5000
+                      "boost": 1000
                     }
                   }
                 },

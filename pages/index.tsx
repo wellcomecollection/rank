@@ -5,10 +5,15 @@ type RankEvalResp = {
   details: any;
 };
 
-type DocProps = { _id: string; _index: string };
-const Doc = (doc: DocProps) => {
+type Doc = { _id: string; _index: string };
+const Doc = (doc: Doc) => {
   return (
-    <a href={`https://wellcomecollection.org/works/${doc._id}`}>{doc._id}</a>
+    <a
+      style={{ color: "white" }}
+      href={`https://wellcomecollection.org/works/${doc._id}`}
+    >
+      {doc._id}
+    </a>
   );
 };
 
@@ -32,6 +37,7 @@ const Index = () => {
           >
             {rankEval.requests.map((request) => (
               <li
+                key={request.id}
                 style={{
                   listStyle: "none",
                   padding: 0,
@@ -42,7 +48,7 @@ const Index = () => {
                 <h2>
                   Query: {request.params.query}
                   {results
-                    ? `(${results.details[request.id].metric_score} / 1)`
+                    ? ` (${results.details[request.id].metric_score} / 1)`
                     : ""}
                 </h2>
                 <h3>Expected results</h3>
@@ -58,8 +64,17 @@ const Index = () => {
                       key={rating._id}
                       style={{
                         border: "1px solid silver",
-                        padding: "5px",
+                        padding: "25px",
                         display: "inline-block",
+                        color: "white",
+                        background: !results
+                          ? "#212121"
+                          : results.details[request.id].hits.find(
+                              (hit: { hit: Doc }) => hit.hit._id === rating._id
+                            )
+                          ? "#19a974"
+                          : "#ff4136",
+                        lineHeight: 1.4,
                       }}
                     >
                       <div>
@@ -71,7 +86,7 @@ const Index = () => {
                         {!results
                           ? "Test not run"
                           : results.details[request.id].hits.find(
-                              (hit) => hit.hit._id === rating._id
+                              (hit: { hit: Doc }) => hit.hit._id === rating._id
                             )
                           ? "Found"
                           : "Not found"}
@@ -84,12 +99,13 @@ const Index = () => {
                     <h3>Unrated docs found</h3>
                     <div>
                       {results.details[request.id].unrated_docs.map(
-                        (doc: DocProps) => (
+                        (doc: Doc) => (
                           <div
                             style={{
                               border: "1px solid silver",
                               padding: "5px",
                               display: "inline-block",
+                              background: "#212121",
                             }}
                           >
                             <Doc {...doc} />
