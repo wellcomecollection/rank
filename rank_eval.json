@@ -76,56 +76,5 @@
       "relevant_rating_threshold": 3,
       "k": 1
     }
-  },
-  "templates": [
-    {
-      "id": "multi_match",
-      "template": {
-        "source": {
-          "query": {
-            "bool": {
-              "should": [
-                {
-                  "prefix": {
-                    "data.title.keyword": {
-                      "value": "{{query}}",
-                      "boost": 1000
-                    }
-                  }
-                },
-                {
-                  "multi_match": {
-                    "query": "{{query}}",
-                    "type": "best_fields",
-                    "operator": "and",
-                    "fields": [
-                      "canonicalId.text^1000",
-                      "sourceIdentifier.value.text^1000",
-                      "data.otherIdentifiers.value.text^1000",
-                      "data.items.id.canonicalId.text^1000",
-                      "data.items.id.sourceIdentifier.value.text^1000",
-                      "data.items.id.otherIdentifiers.value.text^1000",
-                      "data.title^100",
-                      "data.title.english^100",
-                      "data.title.shingles^100",
-                      "data.alternativeTitles^100",
-                      "data.subjects.concepts.label^10",
-                      "data.genres.concepts.label^10",
-                      "data.contributors.agent.labe^10",
-                      "data.production.*.label^10",
-                      "data.description",
-                      "data.physicalDescription",
-                      "data.language.label",
-                      "data.edition",
-                      "data.notes.content"
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    }
-  ]
+  }
 }
