@@ -39,7 +39,7 @@
                     "data.alternativeTitles^100",
                     "data.subjects.concepts.label^10",
                     "data.genres.concepts.label^10",
-                    "data.contributors.agent.labe^10",
+                    "data.contributors.agent.label^10",
                     "data.production.*.label^10",
                     "data.description",
                     "data.physicalDescription",
