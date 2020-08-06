@@ -1,6 +1,90 @@
 {
   "requests": [
     {
+      "id": "contributor_salomon",
+      "template_id": "multi_match",
+      "params": {
+        "query": "Salomon Trismosin"
+      },
+      "ratings": [
+        {
+          "_id": "e8qxq5mv",
+          "_index": "works_prod",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "id": "contributor_sun",
+      "template_id": "multi_match",
+      "params": {
+        "query": "sun yat sen"
+      },
+      "ratings": [
+        {
+          "_id": "e8qxq5mv",
+          "_index": "works_prod",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "id": "contributor_william",
+      "template_id": "multi_match",
+      "params": {
+        "query": "william Blake"
+      },
+      "ratings": [
+        {
+          "_id": "e8qxq5mv",
+          "_index": "works_prod",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "id": "contributor_ras",
+      "template_id": "multi_match",
+      "params": {
+        "query": "Royal Astronomical Society"
+      },
+      "ratings": [
+        {
+          "_id": "e8qxq5mv",
+          "_index": "works_prod",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "id": "contributor_levasseur",
+      "template_id": "multi_match",
+      "params": {
+        "query": "Levasseur"
+      },
+      "ratings": [
+        {
+          "_id": "e8qxq5mv",
+          "_index": "works_prod",
+          "rating": 3
+        }
+      ]
+    },
+    {
+      "id": "contributor_fcr",
+      "template_id": "multi_match",
+      "params": {
+        "query": "Frederic Cayley Robinson"
+      },
+      "ratings": [
+        {
+          "_id": "e8qxq5mv",
+          "_index": "works_prod",
+          "rating": 3
+        }
+      ]
+    },
+    {
       "id": "title_stim",
       "template_id": "multi_match",
       "params": {
@@ -9,7 +93,7 @@
       "ratings": [
         {
           "_id": "e8qxq5mv",
-          "_index": "works-20200717",
+          "_index": "works_prod",
           "rating": 3
         }
       ]
@@ -23,7 +107,7 @@
       "ratings": [
         {
           "_id": "ruedafcw",
-          "_index": "works-20200717",
+          "_index": "works_prod",
           "rating": 3
         }
       ]
@@ -37,7 +121,7 @@
       "ratings": [
         {
           "_id": "vp7q52gs",
-          "_index": "works-20200717",
+          "_index": "works_prod",
           "rating": 3
         }
       ]
@@ -51,7 +135,7 @@
       "ratings": [
         {
           "_id": "execg22x",
-          "_index": "works-20200717",
+          "_index": "works_prod",
           "rating": 3
         }
       ]
@@ -64,8 +148,8 @@
       },
       "ratings": [
         {
-          "_id": "zc9qb3t9",
-          "_index": "works-20200717",
+          "_id": "xz9c9qn3",
+          "_index": "works_prod",
           "rating": 3
         }
       ]

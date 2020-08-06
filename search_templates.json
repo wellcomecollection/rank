@@ -5,53 +5,68 @@
       "source": {
         "query": {
           "bool": {
-            "filter": [
-              {
-                "term": {
-                  "type": "IdentifiedWork"
-                }
-              }
-            ],
             "should": [
+              {
+                "multi_match": {
+                  "query": "{{query}}",
+                  "fields": [
+                    "canonicalId^1000.0",
+                    "sourceIdentifier.value^1000.0",
+                    "data.otherIdentifiers.value^1000.0",
+                    "data.items.id.canonicalId^1000.0",
+                    "data.items.id.sourceIdentifier.value^1000.0",
+                    "data.items.id.otherIdentifiers.value^1000.0"
+                  ],
+                  "type": "best_fields",
+                  "analyzer": "whitespace_analyzer",
+                  "operator": "Or"
+                }
+              },
               {
                 "prefix": {
                   "data.title.keyword": {
                     "value": "{{query}}",
-                    "boost": 1000
+                    "boost": 1000.0
                   }
                 }
               },
               {
                 "multi_match": {
                   "query": "{{query}}",
-                  "type": "best_fields",
-                  "operator": "and",
                   "fields": [
-                    "canonicalId.text^1000",
-                    "sourceIdentifier.value.text^1000",
-                    "data.otherIdentifiers.value.text^1000",
-                    "data.items.id.canonicalId.text^1000",
-                    "data.items.id.sourceIdentifier.value.text^1000",
-                    "data.items.id.otherIdentifiers.value.text^1000",
-                    "data.title^100",
-                    "data.title.english^100",
-                    "data.title.shingles^100",
-                    "data.alternativeTitles^100",
-                    "data.subjects.concepts.label^10",
-                    "data.genres.concepts.label^10",
-                    "data.contributors.agent.label^10",
-                    "data.production.*.label^10",
+                    "data.contributors.agent.label^1000.0",
+                    "data.title^100.0",
+                    "data.title.english^100.0",
+                    "data.title.shingles^100.0",
+                    "data.alternativeTitles^100.0",
+                    "data.subjects.concepts.label^10.0",
+                    "data.genres.concepts.label^10.0",
+                    "data.production.*.label^10.0",
                     "data.description",
                     "data.physicalDescription",
                     "data.language.label",
                     "data.edition",
-                    "data.notes.content"
-                  ]
+                    "data.notes.content",
+                    "data.collectionPath.path",
+                    "data.collectionPath.label"
+                  ],
+                  "type": "best_fields",
+                  "operator": "And"
                 }
               }
-            ]
+            ],
+            "filter": [{ "term": { "type": { "value": "IdentifiedWork" } } }],
+            "minimum_should_match": "1"
           }
-        }
+        },
+        "post_filter": { "bool": {} },
+        "from": 0,
+        "size": 10,
+        "sort": [
+          { "_score": { "order": "desc" } },
+          { "canonicalId": { "order": "asc" } }
+        ],
+        "track_total_hits": true
       }
     }
   }

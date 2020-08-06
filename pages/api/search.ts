@@ -5,7 +5,7 @@ import searchTemplates from "../../search_templates.json";
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { query } = req.query;
   const { ES_USER, ES_PASSWORD, ES_URL } = process.env;
-  const rankEvalEnpoint = `https://${ES_URL}/works-20200717/_search/template`;
+  const rankEvalEnpoint = `https://${ES_URL}/works_prod/_search/template`;
   const searchTemplate = searchTemplates.find(
     (template) => template.id === "multi_match"
   );
