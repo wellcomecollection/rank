@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import rankEval from "../../rank_eval.json";
+import rankEval from "../../rank_eval_titles.json";
 import searchTemplates from "../../search_templates.json";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

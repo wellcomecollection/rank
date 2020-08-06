@@ -1,18 +1,15 @@
 {
-  "requests": [
-    {
+  "requests": [{
       "id": "title_stim",
       "template_id": "multi_match",
       "params": {
         "query": "stim"
       },
-      "ratings": [
-        {
-          "_id": "e8qxq5mv",
-          "_index": "works_prod",
-          "rating": 3
-        }
-      ]
+      "ratings": [{
+        "_id": "e8qxq5mv",
+        "_index": "works_prod",
+        "rating": 3
+      }]
     },
     {
       "id": "title_odnb",
@@ -20,13 +17,11 @@
       "params": {
         "query": "Oxford dictionary of national biography"
       },
-      "ratings": [
-        {
-          "_id": "ruedafcw",
-          "_index": "works_prod",
-          "rating": 3
-        }
-      ]
+      "ratings": [{
+        "_id": "ruedafcw",
+        "_index": "works_prod",
+        "rating": 3
+      }]
     },
     {
       "id": "title_piggle",
@@ -34,13 +29,11 @@
       "params": {
         "query": "The Piggle"
       },
-      "ratings": [
-        {
-          "_id": "vp7q52gs",
-          "_index": "works_prod",
-          "rating": 3
-        }
-      ]
+      "ratings": [{
+        "_id": "vp7q52gs",
+        "_index": "works_prod",
+        "rating": 3
+      }]
     },
     {
       "id": "title_dasneue",
@@ -48,13 +41,11 @@
       "params": {
         "query": "Das neue Naturheilverfahren"
       },
-      "ratings": [
-        {
-          "_id": "execg22x",
-          "_index": "works_prod",
-          "rating": 3
-        }
-      ]
+      "ratings": [{
+        "_id": "execg22x",
+        "_index": "works_prod",
+        "rating": 3
+      }]
     },
     {
       "id": "title_bom",
@@ -62,19 +53,17 @@
       "params": {
         "query": "bills of mortality"
       },
-      "ratings": [
-        {
-          "_id": "xz9c9qn3",
-          "_index": "works_prod",
-          "rating": 3
-        }
-      ]
+      "ratings": [{
+        "_id": "xz9c9qn3",
+        "_index": "works_prod",
+        "rating": 3
+      }]
     }
   ],
   "metric": {
     "precision": {
       "relevant_rating_threshold": 3,
-      "k": 5
+      "k": 1
     }
   }
 }
