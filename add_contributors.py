@@ -71,11 +71,11 @@ def main(query: str = typer.Option(..., prompt=True)):
 
     typer.echo(f"\nYou've chosen {len(valid_contributors)} valid contributors")
 
-    work_ids = []
+    work_ids = set()
     for work in results:
         for contributor in work["contributors"]:
             if contributor["agent"]["label"] in valid_contributors:
-                work_ids.append(work["id"])
+                work_ids.add(work["id"])
 
     typer.echo(f"I found {len(work_ids)} works tagged with those contributors")
     if typer.confirm("Do you want to add them to rank_eval_contributors.json?"):
