@@ -121,7 +121,7 @@ const Contributors = () => {
           <button
             type="button"
             onClick={async () => {
-              const resp = await fetch("./api/rank");
+              const resp = await fetch("./api/rank_contributors");
               const json: RankEvalResp = await resp.json();
               setResults(json);
             }}
