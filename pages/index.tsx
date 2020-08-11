@@ -45,12 +45,7 @@ const Index = () => {
                   borderTop: "5px solid silver",
                 }}
               >
-                <h2>
-                  Query: {request.params.query}
-                  {results
-                    ? ` (${results.details[request.id].metric_score} / 1)`
-                    : ""}
-                </h2>
+                <h2>Query: {request.params.query}</h2>
                 <h3>Expected results</h3>
                 <ul
                   style={{
