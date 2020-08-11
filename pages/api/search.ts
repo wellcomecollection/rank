@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import rankEval from "../../rank_eval.json";
 import searchTemplates from "../../search_templates.json";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -31,6 +30,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     return {
       id: hit._id,
       title: hit._source.data.title,
+      workType: hit._source.data.workType,
+      description: hit._source.data.description,
     };
   });
 
