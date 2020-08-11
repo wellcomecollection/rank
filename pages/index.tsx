@@ -35,7 +35,15 @@ const Index = () => {
         fontFamily: "sans-serif",
       }}
     >
-      <h1>Ranking evaluation</h1>
+      <h1>
+        Ranking evaluation{" "}
+        {results && (
+          <button type="button" onClick={getResults}>
+            Rerun tests
+          </button>
+        )}
+      </h1>
+
       <div>
         <div>
           <ul
@@ -124,9 +132,6 @@ const Index = () => {
               </li>
             ))}
           </ul>
-          <button type="button" onClick={getResults}>
-            Run tests
-          </button>
         </div>
       </div>
     </div>
