@@ -1,5 +1,5 @@
 import rankEval from "../rank_eval.json";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type RankEvalResp = {
   details: any;
@@ -19,6 +19,16 @@ const Doc = (doc: Doc) => {
 
 const Index = () => {
   const [results, setResults] = useState<RankEvalResp | undefined>();
+
+  async function getResults() {
+    const resp = await fetch("./api/rank");
+    const json: RankEvalResp = await resp.json();
+    setResults(json);
+  }
+
+  useEffect(() => {
+    getResults();
+  }, []);
   return (
     <div
       style={{
@@ -96,6 +106,7 @@ const Index = () => {
                       {results.details[request.id].unrated_docs.map(
                         (doc: Doc) => (
                           <div
+                            key={doc._id}
                             style={{
                               border: "1px solid silver",
                               padding: "5px",
@@ -113,15 +124,8 @@ const Index = () => {
               </li>
             ))}
           </ul>
-          <button
-            type="button"
-            onClick={async () => {
-              const resp = await fetch("./api/rank");
-              const json: RankEvalResp = await resp.json();
-              setResults(json);
-            }}
-          >
-            Run tests {results ? " again" : ""}
+          <button type="button" onClick={getResults}>
+            Run tests
           </button>
         </div>
       </div>
