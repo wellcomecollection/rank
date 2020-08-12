@@ -23,7 +23,7 @@ const Index: NextPage = () => {
   const [results, setResults] = useState<RankEvalResp | undefined>();
 
   async function getResults() {
-    const resp = await fetch("./api/rank");
+    const resp = await fetch("./api/eval");
     const json: RankEvalResp = await resp.json();
     setResults(json);
   }
