@@ -1,5 +1,7 @@
 import rankEval from "../rank_eval.json";
 import { useState, useEffect } from "react";
+import { NextPage } from "next";
+import ListItem from "../components/ListItem";
 
 type RankEvalResp = {
   details: any;
@@ -17,7 +19,7 @@ const Doc = (doc: Doc) => {
   );
 };
 
-const Index = () => {
+const Index: NextPage = () => {
   const [results, setResults] = useState<RankEvalResp | undefined>();
 
   async function getResults() {
@@ -54,15 +56,7 @@ const Index = () => {
             }}
           >
             {rankEval.requests.map((request) => (
-              <li
-                key={request.id}
-                style={{
-                  listStyle: "none",
-                  padding: 0,
-                  margin: "0 0 25px 0",
-                  borderTop: "5px solid silver",
-                }}
-              >
+              <ListItem key={request.id}>
                 <h2>Query: {request.params.query}</h2>
                 <h3>Expected results</h3>
                 <ul
@@ -129,7 +123,7 @@ const Index = () => {
                     </div>
                   </div>
                 )}
-              </li>
+              </ListItem>
             ))}
           </ul>
         </div>
