@@ -122,6 +122,7 @@ const Rank: NextPage = () => {
     title: string;
     workType: WorkType;
     description: string | null;
+    contributors: any[];
   };
 
   const [results, setResults] = useState<Result[]>([]);
@@ -170,23 +171,32 @@ const Rank: NextPage = () => {
           margin: 0,
         }}
       >
-        {results.map(({ id, title, workType, description }, position) => (
-          <ListItem key={id}>
-            <a href={`https://wellcomecollection.org/works/${id}`}>
-              <h3>{title}</h3>
+        {results.map(
+          ({ id, title, workType, description, contributors }, position) => (
+            <ListItem key={id}>
+              <h3>
+                <a href={`https://wellcomecollection.org/works/${id}`}>
+                  {title}
+                </a>
+              </h3>
               <p>work type: {workType.label}</p>
+              <p>
+                contributors:{" "}
+                {contributors.map((c) => `😺 ${c.agent.label}`).join(" / ")}
+              </p>
               {description && <p>{description}</p>}
-            </a>
-            <div>
-              <Rater
-                workId={id}
-                query={activeContributor}
-                position={position}
-                username={null}
-              />
-            </div>
-          </ListItem>
-        ))}
+
+              <div>
+                <Rater
+                  workId={id}
+                  query={activeContributor}
+                  position={position}
+                  username={null}
+                />
+              </div>
+            </ListItem>
+          )
+        )}
       </ul>
     </div>
   );

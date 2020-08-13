@@ -32,6 +32,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       title: hit._source.data.title,
       workType: hit._source.data.workType,
       description: hit._source.data.description,
+      contributors: hit._source.data.contributors,
     };
   });
 
