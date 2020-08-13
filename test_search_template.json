@@ -1,0 +1,22 @@
+{
+  "id": "title_match",
+  "template": {
+    "source": {
+      "query": {
+        "bool": {
+          "should": [
+            {
+              "prefix": {
+                "data.title.keyword": {
+                  "value": "{{query}}",
+                  "boost": 1000
+                }
+              }
+            }
+          ]
+        }
+      },
+      "track_total_hits": true
+    }
+  }
+}
