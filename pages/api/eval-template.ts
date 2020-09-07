@@ -20,7 +20,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   const { RANK_EVAL_USER, RANK_EVAL_PASSWORD } = process.env;
 
-  console.info(RANK_EVAL_USER, RANK_EVAL_PASSWORD, authCreds, req.headers);
   if (
     authCreds &&
     authCreds.user === RANK_EVAL_USER &&
