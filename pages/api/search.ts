@@ -1,13 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import searchTemplates from "../../search_templates.json";
+import { getSearchTemplates } from "../../services/search-templates";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { query } = req.query;
   const { ES_USER, ES_PASSWORD, ES_URL } = process.env;
-  const rankEvalEnpoint = `https://${ES_URL}/works_prod/_search/template`;
-  const searchTemplate = searchTemplates.find(
-    (template) => template.id === "multi_match"
-  );
+  const searchTemplatesResp = await getSearchTemplates();
+  const searchTemplate = searchTemplatesResp.templates[0];
+  const rankEvalEnpoint = `https://${ES_URL}/${searchTemplate.index}/_search/template`;
 
   const resp = await fetch(rankEvalEnpoint, {
     method: "POST",
