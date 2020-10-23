@@ -5,13 +5,13 @@ function WecoApp({ Component, pageProps }) {
     <>
       <Head>
         <title>Rank | The relevance of search @ Wellcome Collection</title>
-        <style jsx global>{`
-          body {
-            padding: 0;
-            margin: 0;
-          }
-        `}</style>
       </Head>
+      <style jsx global>{`
+        body {
+          padding: 0;
+          margin: 0;
+        }
+      `}</style>
       <Component {...pageProps} />
     </>
   );
