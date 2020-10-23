@@ -3,8 +3,14 @@ import { rankRequests, rankMetric } from "../../data/rank";
 import { getSearchTemplates } from "../../services/search-templates";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
+  const { env } = req.query;
+  if (env && !(env === "prod" || env === "stage")) {
+    throw new Error(`Env cannot be ${env}`);
+  }
   const { ES_USER, ES_PASSWORD, ES_URL } = process.env;
-  const searchTemplatesResp = await getSearchTemplates();
+  const searchTemplatesResp = await getSearchTemplates(
+    env ? env.toString() : undefined
+  );
   const rankEvalEnpoint = `https://${ES_URL}/${searchTemplatesResp.templates[0].index}/_rank_eval`;
 
   const requests = searchTemplatesResp.templates

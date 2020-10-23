@@ -20,9 +20,13 @@ type TemplatesWithStringQueryResponse = {
   templates: TemplateWithStringQuery[];
 };
 
-async function getSearchTemplates(): Promise<TemplatesResponse> {
-  const endpoint =
-    "https://api.wellcomecollection.org/catalogue/v2/search-templates.json";
+const endpoints = {
+  stage:
+    "https://api-stage.wellcomecollection.org/catalogue/v2/search-templates.json",
+  prod: "https://api.wellcomecollection.org/catalogue/v2/search-templates.json",
+};
+async function getSearchTemplates(env = "stage"): Promise<TemplatesResponse> {
+  const endpoint = endpoints[env];
   const resp = await fetch(endpoint);
   const json: TemplatesWithStringQueryResponse = await resp.json();
 
