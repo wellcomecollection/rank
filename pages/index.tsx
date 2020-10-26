@@ -1,4 +1,6 @@
 import { NextPage } from "next";
+import absoluteUrl from "next-absolute-url";
+
 type Props = {
   success: boolean;
 };
@@ -20,8 +22,9 @@ const Index: NextPage<Props> = ({ success }) => {
   );
 };
 
-Index.getInitialProps = async ({ res }) => {
-  const resp = await fetch("http://localhost:3000/api/eval");
+Index.getInitialProps = async ({ req }) => {
+  const { origin } = absoluteUrl(req);
+  const resp = await fetch(`${origin}/api/eval`);
   const json = await resp.json();
   const success = json.success;
 
