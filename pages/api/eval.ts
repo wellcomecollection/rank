@@ -50,7 +50,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   res.end(
     JSON.stringify({
       success,
-      body,
       ...json,
     })
   );
