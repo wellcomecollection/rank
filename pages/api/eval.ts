@@ -45,7 +45,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const json = await resp.json();
   const success = json.metric_score === 1;
 
-  res.statusCode = success ? 200 : 500;
+  res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
   res.end(
     JSON.stringify({
