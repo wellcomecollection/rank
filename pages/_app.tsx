@@ -1,20 +1,5 @@
-import Head from "next/head";
+import "../styles/app.css";
 
-function WecoApp({ Component, pageProps }) {
-  return (
-    <>
-      <Head>
-        <title>Rank | The relevance of search @ Wellcome Collection</title>
-      </Head>
-      <style jsx global>{`
-        body {
-          padding: 0;
-          margin: 0;
-        }
-      `}</style>
-      <Component {...pageProps} />
-    </>
-  );
+export default function WecoApp({ Component, pageProps }) {
+  return <Component {...pageProps} />;
 }
-
-export default WecoApp;

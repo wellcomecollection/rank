@@ -32,8 +32,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         rating: parseInt(rating, 10),
         position: parseInt(position, 10),
       };
-      const rankEvalEnpoint = `https://${ES_RATINGS_URL}/ratings/_doc`;
-      const resp = await fetch(rankEvalEnpoint, {
+      const rankEvalEndpoint = `https://${ES_RATINGS_URL}/ratings/_doc`;
+      const resp = await fetch(rankEvalEndpoint, {
         method: "POST",
         body: JSON.stringify(ratingDoc),
         headers: {

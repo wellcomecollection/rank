@@ -1,14 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSearchTemplates } from "../../services/search-templates";
+import { Env } from "../../common/components/types";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { query } = req.query;
+  const { query, env } = req.query;
   const { ES_USER, ES_PASSWORD, ES_URL } = process.env;
-  const searchTemplatesResp = await getSearchTemplates();
+  const searchTemplatesResp = await getSearchTemplates(env as Env);
   const searchTemplate = searchTemplatesResp.templates[0];
-  const rankEvalEnpoint = `https://${ES_URL}/${searchTemplate.index}/_search/template`;
+  const rankEvalEndpoint = `https://${ES_URL}/${searchTemplate.index}/_search/template`;
 
-  const resp = await fetch(rankEvalEnpoint, {
+  const resp = await fetch(rankEvalEndpoint, {
     method: "POST",
     body: JSON.stringify({
       source: searchTemplate.template.source,

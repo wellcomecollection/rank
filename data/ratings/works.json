@@ -1,0 +1,50 @@
+[{
+    "id": "title_contrib_bulloch",
+    "query": "bulloch history of bacteriology",
+    "ratings": [{
+        "_id": "rkcux48q",
+        "rating": 3
+    }]
+}, {
+    "id": "title_stim",
+    "query": "stim",
+    "ratings": [{
+        "_id": "e8qxq5mv",
+        "rating": 3
+    }]
+}, {
+    "id": "title_odnb",
+    "query": "Oxford dictionary of national biography",
+    "ratings": [{
+        "_id": "ruedafcw",
+        "rating": 3
+    }]
+}, {
+    "id": "title_piggle",
+    "query": "The Piggle",
+    "ratings": [{
+        "_id": "vp7q52gs",
+        "rating": 3
+    }]
+}, {
+    "id": "title_dasneue",
+    "query": "Das neue Naturheilverfahren",
+    "ratings": [{
+        "_id": "execg22x",
+        "rating": 3
+    }]
+}, {
+    "id": "title_bom",
+    "query": "bills of mortality",
+    "ratings": [{
+        "_id": "xwtcsk93",
+        "rating": 3
+    }]
+}, {
+    "id": "title_atherosclerosis",
+    "query": "Atherosclerosis : an introduction to atherosclerosis",
+    "ratings": [{
+        "_id": "bcwvtknn",
+        "rating": 3
+    }]
+}]
