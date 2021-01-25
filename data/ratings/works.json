@@ -1,50 +1,42 @@
-[{
-    "id": "title_contrib_bulloch",
+[
+  {
     "query": "bulloch history of bacteriology",
-    "ratings": [{
-        "_id": "rkcux48q",
-        "rating": 3
-    }]
-}, {
-    "id": "title_stim",
+    "ratings": ["rkcux48q"]
+  },
+  {
     "query": "stim",
-    "ratings": [{
-        "_id": "e8qxq5mv",
-        "rating": 3
-    }]
-}, {
-    "id": "title_odnb",
+    "ratings": ["e8qxq5mv"]
+  },
+  {
     "query": "Oxford dictionary of national biography",
-    "ratings": [{
-        "_id": "ruedafcw",
-        "rating": 3
-    }]
-}, {
-    "id": "title_piggle",
+    "ratings": ["ruedafcw"]
+  },
+  {
     "query": "The Piggle",
-    "ratings": [{
-        "_id": "vp7q52gs",
-        "rating": 3
-    }]
-}, {
-    "id": "title_dasneue",
+    "ratings": ["vp7q52gs"]
+  },
+  {
     "query": "Das neue Naturheilverfahren",
-    "ratings": [{
-        "_id": "execg22x",
-        "rating": 3
-    }]
-}, {
-    "id": "title_bom",
+    "ratings": ["execg22x"]
+  },
+  {
     "query": "bills of mortality",
-    "ratings": [{
-        "_id": "xwtcsk93",
-        "rating": 3
-    }]
-}, {
-    "id": "title_atherosclerosis",
+    "ratings": ["xwtcsk93"]
+  },
+  {
     "query": "Atherosclerosis : an introduction to atherosclerosis",
-    "ratings": [{
-        "_id": "bcwvtknn",
-        "rating": 3
-    }]
-}]
+    "ratings": ["bcwvtknn"]
+  },
+  {
+    "query": "L0033046",
+    "ratings": ["kmebmktz"]
+  },
+  {
+    "query": "kmebmktz",
+    "ratings": ["kmebmktz"]
+  },
+  {
+    "query": "gzv2hhgy",
+    "ratings": ["kmebmktz"]
+  }
+]

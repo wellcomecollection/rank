@@ -8,7 +8,7 @@ const rankMetric = {
   images: {
     recall: {
       relevant_rating_threshold: 3,
-      k: 25,
+      k: 30,
     },
   },
   works: {
@@ -26,16 +26,16 @@ function formatExamples(
 ) {
   return examples.map((example) => {
     return {
-      id: example.id,
+      id: example.query,
       template_id: templateId,
       params: {
         query: example.query,
       },
-      ratings: example.ratings.map((r) => {
+      ratings: example.ratings.map((id) => {
         return {
-          _id: r._id,
+          _id: id,
           _index: index,
-          rating: r.rating,
+          rating: 3,
         };
       }),
     };

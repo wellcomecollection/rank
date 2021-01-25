@@ -1,46 +1,69 @@
-[{
-    "id": "title_horse_battle",
+[
+  {
     "query": "horse battle",
-    "ratings": [{
-        "_id": "ud35y7c8",
-        "rating": 3
-    }]
-}, {
-    "id": "title_everest_chests",
+    "ratings": ["ud35y7c8"]
+  },
+  {
+    "query": "crick dna sketch",
+    "ratings": ["gzv2hhgy"]
+  },
+  {
+    "query": "gzv2hhgy",
+    "ratings": ["gzv2hhgy"]
+  },
+  {
+    "query": "kmebmktz",
+    "ratings": ["gzv2hhgy"]
+  },
+  {
+    "query": "L0033046",
+    "ratings": ["gzv2hhgy"]
+  },
+  {
     "query": "everest chest",
-    "ratings": [{
-        "_id": "bt9yvss2",
-        "rating": 3
-    }, {
-        "_id": "erth8sur",
-        "rating": 3
-    }, {
-        "_id": "fddgu7pe",
-        "rating": 3
-    }, {
-        "_id": "qbvq42t6",
-        "rating": 3
-    }, {
-        "_id": "u6ejpuxu",
-        "rating": 3
-    }, {
-        "_id": "xskq2fsc",
-        "rating": 3
-    }, {
-        "_id": "prrq5ajp",
-        "rating": 3
-    }, {
-        "_id": "zw53jx3j",
-        "rating": 3
-    }]
-}, {
-    "id": "contrib_cayley",
+    "ratings": [
+      "bt9yvss2",
+      "erth8sur",
+      "fddgu7pe",
+      "qbvq42t6",
+      "u6ejpuxu",
+      "xskq2fsc",
+      "prrq5ajp",
+      "zw53jx3j"
+    ]
+  },
+  {
     "query": "Frederic Cayley Robinson",
-    "ratings": [{
-        "_id": "avvynvp3",
-        "rating": 3
-    }, {
-        "_id": "b286u5hw",
-        "rating": 3
-    }]
-}]
+    "ratings": [
+      "avvynvp3",
+      "b286u5hw",
+      "dey48vd8",
+      "g6n5e53n",
+      "gcr92r4d",
+      "gh3y9p3y",
+      "vmm6hvuk",
+      "z894cnj8",
+      "cfgh5xqh",
+      "fgszwax3",
+      "hc4jc2ax",
+      "hfyyg6y4",
+      "jz4bkatc",
+      "khw4yqzx",
+      "npgefkju",
+      "q3sw6v4p",
+      "z7huxjwf",
+      "dkj7jswg",
+      "gve6469u",
+      "kyw8ufwn",
+      "r49f89rq",
+      "sptagjhw",
+      "t6jb62an",
+      "tq4qjedt",
+      "xkt8av46",
+      "yh6evjnu",
+      "dvg8e7h5",
+      "knc95egk",
+      "th8c2wan"
+    ]
+  }
+]

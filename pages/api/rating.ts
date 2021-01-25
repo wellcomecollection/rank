@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-type Rating = {
+export type Rating = {
   username: string | undefined;
   workId: string;
   query: string;
@@ -71,5 +71,3 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     res.end(JSON.stringify({ message: "Method Not Allowed" }));
   }
 };
-
-export type { Rating };

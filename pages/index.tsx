@@ -76,7 +76,7 @@ const Index: NextPage<IndexProps> = ({ rankings, pass }) => {
 
 Index.getInitialProps = async ({ req }): Promise<IndexProps> => {
   const { origin } = absoluteUrl(req);
-  const resp = await fetch(`${origin}/api/eval?env=prod`);
+  const resp = await fetch(`${origin}/api/eval?env=stage`);
   const props = await resp.json();
   return props;
 };

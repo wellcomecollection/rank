@@ -4,19 +4,19 @@ Known examples for rank eval are stored in /data/known-examples, with image exam
 
 ```json
 {
-  "id": "title_contrib_bulloch",
-  "query": "bulloch history of bacteriology",
+  "query": "everest chest",
   "ratings": [
-    {
-      "_id": "rkcux48q",
-      "rating": 3
-    }
+    "bt9yvss2",
+    "erth8sur",
+    "fddgu7pe",
+    "qbvq42t6",
+    "u6ejpuxu",
+    "xskq2fsc",
+    "prrq5ajp",
+    "zw53jx3j"
   ]
 }
 ```
 
-`id` should be a unique id for each example
 `query` is the query that the user sends to the api/search box
-`ratings` is a list of expected results, with an `_id` and a `rating`, where `_id` is the work/image id, and `rating` is a measure of how high the work/image should appear in the list of results.
-
-Each example can have multiple target `_id`s.
+`ratings` is a list of expected result work/image IDs. Each example can have multiple target IDs.
