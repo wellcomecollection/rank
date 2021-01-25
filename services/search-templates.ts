@@ -1,4 +1,4 @@
-import { Env } from "../common/components/types";
+import { Env } from "../common/types";
 
 export type Template = {
   id: string;

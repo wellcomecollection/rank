@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSearchTemplates, Template } from "../../services/search-templates";
-import { Env, QueryType, Example } from "../../common/types";
+import { Env, Example } from "../../common/types";
+import { indexToQueryType } from "../index";
 
 const { ES_USER, ES_PASSWORD, ES_URL } = process.env;
 
@@ -24,7 +25,7 @@ function formatExamples(
   index: string,
   templateId: string
 ) {
-  return examples.map((example) => {
+  return examples.map((example: Example) => {
     return {
       id: example.query,
       template_id: templateId,
@@ -51,9 +52,7 @@ type RankEvalResponse = {
 async function makeRankEvalRequest(
   template: Template
 ): Promise<RankEvalResponse> {
-  // the name of the index should indicate the queryType, eg "images-2021-01-12"
-  // should result in an "images" query
-  const queryType = template.index.split("-")[0] as QueryType;
+  const queryType = indexToQueryType(template.index);
   const examples = require(`../../data/ratings/${queryType}.json`);
   const requests = formatExamples(examples, template.index, template.id);
 

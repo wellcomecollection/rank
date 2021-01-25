@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import absoluteUrl from "next-absolute-url";
+import { QueryType } from "../common/types";
 
 type Ranking = {
   queryId: string;
@@ -17,9 +18,15 @@ function scoreToEmoji(score: number): string {
   return score === 1 ? "✅" : "❌";
 }
 
+export function indexToQueryType(index: string): QueryType {
+  // the name of the index should indicate the queryType, eg "images-2021-01-12"
+  // should result in an "images" query
+  return index.split("-")[0] as QueryType;
+}
+
 function formatRanking(ranking: Ranking) {
   return (
-    <div className="py-4 font-mono">
+    <div className="py-4 font-mono" key={ranking.index}>
       <h2 className="text-2xl font-bold">
         {scoreToEmoji(ranking.metric_score)} {ranking.queryId}
       </h2>
@@ -27,14 +34,18 @@ function formatRanking(ranking: Ranking) {
         <b>Index:</b> {ranking.index}
       </p>
       <h3>
-        <b>Searches:</b>
+        <b>Queries:</b>
       </h3>
       <ul>
-        {Object.keys(ranking.details).map(function (key, i) {
-          const score = ranking.details[key].metric_score;
+        {Object.entries(ranking.details).map((key, i) => {
+          const query = key[0];
+          const score = ranking.details[query].metric_score;
+          const encodedQuery = encodeURIComponent(query);
+          const queryType = indexToQueryType(ranking.index);
+          const searchURL = `https://wellcomecollection.org/${queryType}?query=${encodedQuery}`;
           return (
-            <li>
-              {scoreToEmoji(score)} {key.toString()}
+            <li key={query}>
+              {scoreToEmoji(score)} <a href={searchURL}>{query}</a>
             </li>
           );
         })}
