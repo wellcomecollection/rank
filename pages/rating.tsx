@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
-import ListItem from "../components/ListItem";
+import ListItem from "../common/components/ListItem";
 import { Rating } from "./api/rating";
 
 const Rater = ({
@@ -8,7 +8,7 @@ const Rater = ({
   position,
   query,
 }: {
-  username: string | undefined;
+  username?: string;
   workId: string;
   position: number;
   query: string;
