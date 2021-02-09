@@ -1,6 +1,7 @@
 import { NextPage } from "next";
+import Head from "next/head";
 import absoluteUrl from "next-absolute-url";
-import { useState } from "react";
+import React, { useState } from "react";
 import { QueryType } from "../common/types";
 import { RankEvalResponse } from "./api/eval";
 import { CopyToClipboard } from "react-copy-to-clipboard";
@@ -92,37 +93,44 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
 
 const Index: NextPage<IndexProps> = ({ pass, rankings }) => {
   return (
-    <div className="px-4 py-2 lg:max-w-3xl max-w-2xl">
-      <div>
-        <h1 className="text-4xl font-bold">Rank eval</h1>
-        <p className="py-2">
-          When someone runs a search on{" "}
-          <a href="https://wellcomecollection.org/works">
-            wellcomecollection.org
-          </a>
-          , we transform their search terms into some structured json. That json
-          forms the <i>query</i> which is run against our data in elasticsearch.
-          <br />
-          We update the structure of our queries periodically to improve the
-          relevance of our search results.
-          <br />
-          Every time we update a query, we test it against a set of known search
-          terms, making sure that we're always showing people the right stuff.
-          <br />
-          You can{" "}
-          <a href="https://api.wellcomecollection.org/catalogue/v2/search-templates.json">
-            see the current candidate search queries here
-          </a>
-          .
-        </p>
-      </div>
+    <>
+      <Head>
+        <title>Relevancy ranking evaluation | Wellcome Collection</title>
+      </Head>
+      <div className="px-4 py-2 lg:max-w-3xl max-w-2xl">
+        <div>
+          <h1 className="text-4xl font-bold">Rank eval</h1>
+          <p className="py-2">
+            When someone runs a search on{" "}
+            <a href="https://wellcomecollection.org/works">
+              wellcomecollection.org
+            </a>
+            , we transform their search terms into some structured json. That
+            json forms the <i>query</i> which is run against our data in
+            elasticsearch.
+            <br />
+            We update the structure of our queries periodically to improve the
+            relevance of our search results.
+            <br />
+            Every time we update a query, we test it against a set of known
+            search terms, making sure that we're always showing people the right
+            stuff.
+            <br />
+            You can{" "}
+            <a href="https://api.wellcomecollection.org/catalogue/v2/search-templates.json">
+              see the current candidate search queries here
+            </a>
+            .
+          </p>
+        </div>
 
-      <div>
-        {rankings.map((ranking) => (
-          <RankingComponent ranking={ranking} key={ranking.queryId} />
-        ))}
+        <div>
+          {rankings.map((ranking) => (
+            <RankingComponent ranking={ranking} key={ranking.queryId} />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
