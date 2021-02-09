@@ -1,16 +1,12 @@
 import { NextPage } from "next";
 import absoluteUrl from "next-absolute-url";
+import { useState } from "react";
 import { QueryType } from "../common/types";
-
-type Ranking = {
-  queryId: string;
-  metric_score: number;
-  index: string;
-  details: Record<string, any>;
-};
+import { RankEvalResponse } from "./api/eval";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 type IndexProps = {
-  rankings: Ranking[];
+  rankings: RankEvalResponse[];
   pass: boolean;
 };
 
@@ -24,12 +20,52 @@ export function indexToQueryType(index: string): QueryType {
   return index.split("-")[0] as QueryType;
 }
 
-function formatRanking(ranking: Ranking) {
+type RankingComponentProps = {
+  ranking: RankEvalResponse;
+};
+const RankingComponent = ({ ranking }: RankingComponentProps) => {
+  const [showJson, setShowJson] = useState(false);
+  const elasticJson = `${ranking.query.method} ${
+    ranking.query.url
+  }\n${JSON.stringify(JSON.parse(ranking.query.body), null, 2)}`;
+  const [copied, setCopied] = useState(false);
+
   return (
     <div className="py-4 font-mono" key={ranking.index}>
       <h2 className="text-2xl font-bold">
         {scoreToEmoji(ranking.metric_score)} {ranking.queryId}
       </h2>
+      <div className="space-x-4">
+        <span>JSON</span>
+        <button
+          type="button"
+          onClick={() => {
+            setShowJson(!showJson);
+          }}
+        >
+          👁️
+        </button>
+        <CopyToClipboard
+          text={elasticJson}
+          onCopy={() => {
+            setCopied(true);
+            const t = setTimeout(() => {
+              setCopied(false);
+              clearTimeout(t);
+            }, 1000);
+          }}
+        >
+          <button type="button">📋</button>
+        </CopyToClipboard>
+        {copied && <span>Copied</span>}
+        <pre
+          style={{
+            display: showJson ? "block" : "none",
+          }}
+        >
+          {elasticJson}
+        </pre>
+      </div>
       <p>
         <b>Index:</b> {ranking.index}
       </p>
@@ -52,10 +88,11 @@ function formatRanking(ranking: Ranking) {
       </ul>
     </div>
   );
-}
-const Index: NextPage<IndexProps> = ({ rankings, pass }) => {
+};
+
+const Index: NextPage<IndexProps> = ({ pass, rankings }) => {
   return (
-    <body className="px-4 py-2 lg:max-w-3xl max-w-2xl">
+    <div className="px-4 py-2 lg:max-w-3xl max-w-2xl">
       <div>
         <h1 className="text-4xl font-bold">Rank eval</h1>
         <p className="py-2">
@@ -73,15 +110,19 @@ const Index: NextPage<IndexProps> = ({ rankings, pass }) => {
           terms, making sure that we're always showing people the right stuff.
           <br />
           You can{" "}
-          <a href="https://api-stage.wellcomecollection.org/catalogue/v2/search-templates.json">
+          <a href="https://api.wellcomecollection.org/catalogue/v2/search-templates.json">
             see the current candidate search queries here
           </a>
           .
         </p>
       </div>
 
-      <div>{rankings.map((ranking) => formatRanking(ranking))}</div>
-    </body>
+      <div>
+        {rankings.map((ranking) => (
+          <RankingComponent ranking={ranking} key={ranking.queryId} />
+        ))}
+      </div>
+    </div>
   );
 };
 

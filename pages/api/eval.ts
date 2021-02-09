@@ -43,10 +43,16 @@ function formatExamples(
   });
 }
 
-type RankEvalResponse = {
+export type RankEvalResponse = {
   metric_score: number;
   queryId: string;
   index: string;
+  details: Record<string, any>;
+  query: {
+    method: string;
+    url: string;
+    body: string;
+  };
 };
 
 async function makeRankEvalRequest(
@@ -86,6 +92,11 @@ async function makeRankEvalRequest(
     ...json,
     queryId: template.id,
     index: template.index,
+    query: {
+      method: "POST",
+      url: `https://${ES_URL}/${template.index}/_rank_eval`,
+      body: JSON.stringify(body),
+    },
   };
 }
 
