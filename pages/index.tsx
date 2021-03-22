@@ -97,46 +97,39 @@ const Index: NextPage<IndexProps> = ({ pass, rankings }) => {
       <Head>
         <title>Relevancy ranking evaluation | Wellcome Collection</title>
       </Head>
-      <div className="px-4 py-2 lg:max-w-3xl max-w-2xl">
-        <div>
-          <h1 className="text-4xl font-bold">Rank eval</h1>
-          <p className="py-2">
-            When someone runs a search on{" "}
-            <a href="https://wellcomecollection.org/works">
-              wellcomecollection.org
-            </a>
-            , we transform their search terms into some structured json. That
-            json forms the <i>query</i> which is run against our data in
-            elasticsearch.
-            <br />
-            We update the structure of our queries periodically to improve the
-            relevance of our search results.
-            <br />
-            Every time we update a query, we test it against a set of known
-            search terms, making sure that we're always showing people the right
-            stuff.
-            <br />
-            You can{" "}
-            <a href="https://api.wellcomecollection.org/catalogue/v2/search-templates.json">
-              see the current candidate search queries here
-            </a>
-            .
-          </p>
-        </div>
 
-        <div>
-          {rankings.map((ranking) => (
-            <RankingComponent ranking={ranking} key={ranking.queryId} />
-          ))}
-        </div>
-      </div>
+      <h1 className="text-4xl font-bold">Rank eval</h1>
+      <p className="py-2">
+        When someone runs a search on{" "}
+        <a href="https://wellcomecollection.org/works">
+          wellcomecollection.org
+        </a>
+        , we transform their search terms into some structured json. That json
+        forms the <i>query</i> which is run against our data in elasticsearch.
+        <br />
+        We update the structure of our queries periodically to improve the
+        relevance of our search results.
+        <br />
+        Every time we update a query, we test it against a set of known search
+        terms, making sure that we're always showing people the right stuff.
+        <br />
+        You can{" "}
+        <a href="https://api.wellcomecollection.org/catalogue/v2/search-templates.json">
+          see the current candidate search queries here
+        </a>
+        .
+      </p>
+
+      {rankings.map((ranking) => (
+        <RankingComponent ranking={ranking} key={ranking.queryId} />
+      ))}
     </>
   );
 };
 
 Index.getInitialProps = async ({ req }): Promise<IndexProps> => {
   const { origin } = absoluteUrl(req);
-  const resp = await fetch(`${origin}/api/eval?env=stage`);
+  const resp = await fetch(`${origin}/api/eval?env=prod`);
   const props = await resp.json();
   return props;
 };

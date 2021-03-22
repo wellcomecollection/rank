@@ -36,7 +36,7 @@ async function getSearchTemplates(env: Env): Promise<TemplatesResponse> {
     index: template.index,
     template: {
       source: {
-        query: JSON.parse(template.query.replace("IdentifiedWork", "Visible")),
+        query: JSON.parse(template.query),
       },
     },
   }));
