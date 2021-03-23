@@ -27,7 +27,7 @@ type RankingComponentProps = {
 const RankingComponent = ({ ranking }: RankingComponentProps) => {
   const [showJson, setShowJson] = useState(false);
   const elasticJson = `${ranking.query.method} ${
-    ranking.query.url
+    ranking.query.path
   }\n${JSON.stringify(JSON.parse(ranking.query.body), null, 2)}`;
   const [copied, setCopied] = useState(false);
 

@@ -1,11 +1,9 @@
-import { Client } from "@elastic/elasticsearch";
 import { NextApiRequest, NextApiResponse } from "next";
+import { client } from "../../../services/elasticsearch";
 import {
   getSearchTemplates,
   Template,
 } from "../../../services/search-templates";
-
-const { ES_USER, ES_PASSWORD, ES_CLOUD_ID } = process.env;
 
 async function getCurrentQuery(): Promise<Template> {
   const searchTemplates = await getSearchTemplates("prod");
@@ -30,15 +28,6 @@ async function getTestQuery(id: string): Promise<Template> {
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { query, queryId } = req.query;
 
-  const client = new Client({
-    cloud: {
-      id: ES_CLOUD_ID,
-    },
-    auth: {
-      username: ES_USER,
-      password: ES_PASSWORD,
-    },
-  });
   const template = queryId
     ? await getTestQuery(queryId.toString())
     : await getCurrentQuery();
