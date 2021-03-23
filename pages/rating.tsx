@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import { useState, useEffect } from "react";
-import ListItem from "../common/components/ListItem";
+import ListItem from "../components/ListItem";
 import { Rating } from "./api/rating";
 
 const Rater = ({
