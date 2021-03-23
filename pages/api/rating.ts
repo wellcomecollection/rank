@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { ratingClient } from "../../services/elasticsearch";
 
 export type Rating = {
   username: string | undefined;
@@ -20,11 +21,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         (val) => typeof val !== "undefined"
       )
     ) {
-      const {
-        ES_RATINGS_USER,
-        ES_RATINGS_PASSWORD,
-        ES_RATINGS_URL,
-      } = process.env;
       const ratingDoc: Rating = {
         username,
         workId,
@@ -32,27 +28,22 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         rating: parseInt(rating, 10),
         position: parseInt(position, 10),
       };
-      const rankEvalEndpoint = `https://${ES_RATINGS_URL}/ratings/_doc`;
-      const resp = await fetch(rankEvalEndpoint, {
-        method: "POST",
-        body: JSON.stringify(ratingDoc),
-        headers: {
-          Authorization: `Basic ${Buffer.from(
-            `${ES_RATINGS_USER}:${ES_RATINGS_PASSWORD}`
-          ).toString("base64")}`,
-          "Content-Type": "application/json",
-        },
-      });
-      const json = await resp.json();
 
-      if (!json.status) {
+      const resp = await ratingClient.index({
+        index: "ratings",
+        body: ratingDoc,
+      });
+
+      const body = resp.body;
+
+      if (!body.status) {
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.end(JSON.stringify(ratingDoc));
       } else {
-        res.statusCode = json.status;
+        res.statusCode = body.status;
         res.setHeader("Content-Type", "application/json");
-        res.end(JSON.stringify(json));
+        res.end(JSON.stringify(body));
       }
     } else {
       res.statusCode = 400;

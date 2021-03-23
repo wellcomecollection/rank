@@ -1,9 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import { client } from "../../services/elasticsearch";
 import { getSearchTemplates, Template } from "../../services/search-templates";
 import { Env, Example } from "../../types";
 import { indexToQueryType } from "../index";
-
-const { ES_USER, ES_PASSWORD, ES_URL } = process.env;
 
 const rankMetric = {
   images: {
@@ -50,7 +49,7 @@ export type RankEvalResponse = {
   details: Record<string, any>;
   query: {
     method: string;
-    url: string;
+    path: string;
     body: string;
   };
 };
@@ -73,29 +72,19 @@ async function makeRankEvalRequest(
     metric: rankMetric[queryType],
   };
 
-  const request = {
-    method: "POST",
-    body: JSON.stringify(body),
-    headers: {
-      Authorization: `Basic ${Buffer.from(`${ES_USER}:${ES_PASSWORD}`).toString(
-        "base64"
-      )}`,
-      "Content-Type": "application/json",
-    },
-  };
-
-  const rankEvalEndpoint = `https://${ES_URL}/${template.index}/_rank_eval`;
-  const response = await fetch(rankEvalEndpoint, request);
-  const json: RankEvalResponse = await response.json();
+  const resp = await client.rankEval<RankEvalResponse>({
+    index: template.index,
+    body,
+  });
 
   return {
-    ...json,
+    ...resp.body,
     queryId: template.id,
     index: template.index,
     query: {
       method: "POST",
-      url: `https://${ES_URL}/${template.index}/_rank_eval`,
-      body: JSON.stringify(body),
+      path: `${template.index}/_rank_eval`,
+      body: JSON.stringify(resp.body),
     },
   };
 }
