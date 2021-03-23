@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { getSearchTemplates, Template } from "../../services/search-templates";
-import { Env, Example } from "../../common/types";
+import { Env, Example } from "../../types";
 import { indexToQueryType } from "../index";
 
 const { ES_USER, ES_PASSWORD, ES_URL } = process.env;

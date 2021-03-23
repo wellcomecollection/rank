@@ -2,7 +2,7 @@ import { NextPage } from "next";
 import Head from "next/head";
 import absoluteUrl from "next-absolute-url";
 import React, { useState } from "react";
-import { QueryType } from "../common/types";
+import { QueryType } from "../types";
 import { RankEvalResponse } from "./api/eval";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
