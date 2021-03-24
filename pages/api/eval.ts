@@ -54,7 +54,7 @@ export type RankEvalResponse = {
   };
 };
 
-async function makeRankEvalRequest(
+export async function makeRankEvalRequest(
   template: Template
 ): Promise<RankEvalResponse> {
   const queryType = indexToQueryType(template.index);

@@ -4,6 +4,7 @@ import {
   getSearchTemplates,
   Template,
 } from "../../../services/search-templates";
+import { makeRankEvalRequest } from "../eval";
 
 async function getCurrentQuery(): Promise<Template> {
   const searchTemplates = await getSearchTemplates("prod");
@@ -32,7 +33,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     ? await getTestQuery(queryId.toString())
     : await getCurrentQuery();
 
-  const resp = await client.searchTemplate({
+  const rankEvalReq = makeRankEvalRequest(template);
+  const searchReq = client.searchTemplate({
     index: template.index,
     body: {
       source: {
@@ -55,7 +57,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
+  const [searchResp, rankEvalResp] = await Promise.all([
+    searchReq,
+    rankEvalReq,
+  ]);
+
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
-  res.end(JSON.stringify(resp.body));
+  res.end(
+    JSON.stringify({
+      ...searchResp.body,
+      rankEval: rankEvalResp,
+    })
+  );
 };

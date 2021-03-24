@@ -1,12 +1,9 @@
+import { FunctionComponent, useEffect, useState } from "react";
 import { GetServerSideProps, NextPage } from "next";
+import Link from "next/link";
 import absoluteUrl from "next-absolute-url";
-import { useState } from "react";
-
-function removeUndefinedValues(
-  obj: Record<string, unknown>
-): { [key: string]: any } {
-  return JSON.parse(JSON.stringify(obj));
-}
+import QueryIdSelect from "../components/QueryIdSelect";
+import Submit from "../components/Submit";
 
 type Props = {
   data?: any;
@@ -44,13 +41,31 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   };
 };
 
+type RankEvalStatusProps = {
+  score: number;
+};
+const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ score }) => {
+  return (
+    <div
+      className={`w-5 h-5 mr-2 rounded-full bg-${
+        score === 1 ? "green" : "red"
+      }-200`}
+    >
+      <span className="sr-only">{score === 1 ? "pass" : "fail"}</span>
+    </div>
+  );
+};
+
 const Search: NextPage<Props> = ({ data, search }) => {
   const [query, setQuery] = useState(search.query);
-  const [queryId, setQueryId] = useState(search.queryId);
+  const [showRankEval, setShowRankEval] = useState(false);
+  useEffect(() => {
+    setQuery(search.query);
+  }, [search.query]);
 
   return (
-    <form>
-      <div>
+    <>
+      <form className="mb-5">
         <label className="p-2 mr-10 inline-block border-2 border-purple-400 rounded-full">
           Query:{" "}
           <input
@@ -61,36 +76,65 @@ const Search: NextPage<Props> = ({ data, search }) => {
             onChange={(event) => setQuery(event.currentTarget.value)}
           />
         </label>
-        <label className="p-2 mr-10 inline-block border-2 border-purple-400 rounded-full">
-          Query ID:
-          <select
-            className="ml-2"
-            name="queryId"
-            onChange={(event) => setQueryId(event.currentTarget.value)}
-          >
-            <option value="">default</option>
-            <option value="languages" selected={queryId === "languages"}>
-              languages
-            </option>
-          </select>
-        </label>
+        <QueryIdSelect queryId={search.queryId} />
+        <Submit />
+      </form>
+      <h1 className="text-4xl font-bold">Search</h1>
+      <div className="mt-5">
         <button
-          className="p-2 ml-3 mr-10 inline-block border-2 border-purple-400 rounded-full"
-          aria-label="Search catalogue"
-          type="submit"
+          type="button"
+          className={`flex flex-auto items-center mr-2 mb-2 p-2 bg-indigo-${
+            showRankEval ? "100" : "200"
+          } rounded-full`}
+          onClick={() => setShowRankEval(!showRankEval)}
         >
-          🔎
+          <RankEvalStatus
+            score={
+              Object.values(data.rankEval.details).every(
+                (ranking) => ((ranking as any).metric_score as any) === 1
+              )
+                ? 1
+                : 0
+            }
+          />
+          Rank eval
         </button>
+        {showRankEval && (
+          <div className="flex flex-wrap">
+            {Object.entries(data.rankEval.details).map(
+              ([title, ranking], i) => (
+                <Link
+                  href={{
+                    pathname: "/search",
+                    query: JSON.parse(
+                      JSON.stringify({
+                        query: title,
+                        queryId: search.queryId,
+                      })
+                    ),
+                  }}
+                  key={i}
+                >
+                  <a className="flex flex-auto items-center mr-2 mb-2 p-2 bg-indigo-200 rounded-full">
+                    <RankEvalStatus score={(ranking as any).metric_score} />
+                    <div>{title}</div>
+                  </a>
+                </Link>
+              )
+            )}
+          </div>
+        )}
       </div>
       <ul>
         {data.hits.hits.map((hit) => (
           <li key={hit._id}>
             <h2 className="mt-5 text-xl border-t">{hit._source.data.title}</h2>
             <div>Score: {hit._score}</div>
+            <h3 className="text-lg font-bold mt-2">Matches</h3>
             <div>
               {hit.highlight && hit.highlight["data.title"] && (
                 <div>
-                  <h3 className="font-bold mt-2">Title</h3>
+                  <h3 className="font-bold">Title</h3>
                   <div
                     dangerouslySetInnerHTML={{
                       __html: hit.highlight["data.title"],
@@ -100,7 +144,7 @@ const Search: NextPage<Props> = ({ data, search }) => {
               )}
               {hit.highlight && hit.highlight["data.contributors.agent.label"] && (
                 <div>
-                  <h3 className="font-bold mt-2">Contributors</h3>
+                  <h3 className="font-bold">Contributors</h3>
                   <dd
                     dangerouslySetInnerHTML={{
                       __html: hit.highlight["data.contributors.agent.label"],
@@ -110,7 +154,7 @@ const Search: NextPage<Props> = ({ data, search }) => {
               )}
               {hit.highlight && hit.highlight["data.subjects.concepts.label"] && (
                 <div>
-                  <h3 className="font-bold mt-2">Subjects</h3>
+                  <h3 className="font-bold">Subjects</h3>
                   <div
                     dangerouslySetInnerHTML={{
                       __html: hit.highlight["data.subjects.concepts.label"],
@@ -120,7 +164,7 @@ const Search: NextPage<Props> = ({ data, search }) => {
               )}
               {hit.highlight && hit.highlight["data.genres.concepts.label"] && (
                 <div>
-                  <h3 className="font-bold mt-2">Genres</h3>
+                  <h3 className="font-bold">Genres</h3>
                   <div
                     dangerouslySetInnerHTML={{
                       __html: hit.highlight["data.genres.concepts.label"],
@@ -132,7 +176,7 @@ const Search: NextPage<Props> = ({ data, search }) => {
           </li>
         ))}
       </ul>
-    </form>
+    </>
   );
 };
 
