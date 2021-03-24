@@ -1,14 +1,43 @@
-import { NextPage } from "next";
+import { GetServerSideProps, NextPage } from "next";
 import Head from "next/head";
 import absoluteUrl from "next-absolute-url";
 import React, { useState } from "react";
 import { QueryType } from "../types";
 import { RankEvalResponse } from "./api/eval";
 import { CopyToClipboard } from "react-copy-to-clipboard";
+import QueryIdSelect from "../components/QueryIdSelect";
+import Submit from "../components/Submit";
 
-type IndexProps = {
+type Data = {
   rankings: RankEvalResponse[];
   pass: boolean;
+};
+type Props = {
+  data: Data;
+  search: {
+    queryId?: string;
+  };
+};
+
+export const getServerSideProps: GetServerSideProps<Props> = async ({
+  query: qs,
+  req,
+}) => {
+  const queryId = qs.queryId ? qs.queryId.toString() : undefined;
+  const { origin } = absoluteUrl(req);
+  const resp = await fetch(`${origin}/api/eval?env=prod`);
+  const data = await resp.json();
+
+  return {
+    props: {
+      data,
+      search: JSON.parse(
+        JSON.stringify({
+          queryId,
+        })
+      ),
+    },
+  };
 };
 
 function scoreToEmoji(score: number): string {
@@ -91,14 +120,20 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
   );
 };
 
-const Index: NextPage<IndexProps> = ({ pass, rankings }) => {
+const Index: NextPage<Props> = ({ data: { pass, rankings }, search }) => {
   return (
     <>
       <Head>
         <title>Relevancy ranking evaluation | Wellcome Collection</title>
       </Head>
 
+      <form className="mb-5">
+        <QueryIdSelect queryId={search.queryId} />
+        <Submit />
+      </form>
+
       <h1 className="text-4xl font-bold">Rank eval</h1>
+
       <p className="py-2">
         When someone runs a search on{" "}
         <a href="https://wellcomecollection.org/works">
@@ -125,13 +160,6 @@ const Index: NextPage<IndexProps> = ({ pass, rankings }) => {
       ))}
     </>
   );
-};
-
-Index.getInitialProps = async ({ req }): Promise<IndexProps> => {
-  const { origin } = absoluteUrl(req);
-  const resp = await fetch(`${origin}/api/eval?env=prod`);
-  const props = await resp.json();
-  return props;
 };
 
 export default Index;
