@@ -61,7 +61,6 @@ const Hit = ({ hit }) => {
   return (
     <>
       <h2 className="mt-5 text-xl border-t-4">{hit._source.data.title}</h2>
-      <h3>MM::L {JSON.stringify(hit.matched_queries)}</h3>
       <div onClick={() => setShowExplanation(!showExplanation)}>
         Score: {hit._score}
       </div>
@@ -71,6 +70,7 @@ const Hit = ({ hit }) => {
       {hit.highlight && (
         <>
           <h3 className="text-lg font-bold mt-2">Matches</h3>
+          {hit.matched_queries && <div>{hit.matched_queries.join(", ")}</div>}
           <div>
             {Object.entries(hit.highlight).map(([key, highlight]) => {
               return (
