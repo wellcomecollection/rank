@@ -4,6 +4,7 @@ import Link from "next/link";
 import absoluteUrl from "next-absolute-url";
 import QueryIdSelect from "../components/QueryIdSelect";
 import Submit from "../components/Submit";
+import { highlightFields } from "../services/search";
 
 type Props = {
   data?: any;
@@ -56,9 +57,48 @@ const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ score }) => {
   );
 };
 
+const Hit = ({ hit }) => {
+  const [showExplanation, setShowExplanation] = useState(false);
+  return (
+    <>
+      {" "}
+      <h2 className="mt-5 text-xl border-t-4">{hit._source.data.title}</h2>
+      <div onClick={() => setShowExplanation(!showExplanation)}>
+        Score: {hit._score}
+      </div>
+      {showExplanation && (
+        <pre>{JSON.stringify(hit._explanation, null, 2)}</pre>
+      )}
+      {hit.highlight && (
+        <>
+          <h3 className="text-lg font-bold mt-2">Matches</h3>
+          <div>
+            {Object.entries(hit.highlight).map(([key, highlight]) => {
+              return (
+                <div key={key}>
+                  <h3 className="font-bold">{key}</h3>
+                  {(highlight as any[]).map((text) => (
+                    <div
+                      key={key}
+                      dangerouslySetInnerHTML={{
+                        __html: text,
+                      }}
+                    />
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </>
+  );
+};
+
 const Search: NextPage<Props> = ({ data, search }) => {
   const [query, setQuery] = useState(search.query);
-  const [showRankEval, setShowRankEval] = useState(false);
+  const [showRankEval, setShowRankEval] = useState(true);
+
   useEffect(() => {
     setQuery(search.query);
   }, [search.query]);
@@ -128,51 +168,7 @@ const Search: NextPage<Props> = ({ data, search }) => {
       <ul>
         {data.hits.hits.map((hit) => (
           <li key={hit._id}>
-            <h2 className="mt-5 text-xl border-t">{hit._source.data.title}</h2>
-            <div>Score: {hit._score}</div>
-            <h3 className="text-lg font-bold mt-2">Matches</h3>
-            <div>
-              {hit.highlight && hit.highlight["data.title"] && (
-                <div>
-                  <h3 className="font-bold">Title</h3>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: hit.highlight["data.title"],
-                    }}
-                  />
-                </div>
-              )}
-              {hit.highlight && hit.highlight["data.contributors.agent.label"] && (
-                <div>
-                  <h3 className="font-bold">Contributors</h3>
-                  <dd
-                    dangerouslySetInnerHTML={{
-                      __html: hit.highlight["data.contributors.agent.label"],
-                    }}
-                  />
-                </div>
-              )}
-              {hit.highlight && hit.highlight["data.subjects.concepts.label"] && (
-                <div>
-                  <h3 className="font-bold">Subjects</h3>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: hit.highlight["data.subjects.concepts.label"],
-                    }}
-                  />
-                </div>
-              )}
-              {hit.highlight && hit.highlight["data.genres.concepts.label"] && (
-                <div>
-                  <h3 className="font-bold">Genres</h3>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: hit.highlight["data.genres.concepts.label"],
-                    }}
-                  />
-                </div>
-              )}
-            </div>
+            <Hit hit={hit} />
           </li>
         ))}
       </ul>

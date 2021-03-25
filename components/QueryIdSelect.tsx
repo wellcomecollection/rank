@@ -16,6 +16,7 @@ const QueryIdSelect = (props: Props) => {
       >
         <option value="">default</option>
         <option value="languages">languages</option>
+        <option value="exact-title-match">exact-title-match</option>
       </select>
     </label>
   );
