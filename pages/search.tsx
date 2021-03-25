@@ -4,7 +4,6 @@ import Link from "next/link";
 import absoluteUrl from "next-absolute-url";
 import QueryIdSelect from "../components/QueryIdSelect";
 import Submit from "../components/Submit";
-import { highlightFields } from "../services/search";
 
 type Props = {
   data?: any;
