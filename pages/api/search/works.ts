@@ -37,18 +37,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const searchReq = client.searchTemplate({
     index: template.index,
     body: {
+      explain: true,
       source: {
         ...template.template.source,
         track_total_hits: true,
         highlight: {
           pre_tags: ['<em class="bg-yellow-200">'],
           post_tags: ["</em>"],
-          fields: {
-            "data.title": { number_of_fragments: 0 },
-            "data.contributors.agent.label": { number_of_fragments: 0 },
-            "data.subjects.concepts.label": { number_of_fragments: 0 },
-            "data.genres.concepts.label": { number_of_fragments: 0 },
-          },
+          fields: { "*": { number_of_fragments: 0 } },
         },
       },
       params: {
