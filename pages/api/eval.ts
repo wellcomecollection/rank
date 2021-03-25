@@ -58,7 +58,7 @@ export async function makeRankEvalRequest(
   template: Template
 ): Promise<RankEvalResponse> {
   const queryType = indexToQueryType(template.index);
-  const examples = require(`../../data/ratings/${queryType}.json`);
+  const { default: examples } = await import(`../../data/ratings/${queryType}`);
   const requests = formatExamples(examples, template.index, template.id);
 
   const body = {
@@ -90,7 +90,7 @@ export async function makeRankEvalRequest(
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const env = req.query.env ? req.query.env : "stage";
+  const env = req.query.env ? req.query.env : "prod";
   const searchTemplates = await getSearchTemplates(env as Env);
 
   // we allow for multiple requests to be made, because each search template

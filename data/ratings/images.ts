@@ -1,27 +1,27 @@
-[
+export default [
   {
-    "query": "horse battle",
-    "ratings": ["ud35y7c8"]
+    query: "horse battle",
+    ratings: ["ud35y7c8"],
   },
   {
-    "query": "crick dna sketch",
-    "ratings": ["gzv2hhgy"]
+    query: "crick dna sketch",
+    ratings: ["gzv2hhgy"],
   },
   {
-    "query": "gzv2hhgy",
-    "ratings": ["gzv2hhgy"]
+    query: "gzv2hhgy",
+    ratings: ["gzv2hhgy"],
   },
   {
-    "query": "kmebmktz",
-    "ratings": ["gzv2hhgy"]
+    query: "kmebmktz",
+    ratings: ["gzv2hhgy"],
   },
   {
-    "query": "L0033046",
-    "ratings": ["gzv2hhgy"]
+    query: "L0033046",
+    ratings: ["gzv2hhgy"],
   },
   {
-    "query": "everest chest",
-    "ratings": [
+    query: "everest chest",
+    ratings: [
       "bt9yvss2",
       "erth8sur",
       "fddgu7pe",
@@ -29,12 +29,12 @@
       "u6ejpuxu",
       "xskq2fsc",
       "prrq5ajp",
-      "zw53jx3j"
-    ]
+      "zw53jx3j",
+    ],
   },
   {
-    "query": "Frederic Cayley Robinson",
-    "ratings": [
+    query: "Frederic Cayley Robinson",
+    ratings: [
       "avvynvp3",
       "b286u5hw",
       "dey48vd8",
@@ -63,7 +63,7 @@
       "yh6evjnu",
       "dvg8e7h5",
       "knc95egk",
-      "th8c2wan"
-    ]
-  }
-]
+      "th8c2wan",
+    ],
+  },
+];

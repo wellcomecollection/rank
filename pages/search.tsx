@@ -60,8 +60,8 @@ const Hit = ({ hit }) => {
   const [showExplanation, setShowExplanation] = useState(false);
   return (
     <>
-      {" "}
       <h2 className="mt-5 text-xl border-t-4">{hit._source.data.title}</h2>
+      <h3>MM::L {JSON.stringify(hit.matched_queries)}</h3>
       <div onClick={() => setShowExplanation(!showExplanation)}>
         Score: {hit._score}
       </div>
