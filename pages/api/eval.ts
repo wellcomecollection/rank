@@ -1,9 +1,7 @@
 import { Env, Example } from "../../types";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Template, getSearchTemplates } from "../../services/search-templates";
-
 import { client } from "../../services/elasticsearch";
-import { getModules } from "../../utils";
 import { indexToQueryType } from "../index";
 
 function formatExamples(

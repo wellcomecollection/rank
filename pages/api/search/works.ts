@@ -54,9 +54,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  const [searchResp, ...rankEvalResps] = await Promise.all(
-    [searchReq].concat(rankEvalReqs)
-  );
+  const requests = [searchReq, ...rankEvalReqs];
+  const [searchResp, ...rankEvalResps] = await Promise.all(requests as any[]);
 
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
