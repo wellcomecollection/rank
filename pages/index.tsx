@@ -1,17 +1,19 @@
 import { GetServerSideProps, NextPage } from "next";
-import Head from "next/head";
-import absoluteUrl from "next-absolute-url";
 import React, { useState } from "react";
+
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import Head from "next/head";
+import QueryIdSelect from "../components/QueryIdSelect";
 import { QueryType } from "../types";
 import { RankEvalResponse } from "./api/eval";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import QueryIdSelect from "../components/QueryIdSelect";
 import Submit from "../components/Submit";
+import absoluteUrl from "next-absolute-url";
 
 type Data = {
   rankings: RankEvalResponse[];
   pass: boolean;
 };
+
 type Props = {
   data: Data;
   search: {
@@ -126,11 +128,6 @@ const Index: NextPage<Props> = ({ data: { pass, rankings }, search }) => {
       <Head>
         <title>Relevancy ranking evaluation | Wellcome Collection</title>
       </Head>
-
-      <form className="mb-5">
-        <QueryIdSelect queryId={search.queryId} />
-        <Submit />
-      </form>
 
       <h1 className="text-4xl font-bold">Rank eval</h1>
 

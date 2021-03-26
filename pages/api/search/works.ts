@@ -1,10 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { client } from "../../../services/elasticsearch";
 import {
-  getSearchTemplates,
   Template,
+  getSearchTemplates,
 } from "../../../services/search-templates";
-import { makeRankEvalRequest } from "../eval";
+
+import { client } from "../../../services/elasticsearch";
+import { rankEvalRequests } from "../eval";
 
 async function getCurrentQuery(): Promise<Template> {
   const searchTemplates = await getSearchTemplates("prod");
@@ -33,7 +34,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     ? await getTestQuery(queryId.toString())
     : await getCurrentQuery();
 
-  const rankEvalReq = makeRankEvalRequest(template);
+  const rankEvalReqs = rankEvalRequests(template);
   const searchReq = client.searchTemplate({
     index: template.index,
     body: {
@@ -53,17 +54,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
-  const [searchResp, rankEvalResp] = await Promise.all([
-    searchReq,
-    rankEvalReq,
-  ]);
+  const requests = [searchReq, ...rankEvalReqs];
+  const [searchResp, ...rankEvalResps] = await Promise.all(requests as any[]);
 
   res.statusCode = 200;
   res.setHeader("Content-Type", "application/json");
   res.end(
     JSON.stringify({
       ...searchResp.body,
-      rankEval: rankEvalResp,
+      rankEval: rankEvalResps,
     })
   );
 };
