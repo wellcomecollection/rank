@@ -54,6 +54,15 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     },
   });
 
+  searchReq
+    .then((r) => {
+      console.info("=====================");
+      console.info(r);
+    })
+    .catch((err) => {
+      console.info("+++++++++++++++++++++");
+      console.info(err.meta.body.error.caused_by);
+    });
   const requests = [searchReq, ...rankEvalReqs];
   const [searchResp, ...rankEvalResps] = await Promise.all(requests as any[]);
 
