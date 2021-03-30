@@ -1,10 +1,11 @@
 const query = {
   bool: {
+    minimum_should_match: "1",
     should: [
       {
         multi_match: {
           _name: "identifiers",
-          query: "{{query}}",
+          analyzer: "whitespace_analyzer",
           fields: [
             "state.canonicalId^1000.0",
             "state.sourceIdentifier.value^1000.0",
@@ -16,9 +17,9 @@ const query = {
             "data.imageData.id.sourceIdentifier.value^1000.0",
             "data.imageData.id.otherIdentifiers.value^1000.0",
           ],
-          type: "best_fields",
-          analyzer: "whitespace_analyzer",
           operator: "Or",
+          query: "{{query}}",
+          type: "best_fields",
         },
       },
       {
@@ -26,8 +27,8 @@ const query = {
           queries: [
             {
               bool: {
-                _name: "exact prefix title",
-                boost: 1000,
+                _name: "title prefix",
+                boost: 1000.0,
                 must: [
                   {
                     prefix: {
@@ -36,9 +37,6 @@ const query = {
                       },
                     },
                   },
-                  // Stops matching prefixes of incomplete words
-                  // e.g. query:stim matching:stimulus
-                  // But will match "stimming" due to stemming
                   {
                     match_phrase: {
                       "data.title": {
@@ -51,34 +49,31 @@ const query = {
             },
             {
               multi_match: {
-                _name: "exact",
-                query: "{{query}}",
+                _name: "title exact spellings",
                 fields: [
                   "data.title^100.0",
                   "data.title.english^100.0",
                   "data.title.shingles^100.0",
                   "data.alternativeTitles^100.0",
-                  "data.lettering",
                 ],
+                operator: "And",
+                query: "{{query}}",
                 type: "best_fields",
               },
             },
             {
-              // This is for fields where we expect there to be alternative spellings of words
-              // e.g. Arkaprakasa
               multi_match: {
-                _name: "alternative spellings",
-                query: "{{query}}",
+                _name: "title alternative spellings",
                 fields: [
                   "data.title^80.0",
                   "data.title.english^80.0",
                   "data.title.shingles^80.0",
                   "data.alternativeTitles^80.0",
-                  "data.lettering",
                 ],
-                type: "best_fields",
                 fuzziness: "AUTO",
                 operator: "And",
+                query: "{{query}}",
+                type: "best_fields",
               },
             },
           ],
@@ -87,7 +82,6 @@ const query = {
       {
         multi_match: {
           _name: "data",
-          query: "{{query}}",
           fields: [
             "data.contributors.agent.label^1000.0",
             "data.subjects.concepts.label^10.0",
@@ -100,9 +94,11 @@ const query = {
             "data.notes.content",
             "data.collectionPath.path",
             "data.collectionPath.label",
+            "data.lettering",
           ],
-          type: "cross_fields",
           operator: "And",
+          query: "{{query}}",
+          type: "cross_fields",
         },
       },
     ],
@@ -115,7 +111,6 @@ const query = {
         },
       },
     ],
-    minimum_should_match: "1",
   },
 };
 
