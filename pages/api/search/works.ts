@@ -37,7 +37,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   const rankEvalReqs = rankEvalRequests(template);
   const searchQuery = query ? template : await getTestQuery("match-all");
 
-  console.info(searchQuery);
   const searchReq = client.searchTemplate({
     index: template.index,
     body: {
