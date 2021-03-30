@@ -35,12 +35,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     : await getCurrentQuery();
 
   const rankEvalReqs = rankEvalRequests(template);
+  const searchQuery = query ? template : await getTestQuery("match-all");
+
   const searchReq = client.searchTemplate({
     index: template.index,
     body: {
       explain: true,
       source: {
-        ...template.template.source,
+        ...searchQuery.template.source,
         track_total_hits: true,
         highlight: {
           pre_tags: ['<em class="bg-yellow-200">'],
