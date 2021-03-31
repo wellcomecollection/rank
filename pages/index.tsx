@@ -122,7 +122,7 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
   );
 };
 
-const Index: NextPage<Props> = ({ data: { pass, rankings }, search }) => {
+const Index: NextPage<Props> = ({ data: { rankings } }) => {
   return (
     <>
       <Head>
