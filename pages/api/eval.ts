@@ -1,6 +1,7 @@
 import { Env, Example } from "../../types";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Template, getSearchTemplates } from "../../services/search-templates";
+
 import { client } from "../../services/elasticsearch";
 import { indexToQueryType } from "../index";
 
@@ -63,6 +64,7 @@ export async function rankEvalRequest(
   const { default: ratings } = await import(
     `../../data/ratings/${queryType}/${moduleName}`
   );
+
   const requests = formatExamples(
     ratings.examples,
     template.index,
@@ -88,7 +90,7 @@ export async function rankEvalRequest(
     .then((resp) => {
       return {
         ...resp.body,
-        queryId: template.id,
+        queryId: `${queryType}-${moduleName}`,
         index: template.index,
         query: {
           method: "POST",
