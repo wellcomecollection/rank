@@ -4,12 +4,12 @@ const query = {
       {
         term: {
           type: {
-            value: "Visible",
-          },
-        },
-      },
-    ],
-  },
-};
+            value: 'Visible'
+          }
+        }
+      }
+    ]
+  }
+}
 
-export default query;
+export default query

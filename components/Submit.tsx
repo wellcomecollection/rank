@@ -7,7 +7,7 @@ const Submit = () => {
     >
       🔎
     </button>
-  );
-};
+  )
+}
 
-export default Submit;
+export default Submit

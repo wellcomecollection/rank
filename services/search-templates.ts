@@ -1,34 +1,34 @@
-import { Env } from "../types";
+import { Env } from '../types'
 
 export type Template = {
   id: string;
   index: string;
-  template: { source: { query: Object } };
-};
+  template: { source: { query: unknown } };
+}
 
 type TemplatesResponse = {
-  templates: Template[];
-};
+  templates: Template[]
+}
 
 type TemplateWithStringQuery = {
-  id: string;
-  index: string;
-  query: string;
-};
+  id: string
+  index: string
+  query: string
+}
 
 type TemplatesWithStringQueryResponse = {
-  templates: TemplateWithStringQuery[];
-};
+  templates: TemplateWithStringQuery[]
+}
 
 const endpoints = {
   stage:
-    "https://api-stage.wellcomecollection.org/catalogue/v2/search-templates.json",
-  prod: "https://api.wellcomecollection.org/catalogue/v2/search-templates.json",
-};
+    'https://api-stage.wellcomecollection.org/catalogue/v2/search-templates.json',
+  prod: 'https://api.wellcomecollection.org/catalogue/v2/search-templates.json'
+}
 
-async function getSearchTemplates(env: Env): Promise<TemplatesResponse> {
-  const res = await fetch(endpoints[env]);
-  const json: TemplatesWithStringQueryResponse = await res.json();
+async function getSearchTemplates (env: Env): Promise<TemplatesResponse> {
+  const res = await fetch(endpoints[env])
+  const json: TemplatesWithStringQueryResponse = await res.json()
 
   // The query is returned as a string from the API
   const templates: Template[] = json.templates.map((template) => ({
@@ -36,11 +36,11 @@ async function getSearchTemplates(env: Env): Promise<TemplatesResponse> {
     index: template.index,
     template: {
       source: {
-        query: JSON.parse(template.query),
-      },
-    },
-  }));
-  return { templates };
+        query: JSON.parse(template.query)
+      }
+    }
+  }))
+  return { templates }
 }
 
-export { getSearchTemplates };
+export { getSearchTemplates }
