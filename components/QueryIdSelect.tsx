@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState } from 'react'
 
 type Props = {
   queryId?: string;
-};
+}
 const QueryIdSelect = (props: Props) => {
-  const [queryId, setQueryId] = useState(props.queryId);
+  const [queryId, setQueryId] = useState(props.queryId)
   return (
     <label className="p-2 mr-10 inline-block border-2 border-purple-400 rounded-full">
       Query ID:
@@ -21,7 +21,7 @@ const QueryIdSelect = (props: Props) => {
         </option>
       </select>
     </label>
-  );
-};
+  )
+}
 
-export default QueryIdSelect;
+export default QueryIdSelect

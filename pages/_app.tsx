@@ -1,7 +1,9 @@
-import Head from "next/head";
-import "../styles/app.css";
 
-export default function WecoApp({ Component, pageProps }) {
+import { AppProps } from 'next/app'
+import Head from 'next/head'
+import '../styles/app.css'
+
+export default function WecoApp ({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
@@ -29,5 +31,5 @@ export default function WecoApp({ Component, pageProps }) {
         </div>
       </div>
     </>
-  );
+  )
 }
