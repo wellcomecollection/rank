@@ -46,16 +46,6 @@ export default {
       query: 'gzv2hhgy',
       ratings: ['kmebmktz']
     },
-    {
-      query: 'at-tib',
-      ratings: ['vyqkhbsd']
-    },
-    {
-      query: 'Aṭ-ṭib',
-      ratings: ['vyqkhbsd']
-    },
-    { query: 'nuğūm', ratings: ['nut59kt9'] },
-    { query: 'nujum', ratings: ['nut59kt9'] }
   ],
   metric: {
     precision: {

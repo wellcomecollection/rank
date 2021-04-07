@@ -43,6 +43,7 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
       explain: true,
       source: {
         ...searchQuery.template.source,
+        size: 1000,
         track_total_hits: true,
         highlight: {
           pre_tags: ['<em class="bg-yellow-200">'],
