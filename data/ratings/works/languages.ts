@@ -8,7 +8,6 @@ export default {
     { query: "travaillons", ratings: ["jb823ud6"] },
     { query: "conosceva", ratings: ["va2vy7wb"] },
     { query: "sharh", ratings: ["frd5y363"] },
-    { query: "sharh", ratings: ["aarnrbyc"] },
   ],
   metric: {
     recall: {
