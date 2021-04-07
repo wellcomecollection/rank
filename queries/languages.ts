@@ -83,6 +83,7 @@ const query = {
                 _name: 'non-english titles',
                 fields: languages.map((language) => `data.title.${language}`),
                 query: '{{query}}',
+                operator: 'And',
                 type: 'best_fields',
               },
             },
@@ -123,5 +124,4 @@ const query = {
     ],
   },
 }
-
 export default query
