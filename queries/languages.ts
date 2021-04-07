@@ -1,13 +1,4 @@
 const languages = ['french', 'german', 'italian', 'hindi', 'bengali', 'arabic']
-const languageQueries = languages.map((language) => {
-  const languageQuery = { match: {} }
-  languageQuery.match[`data.title.${language}`] = {
-    _name: `${language} title`,
-    query: '{{query}}',
-    analyzer: language
-  }
-  return languageQuery
-})
 
 const query = {
   bool: {
@@ -88,9 +79,11 @@ const query = {
               }
             },
             {
-              dis_max: {
+              multi_match: {
                 _name: 'non-english titles',
-                queries: languageQueries
+                fields: languages.map((language) => (`data.title.${language}`)),
+                query: '{{query}}',
+                type: 'best_fields'
               }
             }
           ]
