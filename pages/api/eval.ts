@@ -1,8 +1,8 @@
 import { Env, Example } from '../../types'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { RankEvalResponse, client } from '../../services/elasticsearch'
 import { Template, getSearchTemplates } from '../../services/search-templates'
 
-import { client, RankEvalResponse } from '../../services/elasticsearch'
 import { indexToQueryType } from '../index'
 
 function formatExamples (
@@ -29,7 +29,7 @@ function formatExamples (
 }
 
 const ratingsData = {
-  works: ['precision', 'recall'],
+  works: ['precision', 'recall', 'languages'],
   images: ['precision', 'recall']
 }
 
@@ -89,7 +89,10 @@ export async function rankEvalRequest (
     })
 }
 
-export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
   const env = req.query.env ? req.query.env : 'prod'
   const searchTemplates = await getSearchTemplates(env as Env)
 

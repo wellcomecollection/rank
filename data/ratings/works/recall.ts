@@ -1,10 +1,6 @@
 export default {
   examples: [
     {
-      query: 'sharh',
-      ratings: ['frd5y363', 'aarnrbyc']
-    },
-    {
       query: 'arkaprakāśa',
       ratings: ['qqh7ydr3', 'qb7eggtk', 'jvw4bdrz', 'jh46tazh']
     },

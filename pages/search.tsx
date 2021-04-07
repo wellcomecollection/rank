@@ -48,8 +48,9 @@ type RankEvalStatusProps = {
 const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ score }) => {
   return (
     <div
-      className={`w-5 h-5 mr-2 rounded-full bg-${score === 1 ? 'green' : 'red'
-        }-200`}
+      className={`w-5 h-5 mr-2 rounded-full bg-${
+        score === 1 ? 'green' : 'red'
+      }-200`}
     >
       <span className="sr-only">{score === 1 ? 'pass' : 'fail'}</span>
     </div>
@@ -104,8 +105,9 @@ const RankEval = ({ rankEval, search }) => {
     <div className="mt-5">
       <button
         type="button"
-        className={`flex flex-auto items-center mr-2 mb-2 p-2 bg-indigo-${showRankEval ? '100' : '200'
-          } rounded-full`}
+        className={`flex flex-auto items-center mr-2 mb-2 p-2 bg-indigo-${
+          showRankEval ? '100' : '200'
+        } rounded-full`}
         onClick={() => setShowRankEval(!showRankEval)}
       >
         <RankEvalStatus
@@ -117,7 +119,7 @@ const RankEval = ({ rankEval, search }) => {
               : 0
           }
         />
-        Rank eval
+        {rankEval.queryId}
       </button>
       {showRankEval && (
         <div className="flex flex-wrap">
