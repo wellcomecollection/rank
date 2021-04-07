@@ -9,10 +9,13 @@ export type Rating = {
   position: number
 }
 
-export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
   if (req.method === 'POST') {
     const {
-      body: { username, workId, query, rating, position }
+      body: { username, workId, query, rating, position },
     } = req
 
     if (
@@ -26,12 +29,12 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
         workId,
         query,
         rating: parseInt(rating, 10),
-        position: parseInt(position, 10)
+        position: parseInt(position, 10),
       }
 
       const resp = await ratingClient.index({
         index: 'ratings',
-        body: ratingDoc
+        body: ratingDoc,
       })
 
       const body = resp.body
@@ -52,7 +55,7 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
         JSON.stringify({
           message: 'Bad Request',
           body: req.body,
-          params: { username, workId, query, rating, position }
+          params: { username, workId, query, rating, position },
         })
       )
     }

@@ -15,12 +15,12 @@ const query = {
             'data.items.id.otherIdentifiers.value^1000.0',
             'data.imageData.id.canonicalId^1000.0',
             'data.imageData.id.sourceIdentifier.value^1000.0',
-            'data.imageData.id.otherIdentifiers.value^1000.0'
+            'data.imageData.id.otherIdentifiers.value^1000.0',
           ],
           operator: 'Or',
           query: '{{query}}',
-          type: 'best_fields'
-        }
+          type: 'best_fields',
+        },
       },
       {
         dis_max: {
@@ -33,19 +33,19 @@ const query = {
                   {
                     prefix: {
                       'data.title.keyword': {
-                        value: '{{query}}'
-                      }
-                    }
+                        value: '{{query}}',
+                      },
+                    },
                   },
                   {
                     match_phrase: {
                       'data.title': {
-                        query: '{{query}}'
-                      }
-                    }
-                  }
-                ]
-              }
+                        query: '{{query}}',
+                      },
+                    },
+                  },
+                ],
+              },
             },
             {
               multi_match: {
@@ -54,12 +54,12 @@ const query = {
                   'data.title^100.0',
                   'data.title.english^100.0',
                   'data.title.shingles^100.0',
-                  'data.alternativeTitles^100.0'
+                  'data.alternativeTitles^100.0',
                 ],
                 operator: 'And',
                 query: '{{query}}',
-                type: 'best_fields'
-              }
+                type: 'best_fields',
+              },
             },
             {
               multi_match: {
@@ -68,16 +68,16 @@ const query = {
                   'data.title^80.0',
                   'data.title.english^80.0',
                   'data.title.shingles^80.0',
-                  'data.alternativeTitles^80.0'
+                  'data.alternativeTitles^80.0',
                 ],
                 fuzziness: 'AUTO',
                 operator: 'And',
                 query: '{{query}}',
-                type: 'best_fields'
-              }
-            }
-          ]
-        }
+                type: 'best_fields',
+              },
+            },
+          ],
+        },
       },
       {
         multi_match: {
@@ -94,24 +94,24 @@ const query = {
             'data.notes.content',
             'data.collectionPath.path',
             'data.collectionPath.label',
-            'data.lettering'
+            'data.lettering',
           ],
           operator: 'And',
           query: '{{query}}',
-          type: 'cross_fields'
-        }
-      }
+          type: 'cross_fields',
+        },
+      },
     ],
     filter: [
       {
         term: {
           type: {
-            value: 'Visible'
-          }
-        }
-      }
-    ]
-  }
+            value: 'Visible',
+          },
+        },
+      },
+    ],
+  },
 }
 
 export default query

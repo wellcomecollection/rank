@@ -10,8 +10,8 @@ export default {
         'u6ejpuxu',
         'xskq2fsc',
         'prrq5ajp',
-        'zw53jx3j'
-      ]
+        'zw53jx3j',
+      ],
     },
     {
       query: 'Frederic Cayley Robinson',
@@ -44,15 +44,15 @@ export default {
         'yh6evjnu',
         'dvg8e7h5',
         'knc95egk',
-        'th8c2wan'
-      ]
-    }
+        'th8c2wan',
+      ],
+    },
   ],
   metric: {
     recall: {
       // The relevant_rating_threshold is not used for now as all ratings are marked as 3 in api/eval.ts
       relevant_rating_threshold: 3,
-      k: 30
-    }
-  }
+      k: 30,
+    },
+  },
 }

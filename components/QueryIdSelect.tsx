@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 type Props = {
-  queryId?: string;
+  queryId?: string
 }
 const QueryIdSelect = (props: Props) => {
   const [queryId, setQueryId] = useState(props.queryId)

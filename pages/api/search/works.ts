@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import {
   Template,
-  getSearchTemplates
+  getSearchTemplates,
 } from '../../../services/search-templates'
 
 import { client } from '../../../services/elasticsearch'
 import { rankEvalRequests } from '../eval'
 
-async function getCurrentQuery (): Promise<Template> {
+async function getCurrentQuery(): Promise<Template> {
   const searchTemplates = await getSearchTemplates('prod')
   const template = searchTemplates.templates.find((template) =>
     template.index.startsWith('works')
@@ -15,7 +15,7 @@ async function getCurrentQuery (): Promise<Template> {
 
   return template
 }
-async function getTestQuery (id: string): Promise<Template> {
+async function getTestQuery(id: string): Promise<Template> {
   const currentTemplate = await getCurrentQuery()
   const index = currentTemplate.index
   const query = await import(`../../../queries/${id}`).then((q) => q.default)
@@ -23,11 +23,14 @@ async function getTestQuery (id: string): Promise<Template> {
   return {
     id,
     index,
-    template: { source: { query: query } }
+    template: { source: { query: query } },
   }
 }
 
-export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
   const { query, queryId } = req.query
 
   const template = queryId
@@ -47,13 +50,13 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
         highlight: {
           pre_tags: ['<em class="bg-yellow-200">'],
           post_tags: ['</em>'],
-          fields: { '*': { number_of_fragments: 0 } }
-        }
+          fields: { '*': { number_of_fragments: 0 } },
+        },
       },
       params: {
-        query
-      }
-    }
+        query,
+      },
+    },
   })
 
   const requests = [searchReq, ...rankEvalReqs]
@@ -64,7 +67,7 @@ export default async (req: NextApiRequest, res: NextApiResponse): Promise<void> 
   res.end(
     JSON.stringify({
       ...searchResp.body,
-      rankEval: rankEvalResps
+      rankEval: rankEvalResps,
     })
   )
 }
