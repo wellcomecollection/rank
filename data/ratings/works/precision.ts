@@ -45,7 +45,7 @@ export default {
     {
       query: 'gzv2hhgy',
       ratings: ['kmebmktz']
-    },
+    }
   ],
   metric: {
     precision: {

@@ -1,10 +1,10 @@
-import { FunctionComponent, useEffect, useState } from "react";
-import { GetServerSideProps, NextPage } from "next";
+import { FunctionComponent, useEffect, useState } from 'react'
+import { GetServerSideProps, NextPage } from 'next'
 
-import Link from "next/link";
-import QueryIdSelect from "../components/QueryIdSelect";
-import Submit from "../components/Submit";
-import absoluteUrl from "next-absolute-url";
+import Link from 'next/link'
+import QueryIdSelect from '../components/QueryIdSelect'
+import Submit from '../components/Submit'
+import absoluteUrl from 'next-absolute-url'
 
 type Props = {
   data?: any;
@@ -12,22 +12,22 @@ type Props = {
     query?: string;
     queryId?: string;
   };
-};
+}
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
   query: qs,
-  req,
+  req
 }) => {
-  const query = qs.query ? qs.query.toString() : undefined;
-  const queryId = qs.queryId ? qs.queryId.toString() : undefined;
-  const { origin } = absoluteUrl(req);
+  const query = qs.query ? qs.query.toString() : undefined
+  const queryId = qs.queryId ? qs.queryId.toString() : undefined
+  const { origin } = absoluteUrl(req)
   const reqQs = Object.entries({ query, queryId })
     .filter(([, v]) => Boolean(v))
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
-    .join("&");
+    .join('&')
 
-  const resp = await fetch(`${origin}/api/search/works?${reqQs}`);
-  const data = await resp.json();
+  const resp = await fetch(`${origin}/api/search/works?${reqQs}`)
+  const data = await resp.json()
 
   return {
     props: {
@@ -35,31 +35,31 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
       search: JSON.parse(
         JSON.stringify({
           query,
-          queryId,
+          queryId
         })
-      ),
-    },
-  };
-};
+      )
+    }
+  }
+}
 
 type RankEvalStatusProps = {
   score: number;
-};
+}
 const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ score }) => {
   return (
     <div
       className={`w-5 h-5 mr-2 rounded-full bg-${
-        score === 1 ? "green" : "red"
+        score === 1 ? 'green' : 'red'
       }-200`}
     >
-      <span className="sr-only">{score === 1 ? "pass" : "fail"}</span>
+      <span className="sr-only">{score === 1 ? 'pass' : 'fail'}</span>
     </div>
-  );
-};
+  )
+}
 
-type HitProps = { hit: any };
+type HitProps = { hit: any }
 const Hit: FunctionComponent<HitProps> = ({ hit }) => {
-  const [showExplanation, setShowExplanation] = useState(false);
+  const [showExplanation, setShowExplanation] = useState(false)
   return (
     <>
       <h2 className="mt-5 text-xl border-t-4">{hit._source.data.title}</h2>
@@ -73,7 +73,7 @@ const Hit: FunctionComponent<HitProps> = ({ hit }) => {
         <>
           <h3 className="text-lg font-bold mt-2">Matches</h3>
           {hit.matched_queries && (
-            <div>Queries: {hit.matched_queries.join(", ")}</div>
+            <div>Queries: {hit.matched_queries.join(', ')}</div>
           )}
           <div>
             {Object.entries(hit.highlight).map(([key, highlight]) => {
@@ -84,29 +84,29 @@ const Hit: FunctionComponent<HitProps> = ({ hit }) => {
                     <div
                       key={key}
                       dangerouslySetInnerHTML={{
-                        __html: text,
+                        __html: text
                       }}
                     />
                   ))}
                 </div>
-              );
+              )
             })}
           </div>
         </>
       )}
     </>
-  );
-};
+  )
+}
 
 const RankEval = ({ rankEval, search }) => {
-  const [showRankEval, setShowRankEval] = useState(true);
+  const [showRankEval, setShowRankEval] = useState(true)
 
   return (
     <div className="mt-5">
       <button
         type="button"
         className={`flex flex-auto items-center mr-2 mb-2 p-2 bg-indigo-${
-          showRankEval ? "100" : "200"
+          showRankEval ? '100' : '200'
         } rounded-full`}
         onClick={() => setShowRankEval(!showRankEval)}
       >
@@ -126,13 +126,13 @@ const RankEval = ({ rankEval, search }) => {
           {Object.entries(rankEval.details).map(([title, ranking], i) => (
             <Link
               href={{
-                pathname: "/search",
+                pathname: '/search',
                 query: JSON.parse(
                   JSON.stringify({
                     query: title,
-                    queryId: search.queryId,
+                    queryId: search.queryId
                   })
-                ),
+                )
               }}
               key={i}
             >
@@ -145,21 +145,21 @@ const RankEval = ({ rankEval, search }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 const Search: NextPage<Props> = ({ data, search }) => {
-  const [query, setQuery] = useState(search.query);
+  const [query, setQuery] = useState(search.query)
 
   useEffect(() => {
-    setQuery(search.query);
-  }, [search.query]);
+    setQuery(search.query)
+  }, [search.query])
 
   return (
     <>
       <form className="mb-5">
         <label className="p-2 mr-10 inline-block border-2 border-purple-400 rounded-full">
-          Query:{" "}
+          Query:{' '}
           <input
             className="ml-2"
             type="text"
@@ -183,7 +183,7 @@ const Search: NextPage<Props> = ({ data, search }) => {
         ))}
       </ul>
     </>
-  );
-};
+  )
+}
 
-export default Search;
+export default Search
