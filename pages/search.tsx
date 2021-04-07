@@ -7,16 +7,16 @@ import Submit from '../components/Submit'
 import absoluteUrl from 'next-absolute-url'
 
 type Props = {
-  data?: any;
+  data?: any
   search: {
-    query?: string;
-    queryId?: string;
-  };
+    query?: string
+    queryId?: string
+  }
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
   query: qs,
-  req
+  req,
 }) => {
   const query = qs.query ? qs.query.toString() : undefined
   const queryId = qs.queryId ? qs.queryId.toString() : undefined
@@ -35,15 +35,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
       search: JSON.parse(
         JSON.stringify({
           query,
-          queryId
+          queryId,
         })
-      )
-    }
+      ),
+    },
   }
 }
 
 type RankEvalStatusProps = {
-  score: number;
+  score: number
 }
 const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ score }) => {
   return (
@@ -84,7 +84,7 @@ const Hit: FunctionComponent<HitProps> = ({ hit }) => {
                     <div
                       key={key}
                       dangerouslySetInnerHTML={{
-                        __html: text
+                        __html: text,
                       }}
                     />
                   ))}
@@ -130,9 +130,9 @@ const RankEval = ({ rankEval, search }) => {
                 query: JSON.parse(
                   JSON.stringify({
                     query: title,
-                    queryId: search.queryId
+                    queryId: search.queryId,
                   })
-                )
+                ),
               }}
               key={i}
             >

@@ -7,20 +7,20 @@ import absoluteUrl from 'next-absolute-url'
 import { RankEvalResponse } from '../services/elasticsearch'
 
 type Data = {
-  rankings: RankEvalResponse[];
-  pass: boolean;
+  rankings: RankEvalResponse[]
+  pass: boolean
 }
 
 type Props = {
-  data: Data;
+  data: Data
   search: {
-    queryId?: string;
-  };
+    queryId?: string
+  }
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
   query: qs,
-  req
+  req,
 }) => {
   const queryId = qs.queryId ? qs.queryId.toString() : undefined
   const { origin } = absoluteUrl(req)
@@ -32,25 +32,25 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
       data,
       search: JSON.parse(
         JSON.stringify({
-          queryId
+          queryId,
         })
-      )
-    }
+      ),
+    },
   }
 }
 
-function scoreToEmoji (score: number): string {
+function scoreToEmoji(score: number): string {
   return score === 1 ? '✅' : '❌'
 }
 
-export function indexToQueryType (index: string): QueryType {
+export function indexToQueryType(index: string): QueryType {
   // the name of the index should indicate the queryType, eg "images-2021-01-12"
   // should result in an "images" query
   return index.split('-')[0] as QueryType
 }
 
 type RankingComponentProps = {
-  ranking: RankEvalResponse;
+  ranking: RankEvalResponse
 }
 const RankingComponent = ({ ranking }: RankingComponentProps) => {
   const [showJson, setShowJson] = useState(false)
@@ -89,7 +89,7 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
         {copied && <span>Copied</span>}
         <pre
           style={{
-            display: showJson ? 'block' : 'none'
+            display: showJson ? 'block' : 'none',
           }}
         >
           {elasticJson}

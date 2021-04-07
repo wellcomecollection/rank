@@ -5,7 +5,7 @@ import { Template, getSearchTemplates } from '../../services/search-templates'
 
 import { indexToQueryType } from '../index'
 
-function formatExamples (
+function formatExamples(
   examples: Example[],
   index: string,
   templateId: string
@@ -15,25 +15,25 @@ function formatExamples (
       id: example.query,
       template_id: templateId,
       params: {
-        query: example.query
+        query: example.query,
       },
       ratings: example.ratings.map((id) => {
         return {
           _id: id,
           _index: index,
-          rating: 3
+          rating: 3,
         }
-      })
+      }),
     }
   })
 }
 
 const ratingsData = {
   works: ['precision', 'recall', 'languages'],
-  images: ['precision', 'recall']
+  images: ['precision', 'recall'],
 }
 
-export function rankEvalRequests (
+export function rankEvalRequests(
   template: Template
 ): Promise<RankEvalResponse>[] {
   const queryType = indexToQueryType(template.index)
@@ -44,7 +44,7 @@ export function rankEvalRequests (
   return requests
 }
 
-export async function rankEvalRequest (
+export async function rankEvalRequest(
   template: Template,
   moduleName: string
 ): Promise<RankEvalResponse> {
@@ -53,27 +53,23 @@ export async function rankEvalRequest (
     `../../data/ratings/${queryType}/${moduleName}`
   )
 
-  const requests = formatExamples(
-    ratings.examples,
-    template.index,
-    template.id
-  )
+  const requests = formatExamples(ratings.examples, template.index, template.id)
 
   const body = {
     requests,
     templates: [
       {
         id: template.id,
-        template: template.template
-      }
+        template: template.template,
+      },
     ],
-    metric: ratings.metric
+    metric: ratings.metric,
   }
 
   return client
     .rankEval<RankEvalResponse>({
       index: template.index,
-      body
+      body,
     })
     .then((resp) => {
       return {
@@ -83,8 +79,8 @@ export async function rankEvalRequest (
         query: {
           method: 'POST',
           path: `${template.index}/_rank_eval`,
-          body: JSON.stringify(resp.body)
-        }
+          body: JSON.stringify(resp.body),
+        },
       }
     })
 }
@@ -110,7 +106,7 @@ export default async (
   const responses = await Promise.all(requests)
   const response = {
     pass: responses.every((resp) => resp.metric_score === 1),
-    rankings: responses
+    rankings: responses,
   }
 
   res.statusCode = 200

@@ -1,9 +1,8 @@
-
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import '../styles/app.css'
 
-export default function WecoApp ({ Component, pageProps }: AppProps) {
+export default function WecoApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
