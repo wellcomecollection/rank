@@ -1,24 +1,23 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import {
-  Template,
-  getSearchTemplates,
-} from '../../../services/search-templates'
+import { Template, getSearchTemplates } from '../../services/search-templates'
 
-import { client } from '../../../services/elasticsearch'
-import { rankEvalRequests } from '../eval'
+import { client } from '../../services/elasticsearch'
+import { rankEvalRequests } from './eval'
 
-async function getCurrentQuery(): Promise<Template> {
+async function getCurrentQuery(endpoint: string): Promise<Template> {
   const searchTemplates = await getSearchTemplates('prod')
   const template = searchTemplates.templates.find((template) =>
-    template.index.startsWith('works')
+    template.index.startsWith(endpoint)
   )
-
   return template
 }
-async function getTestQuery(id: string): Promise<Template> {
-  const currentTemplate = await getCurrentQuery()
+
+async function getTestQuery(id: string, endpoint: string): Promise<Template> {
+  const currentTemplate = await getCurrentQuery(endpoint)
   const index = currentTemplate.index
-  const query = await import(`../../../queries/${id}`).then((q) => q.default)
+  const query = await import(`../../data/queries/${endpoint}/${id}`).then(
+    (q) => q.default
+  )
 
   return {
     id,
@@ -31,14 +30,16 @@ export default async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> => {
-  const { query, queryId } = req.query
+  const { query, queryId, endpoint } = req.query
 
   const template = queryId
-    ? await getTestQuery(queryId.toString())
-    : await getCurrentQuery()
+    ? await getTestQuery(queryId.toString(), endpoint.toString())
+    : await getCurrentQuery(endpoint.toString())
 
   const rankEvalReqs = rankEvalRequests(template)
-  const searchQuery = query ? template : await getTestQuery('match-all')
+  const searchQuery = query
+    ? template
+    : await getTestQuery('match-all', endpoint.toString())
 
   const searchReq = client.searchTemplate({
     index: template.index,

@@ -1,9 +1,8 @@
-import { FunctionComponent, useEffect, useState } from 'react'
+import { FunctionComponent, useState } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
 
 import Link from 'next/link'
-import QueryIdSelect from '../components/QueryIdSelect'
-import Submit from '../components/Submit'
+import QueryForm from '../components/QueryForm'
 import absoluteUrl from 'next-absolute-url'
 
 type Props = {
@@ -11,6 +10,7 @@ type Props = {
   search: {
     query?: string
     queryId?: string
+    endpoint?: string
   }
 }
 
@@ -19,14 +19,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   req,
 }) => {
   const query = qs.query ? qs.query.toString() : undefined
-  const queryId = qs.queryId ? qs.queryId.toString() : undefined
+  const queryId = qs.queryId ? qs.queryId.toString() : 'match-all'
+  const endpoint = qs.endpoint ? qs.endpoint.toString() : 'works'
   const { origin } = absoluteUrl(req)
-  const reqQs = Object.entries({ query, queryId })
+  const reqQs = Object.entries({ query, queryId, endpoint })
     .filter(([, v]) => Boolean(v))
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
     .join('&')
 
-  const resp = await fetch(`${origin}/api/search/works?${reqQs}`)
+  const resp = await fetch(`${origin}/api/search?${reqQs}`)
   const data = await resp.json()
 
   return {
@@ -36,6 +37,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
         JSON.stringify({
           query,
           queryId,
+          endpoint,
         })
       ),
     },
@@ -57,12 +59,16 @@ const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ score }) => {
   )
 }
 
-type HitProps = { hit: any }
-const Hit: FunctionComponent<HitProps> = ({ hit }) => {
+type HitProps = { hit: any; endpoint }
+const Hit: FunctionComponent<HitProps> = ({ hit, endpoint }) => {
   const [showExplanation, setShowExplanation] = useState(false)
+  const title =
+    endpoint === 'images'
+      ? hit._source.source.canonicalWork.data.title
+      : hit._source.data.title
   return (
     <>
-      <h2 className="mt-5 text-xl border-t-4">{hit._source.data.title}</h2>
+      <h2 className="mt-5 text-xl border-t-4">{title}</h2>
       <div onClick={() => setShowExplanation(!showExplanation)}>
         Score: {hit._score}
       </div>
@@ -131,6 +137,7 @@ const RankEval = ({ rankEval, search }) => {
                   JSON.stringify({
                     query: title,
                     queryId: search.queryId,
+                    endpoint: search.endpoint,
                   })
                 ),
               }}
@@ -149,36 +156,23 @@ const RankEval = ({ rankEval, search }) => {
 }
 
 const Search: NextPage<Props> = ({ data, search }) => {
-  const [query, setQuery] = useState(search.query)
-
-  useEffect(() => {
-    setQuery(search.query)
-  }, [search.query])
-
   return (
     <>
-      <form className="mb-5">
-        <label className="p-2 mr-10 inline-block border-2 border-purple-400 rounded-full">
-          Query:{' '}
-          <input
-            className="ml-2"
-            type="text"
-            name="query"
-            value={query}
-            onChange={(event) => setQuery(event.currentTarget.value)}
-          />
-        </label>
-        <QueryIdSelect queryId={search.queryId} />
-        <Submit />
-      </form>
-      <h1 className="text-4xl font-bold">Search</h1>
+      <QueryForm
+        query={search.query}
+        queryId={search.queryId}
+        endpoint={search.endpoint}
+      />
+
+      <h1 className="text-4xl font-bold">Tests</h1>
       {data.rankEval.map((rankEval, i) => (
         <RankEval key={i} rankEval={rankEval} search={search} />
       ))}
+      <h1 className="text-4xl font-bold">Hits</h1>
       <ul>
         {data.hits.hits.map((hit) => (
           <li key={hit._id}>
-            <Hit hit={hit} />
+            <Hit hit={hit} endpoint={search.endpoint} />
           </li>
         ))}
       </ul>

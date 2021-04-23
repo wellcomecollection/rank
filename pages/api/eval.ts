@@ -30,7 +30,7 @@ function formatExamples(
 
 const ratingsData = {
   works: ['precision', 'recall', 'languages'],
-  images: ['precision', 'recall'],
+  images: ['precision', 'recall', 'languages'],
 }
 
 export function rankEvalRequests(
