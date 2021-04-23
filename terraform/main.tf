@@ -16,6 +16,12 @@ resource "ec_deployment" "rank_catalogue" {
       size       = "1g"
       zone_count = 1
     }
+
+    remote_cluster {
+      deployment_id = local.catalogue_ec_cluster_id
+      alias         = local.catalogue_ec_cluster_name
+      ref_id        = local.catalogue_ec_cluster_ref_id
+    }
   }
 
   kibana {
