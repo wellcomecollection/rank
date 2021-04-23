@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { FunctionComponent, useState } from 'react'
 
 type Props = {
   queryId?: string
 }
-const QueryIdSelect = (props: Props) => {
+const QueryIdSelect: FunctionComponent<Props> = (props) => {
   const [queryId, setQueryId] = useState(props.queryId)
   return (
     <label className="p-2 mr-10 inline-block border-2 border-purple-400 rounded-full">
