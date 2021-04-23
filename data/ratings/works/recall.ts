@@ -1,10 +1,6 @@
 export default {
   examples: [
     {
-      query: 'arkaprakāśa',
-      ratings: ['qqh7ydr3', 'qb7eggtk', 'jvw4bdrz', 'jh46tazh'],
-    },
-    {
       query: 'Atherosclerosis : an introduction to atherosclerosis',
       ratings: ['bcwvtknn', 'rty8296y'],
     },

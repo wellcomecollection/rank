@@ -1,6 +1,10 @@
 export default {
   examples: [
     {
+      query: 'horse battle',
+      ratings: ['ud35y7c8'],
+    },
+    {
       query: 'everest chest',
       ratings: [
         'bt9yvss2',

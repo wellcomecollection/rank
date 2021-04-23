@@ -8,6 +8,10 @@ export default {
     { query: 'travaillons', ratings: ['jb823ud6'] },
     { query: 'conosceva', ratings: ['va2vy7wb'] },
     { query: 'sharh', ratings: ['frd5y363'] },
+    {
+      query: 'arkaprakāśa',
+      ratings: ['qqh7ydr3', 'qb7eggtk', 'jvw4bdrz', 'jh46tazh'],
+    },
   ],
   metric: {
     recall: {
