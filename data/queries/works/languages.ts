@@ -1,5 +1,4 @@
-const languages = ['french', 'german', 'italian', 'hindi', 'bengali', 'arabic']
-
+import languages from '../languages'
 const query = {
   bool: {
     minimum_should_match: '1',
@@ -94,18 +93,18 @@ const query = {
         multi_match: {
           _name: 'data',
           fields: [
-            'data.contributors.agent.label^1000.0',
-            'data.subjects.concepts.label^10.0',
-            'data.genres.concepts.label^10.0',
-            'data.production.*.label^10.0',
-            'data.description',
-            'data.physicalDescription',
-            'data.language.label',
-            'data.edition',
-            'data.notes.content',
-            'data.collectionPath.path',
             'data.collectionPath.label',
+            'data.collectionPath.path',
+            'data.contributors.agent.label^1000.0',
+            'data.description',
+            'data.edition',
+            'data.genres.concepts.label^10.0',
+            'data.language.label',
             'data.lettering',
+            'data.notes.content',
+            'data.physicalDescription',
+            'data.production.*.label^10.0',
+            'data.subjects.concepts.label^10.0',
           ],
           operator: 'And',
           query: '{{query}}',
@@ -124,5 +123,4 @@ const query = {
     ],
   },
 }
-
 export default query

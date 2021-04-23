@@ -1,10 +1,6 @@
 export default {
   examples: [
     {
-      query: 'horse battle',
-      ratings: ['ud35y7c8'],
-    },
-    {
       query: 'crick dna sketch',
       ratings: ['gzv2hhgy'],
     },

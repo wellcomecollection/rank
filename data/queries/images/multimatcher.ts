@@ -1,0 +1,72 @@
+const query = {
+  bool: {
+    should: [
+      {
+        multi_match: {
+          query: '{{query}}',
+          fields: [
+            'source.redirectedWork.data.title^100.0',
+            'source.redirectedWork.data.alternativeTitles^100.0',
+            'source.canonicalWork.data.collectionPath.path',
+            'source.redirectedWork.data.physicalDescription',
+            'source.redirectedWork.data.language.label',
+            'source.redirectedWork.data.lettering',
+            'source.canonicalWork.data.notes.content',
+            'source.canonicalWork.data.contributors.agent.label^1000.0',
+            'source.redirectedWork.data.genres.concepts.label^10.0',
+            'source.canonicalWork.data.subjects.concepts.label^10.0',
+            'source.canonicalWork.data.description',
+            'source.redirectedWork.data.edition',
+            'source.canonicalWork.data.title.shingles^100.0',
+            'source.redirectedWork.data.collectionPath.label',
+            'source.canonicalWork.data.language.label',
+            'source.canonicalWork.data.alternativeTitles^100.0',
+            'source.redirectedWork.data.title.english^100.0',
+            'source.redirectedWork.data.collectionPath.path',
+            'source.canonicalWork.data.lettering',
+            'source.canonicalWork.data.production.*.label^10.0',
+            'source.canonicalWork.data.physicalDescription',
+            'source.canonicalWork.data.edition',
+            'source.redirectedWork.data.notes.content',
+            'source.canonicalWork.data.genres.concepts.label^10.0',
+            'source.redirectedWork.data.production.*.label^10.0',
+            'source.redirectedWork.data.title.shingles^100.0',
+            'source.canonicalWork.data.title.english^100.0',
+            'source.canonicalWork.data.title^100.0',
+            'source.redirectedWork.data.description',
+            'source.redirectedWork.data.contributors.agent.label^1000.0',
+            'source.redirectedWork.data.subjects.concepts.label^10.0',
+            'source.canonicalWork.data.collectionPath.label',
+          ],
+          type: 'cross_fields',
+          operator: 'And',
+        },
+      },
+      {
+        prefix: { 'data.title.keyword': { value: '{{query}}', boost: 1000.0 } },
+      },
+      {
+        multi_match: {
+          query: '{{query}}',
+          fields: [
+            'state.canonicalId',
+            'state.sourceIdentifier.value',
+            'source.canonicalWork.id.canonicalId',
+            'source.redirectedWork.id.canonicalId',
+            'source.canonicalWork.id.sourceIdentifier.value',
+            'source.redirectedWork.id.sourceIdentifier.value',
+            'source.canonicalWork.data.otherIdentifiers.value',
+            'source.redirectedWork.data.otherIdentifiers.value',
+          ],
+          type: 'best_fields',
+          analyzer: 'whitespace_analyzer',
+          operator: 'Or',
+          boost: 1000.0,
+        },
+      },
+    ],
+    minimum_should_match: '1',
+  },
+}
+
+export default query
