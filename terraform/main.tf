@@ -8,7 +8,7 @@ resource "ec_deployment" "rank_catalogue" {
   name                   = "rank_catalogue"
   region                 = "eu-west-1"
   version                = data.ec_stack.latest.version
-  deployment_template_id = "aws-io-optimized-v2"
+  deployment_template_id = "aws-cross-cluster-search-v2"
 
   elasticsearch {
     topology {
