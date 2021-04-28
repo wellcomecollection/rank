@@ -7,7 +7,7 @@ type Props = {
 }
 
 const queries = {
-  works: ['alternative-title-spellings', 'languages'],
+  works: ['0001-alternative-title-spellings', '0002-languages'],
   images: ['multimatcher', 'languages'],
 }
 
