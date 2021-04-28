@@ -5,6 +5,9 @@ const {
   ES_USER,
   ES_PASSWORD,
   ES_CLOUD_ID,
+  ES_RANK_USER,
+  ES_RANK_PASSWORD,
+  ES_RANK_CLOUD_ID,
   ES_RATINGS_USER,
   ES_RATINGS_PASSWORD,
   ES_RATINGS_CLOUD_ID,
@@ -58,6 +61,16 @@ const client = new Client({
   },
 })
 
+const rankClient = new Client({
+  cloud: {
+    id: ES_RANK_CLOUD_ID,
+  },
+  auth: {
+    username: ES_RANK_USER,
+    password: ES_RANK_PASSWORD,
+  },
+})
+
 const ratingClient = new Client({
   cloud: {
     id: ES_RATINGS_CLOUD_ID,
@@ -68,4 +81,4 @@ const ratingClient = new Client({
   },
 })
 
-export { client, ratingClient }
+export { client, rankClient, ratingClient }
