@@ -1,9 +1,9 @@
 export default {
   examples: [
-    { query: 'at-tib', ratings: ['vyqkhbsd'] },
-    { query: 'Aṭ-ṭib', ratings: ['vyqkhbsd'] },
-    { query: 'nuğūm', ratings: ['nut59kt9'] },
-    { query: 'nujum', ratings: ['nut59kt9'] },
+    { query: 'at-tib', ratings: ['qmm9mauk'] },
+    { query: 'Aṭ-ṭib', ratings: ['qmm9mauk'] },
+    { query: 'nuğūm', ratings: ['jtbenqbq'] },
+    { query: 'nujum', ratings: ['jtbenqbq'] },
     { query: 'arbeiten', ratings: ['xn7yyrqf'] },
     { query: 'travaillons', ratings: ['jb823ud6'] },
     { query: 'conosceva', ratings: ['va2vy7wb'] },
