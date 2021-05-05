@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { env } from 'node:process'
 import { rankClient } from '../../services/elasticsearch'
 import { getSearchTemplates } from '../../services/search-templates'
 
@@ -17,17 +16,17 @@ export default async (
   const auth = process.env.CCR_MANAGE_API_KEY
   const authHeader = req.headers.authorization
 
-  // if (false || !auth || !authHeader || auth !== process.env.CCR_MANAGE_API_KEY) {
-  //   res.statusCode = 401
-  //   res.setHeader('Content-Type', 'application/json')
-  //   res.end(
-  //     JSON.stringify({
-  //       statusCode: 401,
-  //       message: 'unauthorised',
-  //     })
-  //   )
-  //   return
-  // }
+  if (!auth || !authHeader || auth !== process.env.CCR_MANAGE_API_KEY) {
+    res.statusCode = 401
+    res.setHeader('Content-Type', 'application/json')
+    res.end(
+      JSON.stringify({
+        statusCode: 401,
+        message: 'unauthorised',
+      })
+    )
+    return
+  }
 
   const searchTemplates = await getSearchTemplates('prod')
   const { body: allIndices } = await rankClient.indices.get({ index: '_all' })
