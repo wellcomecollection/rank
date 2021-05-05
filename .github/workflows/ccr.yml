@@ -1,0 +1,13 @@
+name: ccr-manage-everyday-at-8-am
+on:
+  schedule:
+    - cron: '0 8 * * *'
+jobs:
+  cron:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Manage CCR
+        run: |
+          curl --request POST \
+          --url 'https://rank.wellcomecollection.org/api/ccr' \
+          --header 'Authorization: Bearer ${{ secrets.CCR_MANAGE_API_KEY }}'
