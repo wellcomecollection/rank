@@ -1,4 +1,4 @@
-export const ratings = {
+export default {
   precision: {
     examples: [
       { query: 'crick dna sketch', ratings: ['gzv2hhgy'] },

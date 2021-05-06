@@ -1,4 +1,4 @@
-export const ratings = {
+export default {
   precision: {
     examples: [
       { query: 'Cassils Time lapse', ratings: ['ftqy78zj'] },
@@ -66,6 +66,7 @@ export const ratings = {
       { query: 'posters', ratings: ['z85jd9f4', 'qpkfxsst'] }, // shouldn't match "porter"
       { query: 'gout', ratings: ['t67v2y55'] }, // shouldn't match "out"
       { query: 'L0062541', ratings: ['wsqmrqfj'] }, // shouldn't match "L0032741" in the title
+      { query: 'Maori', ratings: ['h464szg9', 'y48zg6af', 'uf2ds6qs'] }, // shouldn't match "mary" or "amoris" or "maris"
       { query: 'test', ratings: ['t67v2y55'] },
     ],
     metric: {
