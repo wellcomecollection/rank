@@ -9,7 +9,7 @@ type Props = {
   data?: any
   search: {
     query?: string
-    queryId?: string
+    useTestQuery?: true
     endpoint?: string
   }
 }
@@ -19,10 +19,11 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   req,
 }) => {
   const query = qs.query ? qs.query.toString() : undefined
-  const queryId = qs.queryId ? qs.queryId.toString() : 'match-all'
+  const useTestQuery =
+    qs.useTestQuery && qs.useTestQuery === 'true' ? true : undefined
   const endpoint = qs.endpoint ? qs.endpoint.toString() : 'works'
   const { origin } = absoluteUrl(req)
-  const reqQs = Object.entries({ query, queryId, endpoint })
+  const reqQs = Object.entries({ query, useTestQuery, endpoint })
     .filter(([, v]) => Boolean(v))
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
     .join('&')
@@ -36,7 +37,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
       search: JSON.parse(
         JSON.stringify({
           query,
-          queryId,
+          useTestQuery,
           endpoint,
         })
       ),
@@ -160,7 +161,7 @@ const Search: NextPage<Props> = ({ data, search }) => {
     <>
       <QueryForm
         query={search.query}
-        queryId={search.queryId}
+        useTestQuery={search.useTestQuery}
         endpoint={search.endpoint}
       />
 

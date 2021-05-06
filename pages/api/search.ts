@@ -30,10 +30,10 @@ export default async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> => {
-  const { query, queryId, endpoint } = req.query
+  const { query, useTestQuery, endpoint } = req.query
 
-  const template = queryId
-    ? await getTestQuery(queryId.toString(), endpoint.toString())
+  const template = useTestQuery
+    ? await getTestQuery('prod', endpoint.toString())
     : await getCurrentQuery(endpoint.toString())
 
   const rankEvalReqs = rankEvalRequests(template)
