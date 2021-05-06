@@ -2,18 +2,13 @@ import { useEffect, useState } from 'react'
 
 type Props = {
   query?: string
-  queryId?: string
+  useTestQuery?: true
   endpoint?: string
-}
-
-const queries = {
-  works: ['0001-alternative-title-spellings', '0002-languages'],
-  images: ['multimatcher', 'languages'],
 }
 
 const QueryForm = (props: Props) => {
   const [query, setQuery] = useState(props.query)
-  const [queryId, setQueryId] = useState(props.queryId)
+  const [useTestQuery, setUseTestQuery] = useState(props.useTestQuery)
   const [endpoint, setEndpoint] = useState(props.endpoint)
 
   useEffect(() => {
@@ -45,24 +40,16 @@ const QueryForm = (props: Props) => {
         </select>
       </label>
       <label className="p-2 mr-5 inline-block border-2 border-purple-400 rounded-full">
-        Query ID:
-        <select
-          className="ml-2"
-          name="queryId"
-          onChange={(event) => setQueryId(event.currentTarget.value)}
-          value={queryId}
-        >
-          <option selected value="match-all">
-            match-all
-          </option>
-          {queries[endpoint].map((q) => {
-            return (
-              <option key={q} value={q}>
-                {q}
-              </option>
-            )
-          })}
-        </select>
+        🧪 <span className="sr-only">Test query</span>
+        <input
+          type="checkbox"
+          name="useTestQuery"
+          value="true"
+          checked={useTestQuery || false}
+          onChange={(event) => {
+            setUseTestQuery(event.currentTarget.checked ? true : undefined)
+          }}
+        />
       </label>
       <button
         className="p-2 ml-3 mr-5 inline-block border-2 border-purple-400 rounded-full"
