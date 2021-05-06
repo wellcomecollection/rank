@@ -3,24 +3,22 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { RankEvalResponse, client } from '../../services/elasticsearch'
 import { Template, getSearchTemplates } from '../../services/search-templates'
 
+import imageRatings from '../../data/ratings/images'
 import { indexToQueryType } from '../index'
+import workRatings from '../../data/ratings/works'
 
-function formatExamples(
-  examples: Example[],
-  index: string,
-  templateId: string
-) {
+function formatExamples(examples: Example[], template: Template) {
   return examples.map((example: Example) => {
     return {
       id: example.query,
-      template_id: templateId,
+      template_id: template.id,
       params: {
         query: example.query,
       },
       ratings: example.ratings.map((id) => {
         return {
           _id: id,
-          _index: index,
+          _index: template.index,
           rating: 3,
         }
       }),
@@ -28,57 +26,41 @@ function formatExamples(
   })
 }
 
-const ratingsData = {
-  works: ['precision', 'recall', 'languages'],
-  images: ['precision', 'recall', 'languages'],
-}
-
 export function rankEvalRequests(
   template: Template
 ): Promise<RankEvalResponse>[] {
   const queryType = indexToQueryType(template.index)
-  const requests = ratingsData[queryType].map((moduleName) => {
-    return rankEvalRequest(template, moduleName)
-  })
-
+  const ratings = { works: workRatings, images: imageRatings }[queryType]
+  const requests = Object.entries(ratings).map(([name, { examples, metric }]) =>
+    rankEvalRequest(template, name, examples, metric)
+  )
   return requests
 }
 
 export async function rankEvalRequest(
   template: Template,
-  moduleName: string
+  name: string,
+  examples: Example[],
+  metric
 ): Promise<RankEvalResponse> {
-  const queryType = indexToQueryType(template.index)
-  const { default: ratings } = await import(
-    `../../data/ratings/${queryType}/${moduleName}`
-  )
-
-  const requests = formatExamples(ratings.examples, template.index, template.id)
-
+  const { id, index } = template
+  const requests = formatExamples(examples, template)
   const body = {
     requests,
-    templates: [
-      {
-        id: template.id,
-        template: template.template,
-      },
-    ],
-    metric: ratings.metric,
+    metric,
+    templates: [{ id, template: template.template }],
   }
 
   return client
-    .rankEval<RankEvalResponse>({
-      index: template.index,
-      body,
-    })
+    .rankEval<RankEvalResponse>({ index, body })
     .then((resp) => {
       return {
         ...resp.body,
-        queryId: `${queryType}-${moduleName}`,
-        index: template.index,
+        index,
+        queryId: `${indexToQueryType(index)}-${name}`,
         query: {
           method: 'POST',
-          path: `${template.index}/_rank_eval`,
+          path: `${index}/_rank_eval`,
           body: JSON.stringify(resp.body),
         },
       }
@@ -96,12 +78,8 @@ export default async (
   // metrics against multiple indexes
   // see: https://github.com/elastic/elasticsearch/issues/51680
   const requests = searchTemplates.templates
-    .map((searchTemplate) => {
-      return rankEvalRequests(searchTemplate)
-    })
-    .reduce((cur, acc) => {
-      return cur.concat(acc)
-    }, [])
+    .map((template) => rankEvalRequests(template))
+    .reduce((cur, acc) => cur.concat(acc), [])
 
   const responses = await Promise.all(requests)
   const response = {
