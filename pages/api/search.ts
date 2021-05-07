@@ -12,16 +12,15 @@ async function getCurrentQuery(endpoint: string): Promise<Template> {
   return template
 }
 
-async function getTestQuery(id: string, endpoint: string): Promise<Template> {
+async function getTestQuery(endpoint: string): Promise<Template> {
   const currentTemplate = await getCurrentQuery(endpoint)
-  const index = currentTemplate.index
-  const query = await import(`../../data/queries/${endpoint}/${id}`).then(
+  const query = await import(`../../data/queries/${endpoint}`).then(
     (q) => q.default
   )
 
   return {
-    id,
-    index,
+    id: 'test',
+    index: currentTemplate.index,
     template: { source: { query: query } },
   }
 }
@@ -33,20 +32,17 @@ export default async (
   const { query, useTestQuery, endpoint } = req.query
 
   const template = useTestQuery
-    ? await getTestQuery('prod', endpoint.toString())
-    : await getCurrentQuery(endpoint.toString())
+    ? await getTestQuery(endpoint as string)
+    : await getCurrentQuery(endpoint as string)
 
   const rankEvalReqs = rankEvalRequests(template)
-  const searchQuery = query
-    ? template
-    : await getTestQuery('match-all', endpoint.toString())
 
   const searchReq = client.searchTemplate({
     index: template.index,
     body: {
       explain: true,
       source: {
-        ...searchQuery.template.source,
+        ...template.template.source,
         track_total_hits: true,
         highlight: {
           pre_tags: ['<em class="bg-yellow-200">'],
@@ -54,9 +50,7 @@ export default async (
           fields: { '*': { number_of_fragments: 0 } },
         },
       },
-      params: {
-        query,
-      },
+      params: { query },
     },
   })
 

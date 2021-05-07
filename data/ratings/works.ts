@@ -72,7 +72,7 @@ export default {
     metric: {
       recall: {
         relevant_rating_threshold: 3,
-        k: 100000,
+        k: 100,
       },
     },
   },

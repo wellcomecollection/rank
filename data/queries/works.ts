@@ -1,5 +1,6 @@
 import languages from '../languages'
-const query = {
+
+export default {
   bool: {
     minimum_should_match: '1',
     should: [
@@ -123,4 +124,3 @@ const query = {
     ],
   },
 }
-export default query

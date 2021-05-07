@@ -1,14 +1,6 @@
-// should we be searching derived data?
-
-// should we be with more weight on things like subjects, physical descriptions
-// etc, rather than titles?
-
-// have added languages to lettering and notes
-// keyword to lettering
-// keyword and shingles to notes
-
 import languages from '../languages'
-const query = {
+
+export default {
   bool: {
     should: [
       {
@@ -167,5 +159,3 @@ const query = {
     minimum_should_match: '1',
   },
 }
-
-export default query
