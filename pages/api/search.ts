@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Template, getSearchTemplates } from '../../services/search-templates'
-
-import { client } from '../../services/elasticsearch'
+import { rankClient } from '../../services/elasticsearch'
 import { rankEvalRequests } from './eval'
 
 async function getCurrentQuery(endpoint: string): Promise<Template> {
@@ -35,7 +34,7 @@ export default async (
     : await getCurrentQuery(endpoint as string)
 
   const rankEvalReqs = rankEvalRequests(template)
-  const searchReq = client.searchTemplate({
+  const searchReq = rankClient.searchTemplate({
     index: template.index,
     body: {
       explain: true,

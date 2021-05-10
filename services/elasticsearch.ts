@@ -2,9 +2,6 @@
 import { Client } from '@elastic/elasticsearch'
 
 const {
-  // ES_USER,
-  // ES_PASSWORD,
-  // ES_CLOUD_ID,
   ES_RANK_USER,
   ES_RANK_PASSWORD,
   ES_RANK_CLOUD_ID,
@@ -50,16 +47,6 @@ export type RankEvalResponse = {
     body: string
   }
 }
-
-const client = new Client({
-  cloud: {
-    id: ES_RANK_CLOUD_ID,
-  },
-  auth: {
-    username: ES_RANK_USER,
-    password: ES_RANK_PASSWORD,
-  },
-})
 
 const rankClient = new Client({
   cloud: {
