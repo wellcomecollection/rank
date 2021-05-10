@@ -33,7 +33,7 @@ async function getSearchTemplates(env: Env): Promise<TemplatesResponse> {
   // The query is returned as a string from the API
   const templates: Template[] = json.templates.map((template) => ({
     id: template.id,
-    index: template.index,
+    index: `ccr--${template.index}`,
     template: {
       source: {
         query: JSON.parse(template.query),

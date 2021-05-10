@@ -1,6 +1,6 @@
 import { Env, Example } from '../../types'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { RankEvalResponse, client } from '../../services/elasticsearch'
+import { RankEvalResponse, rankClient } from '../../services/elasticsearch'
 import { Template, getSearchTemplates } from '../../services/search-templates'
 
 import imageRatings from '../../data/ratings/images'
@@ -51,7 +51,7 @@ export async function rankEvalRequest(
     templates: [{ id, template: template.template }],
   }
 
-  return client
+  return rankClient
     .rankEval<RankEvalResponse>({ index, body })
     .then((resp) => {
       return {
