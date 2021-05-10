@@ -1,7 +1,9 @@
 {
   "scripts": {
-    "dev": "next dev",
     "build": "next build",
+    "dev": "next dev",
+    "env": "vercel env pull",
+    "link": "vercel link",
     "lint": "yarn eslint . --fix"
   },
   "dependencies": {

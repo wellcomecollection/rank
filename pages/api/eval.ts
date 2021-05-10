@@ -51,7 +51,26 @@ export async function rankEvalRequest(
     templates: [{ id, template: template.template }],
   }
 
-  return rankClient
+  if (name === 'negative') {
+    // To avoid running exceptionally long recall queries for our negative
+    // examples, we intercept the template and add a filter to only include
+    // results from the set of target IDs. This should have no effect on the
+    // final result, as explained in the comment below.
+    const targetIds = examples.flatMap((x) => x.ratings)
+    const augmentedTemplate = {
+      source: {
+        query: {
+          bool: {
+            must: [body.templates[0].template.source.query],
+            filter: { terms: { _id: targetIds } },
+          },
+        },
+      },
+    }
+    body.templates[0].template = augmentedTemplate
+  }
+
+  const response = await rankClient
     .rankEval<RankEvalResponse>({ index, body })
     .then((resp) => {
       return {
@@ -65,6 +84,26 @@ export async function rankEvalRequest(
         },
       }
     })
+
+  if (name === 'negative') {
+    // For our negative examples, we want to check that the target IDs _don't_
+    // appear in the list of results. Rank_eval doesn't have a neat way of doing
+    // this out of the box, but we know that the response's metric_score will be
+    // 0 if and only if the ID isn't included in the results. If the ID is
+    // included anywhere in the list, the score for the recall metric will be > 0.
+    //
+    // We therefore intercept the result here. If the score is 0, we manually
+    // set it to 1 (ie pass). Otherwise, it's set to 0 (ie fail).
+    Object.values(response.details).forEach((search) => {
+      if (search.metric_score === 0) {
+        search.metric_score = 1
+      } else {
+        search.metric_score = 0
+      }
+    })
+  }
+
+  return response
 }
 
 export default async (
@@ -82,6 +121,7 @@ export default async (
     .reduce((cur, acc) => cur.concat(acc), [])
 
   const responses = await Promise.all(requests)
+
   const response = {
     pass: responses.every((resp) => resp.metric_score === 1),
     rankings: responses,
