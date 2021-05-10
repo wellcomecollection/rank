@@ -37,56 +37,55 @@ export default async (
         const namespace = getNamespace(template.index)
         const ccrIndexName = `ccr--${template.index}`
         // we're only working with works for now, but should extend to images
-        if (namespace === 'works') {
-          const { body: indexExists } = await rankClient.indices.exists({
-            index: ccrIndexName,
-          })
 
-          if (indexExists) {
-            console.info(`${ccrIndexName} exists, moving on`)
-            return [
-              {
-                index: ccrIndexName,
-                state: 'exists',
-              } as State,
-            ]
-          }
+        const { body: indexExists } = await rankClient.indices.exists({
+          index: ccrIndexName,
+        })
 
-          // delete previous indices
-          const indices = Object.keys(allIndices).filter((index) =>
-            index.startsWith(`ccr--${namespace}`)
-          )
-          if (indices.length > 0) {
-            console.info(`deleting ${indices}`)
-            await rankClient.indices
-              .delete({
-                index: indices,
-              })
-              .catch((err) => ({ body: err }))
-          }
-
-          await rankClient.ccr.follow({
-            index: ccrIndexName,
-            body: {
-              remote_cluster: 'catalogue',
-              leader_index: template.index,
-              settings: {
-                'index.number_of_replicas': 0,
-              },
-            },
-          })
-
+        if (indexExists) {
+          console.info(`${ccrIndexName} exists, moving on`)
           return [
-            ...indices.map(
-              (index) =>
-                ({
-                  index,
-                  state: 'delete',
-                } as State)
-            ),
-            { index: ccrIndexName, state: 'follow' } as State,
+            {
+              index: ccrIndexName,
+              state: 'exists',
+            } as State,
           ]
         }
+
+        // delete previous indices
+        const indices = Object.keys(allIndices).filter((index) =>
+          index.startsWith(`ccr--${namespace}`)
+        )
+        if (indices.length > 0) {
+          console.info(`deleting ${indices}`)
+          await rankClient.indices
+            .delete({
+              index: indices,
+            })
+            .catch((err) => ({ body: err }))
+        }
+
+        await rankClient.ccr.follow({
+          index: ccrIndexName,
+          body: {
+            remote_cluster: 'catalogue',
+            leader_index: template.index,
+            settings: {
+              'index.number_of_replicas': 0,
+            },
+          },
+        })
+
+        return [
+          ...indices.map(
+            (index) =>
+              ({
+                index,
+                state: 'delete',
+              } as State)
+          ),
+          { index: ccrIndexName, state: 'follow' } as State,
+        ]
       })
     )
   )

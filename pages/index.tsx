@@ -46,7 +46,8 @@ function scoreToEmoji(score: number): string {
 export function indexToQueryType(index: string): QueryType {
   // the name of the index should indicate the queryType, eg "images-2021-01-12"
   // should result in an "images" query
-  return index.split('-')[0] as QueryType
+  console.info(index, index.replace('ccr--', '').split('-')[0])
+  return index.replace('ccr--', '').split('-')[0] as QueryType
 }
 
 type RankingComponentProps = {

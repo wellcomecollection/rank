@@ -7,7 +7,7 @@ import { rankEvalRequests } from './eval'
 async function getCurrentQuery(endpoint: string): Promise<Template> {
   const searchTemplates = await getSearchTemplates('prod')
   const template = searchTemplates.templates.find((template) =>
-    template.index.startsWith(endpoint)
+    template.index.startsWith(`ccr--${endpoint}`)
   )
   return template
 }
@@ -30,13 +30,11 @@ export default async (
   res: NextApiResponse
 ): Promise<void> => {
   const { query, useTestQuery, endpoint } = req.query
-
   const template = useTestQuery
     ? await getTestQuery(endpoint as string)
     : await getCurrentQuery(endpoint as string)
 
   const rankEvalReqs = rankEvalRequests(template)
-
   const searchReq = client.searchTemplate({
     index: template.index,
     body: {
