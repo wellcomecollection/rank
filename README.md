@@ -13,8 +13,8 @@ If the candidate algorithms return those results, we know we're meeting a baseli
 Clone the repo, and run:
 
 - `yarn install` to install packages
-- `vercel link` to link your repo with the project in vercel
-- `vercel env pull` to populate a .env file with secrets
-- `vercel dev` to get the local server running
+- `yarn link` to link your repo with the project in vercel
+- `yarn env` to populate a .env file with secrets
+- `yarn dev` to get the local server running
 
 Take a look at the [docs](/docs) to understand how the service works, and how to add examples, modify queries, replicate indexes, or update mappings.
