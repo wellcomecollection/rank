@@ -94,7 +94,6 @@ export async function rankEvalRequest(
     //
     // We therefore intercept the result here. If the score is 0, we manually
     // set it to 1 (ie pass). Otherwise, it's set to 0 (ie fail).
-    console.log(JSON.stringify(response.details, null, 2))
     Object.values(response.details).forEach((search) => {
       if (search.metric_score === 0) {
         search.metric_score = 1
