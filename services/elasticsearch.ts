@@ -68,4 +68,4 @@ const ratingClient = new Client({
   },
 })
 
-export { client, rankClient, ratingClient }
+export { rankClient, ratingClient }
