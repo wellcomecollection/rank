@@ -51,6 +51,25 @@ export async function rankEvalRequest(
     templates: [{ id, template: template.template }],
   }
 
+  if (name === 'negative') {
+    // To avoid running exceptionally long recall queries for our negative
+    // examples, we intercept the template and add a filter to only include
+    // results from the set of target IDs. This should have no effect on the
+    // final result, as explained in the comment below.
+    const targetIds = examples.flatMap((x) => x.ratings)
+    const augmentedTemplate = {
+      source: {
+        query: {
+          bool: {
+            must: [body.templates[0].template.source.query],
+            filter: { terms: { _id: targetIds } },
+          },
+        },
+      },
+    }
+    body.templates[0].template = augmentedTemplate
+  }
+
   const response = await rankClient
     .rankEval<RankEvalResponse>({ index, body })
     .then((resp) => {
@@ -75,6 +94,7 @@ export async function rankEvalRequest(
     //
     // We therefore intercept the result here. If the score is 0, we manually
     // set it to 1 (ie pass). Otherwise, it's set to 0 (ie fail).
+    console.log(JSON.stringify(response.details, null, 2))
     Object.values(response.details).forEach((search) => {
       if (search.metric_score === 0) {
         search.metric_score = 1
