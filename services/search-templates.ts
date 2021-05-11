@@ -1,9 +1,11 @@
 import { Env } from '../types'
 
+export type TemplateSource = { source: { query: unknown } }
+
 export type Template = {
   id: string
   index: string
-  template: { source: { query: unknown } }
+  template: TemplateSource // Should probably call this source
 }
 
 type TemplatesResponse = {

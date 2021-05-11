@@ -1,5 +1,9 @@
-export default {
+import { Rating } from '../../types'
+import { eq1 } from './pass'
+
+const ratings: Record<string, Rating> = {
   precision: {
+    pass: eq1,
     examples: [
       { query: 'crick dna sketch', ratings: ['gzv2hhgy'] },
       { query: 'gzv2hhgy', ratings: ['gzv2hhgy'] },
@@ -14,6 +18,7 @@ export default {
     },
   },
   recall: {
+    pass: eq1,
     examples: [
       { query: 'horse battle', ratings: ['ud35y7c8'] },
       {
@@ -72,6 +77,7 @@ export default {
     },
   },
   languages: {
+    pass: eq1,
     examples: [
       { query: 'arbeiten', ratings: ['sr4kxmk3', 'utbtee43'] },
       { query: 'conosco', ratings: ['nnh3nh47'] },
@@ -85,3 +91,5 @@ export default {
     },
   },
 }
+
+export default ratings

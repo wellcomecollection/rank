@@ -1,26 +1,8 @@
-import { RankDetail } from '../../services/elasticsearch'
-type PassFun = (
-  score: RankDetail
-) => {
-  score: number // should be a range between 0 => 1
-  pass: boolean
-}
+import { Rating } from '../../types'
+import { eq0, eq1 } from './pass'
+import { filterExamples } from './queryAugmentation'
 
-const eq1: PassFun = (rankDetail: RankDetail) => {
-  return {
-    score: rankDetail.metric_score,
-    pass: rankDetail.metric_score === 1,
-  }
-}
-
-const eq0: PassFun = (rankDetail: RankDetail) => {
-  return {
-    score: rankDetail.metric_score,
-    pass: rankDetail.metric_score > 0,
-  }
-}
-
-export default {
+const ratings: Record<string, Rating> = {
   precision: {
     pass: eq1,
     examples: [
@@ -86,6 +68,7 @@ export default {
   },
   negative: {
     pass: eq0,
+    searchTemplateAugmentation: filterExamples,
     examples: [
       { query: 'Deptford', ratings: ['pb4rbujd', 'g2awspp9'] }, // shouldn't match "dartford" or "hertford"
       { query: 'Sahagún', ratings: ['neumfv84', 'dzhxzxcr'] }, // shouldn't match "gahagan"
@@ -103,3 +86,5 @@ export default {
     },
   },
 }
+
+export default ratings
