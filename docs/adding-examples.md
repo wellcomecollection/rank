@@ -1,6 +1,12 @@
-# Adding examples to rank eval
+# Adding examples to rank
 
-Known examples for rank eval are stored in /data/known-examples, with image examples in `images.json` and works in `works.json`. Each file is a list of examples with the form:
+Known examples for rank eval are stored in `/data/ratings`, with image examples in `images.ts` and works in `works.ts`.
+
+The file is broken into sections, each of which contains a set of `examples` and a `metric`.
+
+The sections should names which describe the search intention which groups them together, eg `languages`.
+
+Each example within a section takes the form:
 
 ```json
 {
@@ -18,5 +24,12 @@ Known examples for rank eval are stored in /data/known-examples, with image exam
 }
 ```
 
-`query` is the query that the user sends to the api/search box
-`ratings` is a list of expected result work/image IDs. Each example can have multiple target IDs.
+where `query` contains the search term(s), and `ratings` contains the IDs of the expected results.
+
+The `examples` in a section are assessed according to their `metric`. The list of elasticsearch's built in metrics and how to use them is [here](https://www.elastic.co/guide/en/elasticsearch/reference/master/search-rank-eval.html#_available_evaluation_metrics).
+
+## Augmenting metrics
+
+Where they're found to be insufficient, the built in metrics can be tweaked to suit the specific needs of the examples.
+
+(WIP https://github.com/wellcomecollection/rank/pull/50)

@@ -2,11 +2,7 @@
 
 Rank is our source of truth for the goodness of search on wellcomecollection.org.
 
-Rank uses [elasticsearch's `rank_eval` API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-rank-eval.html).
-
-`rank_eval` measures a candidate search algorithm's performance on a set of known search terms against a corresponding set of "expected" results from our catalogue.
-
-If the candidate algorithms return those results, we know we're meeting a baseline performance requirement. Better scores on those examples should mean better search satisfaction IRL.
+Rank uses [elasticsearch's `rank_eval` API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-rank-eval.html), which measures how well a query returns the "expected" results for a set of known search terms. If the queries return the results we expect, we know we're meeting a baseline performance requirement. Better scores on those examples should mean better search satisfaction IRL.
 
 ## Developing
 
@@ -17,4 +13,4 @@ Clone the repo, and run:
 - `yarn env` to populate a .env file with secrets
 - `yarn dev` to get the local server running
 
-Take a look at the [docs](/docs) to understand how the service works, and how to add examples, modify queries, replicate indexes, or update mappings.
+Take a look at the [docs](/docs) to understand how the service works, or how to run experiments with new queries, mappings, or examples.
