@@ -1,18 +1,17 @@
 # Docs
 
-How maat is built:
+Rank's built with:
 
-- [next.js](https://nextjs.org/) for building and structuring the content
-- [vercel](https://vercel.com/docs/cli) and the main branch of this github repo for deployment
+- [next.js](https://nextjs.org/) and [typescript](https://www.typescriptlang.org/) for structuring the content
+- [vercel](https://vercel.com/docs/cli) and the `main` branch of this repo for deployment
 - [tailwind css](https://tailwindcss.com/) for styling the content
 - [elasticsearch](https://www.elastic.co/) for storing the catalogue data and running queries
 - [elasticsearch's rank_eval API](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-rank-eval.html) for measuring performance on known results
 
-## What it looks like
+A rough diagram of how rank and the other weco services talk to one another:
 
 ![diagram](diagram.png)
 
-1. client sends a request to maat
-2. maat gets the current search template(s) from api.wellcomecollection.org
-3. maat sends a rank_eval request to the catalogue elasticsearch index using the search templates and the known examples of search-term/result pairs
-4. depending on the results from rank eval, maat returns an indication of success or failure to the client
+Rank doesn't run queries against production data. Our experiments can (and do!) produce long-running queries, which can negatively affect the performance of services which real users see.
+
+Instead, we run our tests and experimental queries against [a replica of the live data in a separate cluster](https://www.elastic.co/guide/en/elasticsearch/reference/current/xpack-ccr.html), which is repopulated every night.
