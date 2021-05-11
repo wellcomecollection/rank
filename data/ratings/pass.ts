@@ -15,8 +15,8 @@ const eq1: PassFn = (rankDetail: RankDetail) => {
 
 const eq0: PassFn = (rankDetail: RankDetail) => {
   return {
-    score: rankDetail.metric_score,
-    pass: rankDetail.metric_score > 0,
+    score: rankDetail.metric_score === 1 ? 0 : 1,
+    pass: rankDetail.metric_score === 0,
   }
 }
 

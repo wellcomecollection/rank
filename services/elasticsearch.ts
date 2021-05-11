@@ -83,6 +83,9 @@ export type RankEvalRequest<TemplateParams> = {
 
 export type RankEvalResponsWithMeta = RankEvalResponse & {
   pass: Pass
+  // We've set the passes here as I didn't want to augment the original response.
+  // There's probably a better way to do this, but it'll do for now.
+  passes: Record<string, Pass>
   queryId: string
   index: string
   query: {

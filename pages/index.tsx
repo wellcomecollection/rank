@@ -62,7 +62,7 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
   return (
     <div className="py-4 font-mono" key={ranking.index}>
       <h2 className="text-2xl font-bold">
-        {scoreToEmoji(ranking.metric_score)} {ranking.queryId}
+        {scoreToEmoji(ranking.pass.score)} {ranking.queryId}
       </h2>
       <div className="space-x-4">
         <span>JSON</span>
@@ -104,7 +104,7 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
       <ul>
         {Object.entries(ranking.details).map((key) => {
           const query = key[0]
-          const score = ranking.details[query].metric_score
+          const score = ranking.passes[query].score
           const encodedQuery = encodeURIComponent(query)
           const queryType = indexToQueryType(ranking.index)
           const searchURL = `https://wellcomecollection.org/${queryType}?query=${encodedQuery}`
