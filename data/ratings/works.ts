@@ -1,5 +1,28 @@
+import { RankDetail } from '../../services/elasticsearch'
+type PassFun = (
+  score: RankDetail
+) => {
+  score: number // should be a range between 0 => 1
+  pass: boolean
+}
+
+const eq1: PassFun = (rankDetail: RankDetail) => {
+  return {
+    score: rankDetail.metric_score,
+    pass: rankDetail.metric_score === 1,
+  }
+}
+
+const eq0: PassFun = (rankDetail: RankDetail) => {
+  return {
+    score: rankDetail.metric_score,
+    pass: rankDetail.metric_score > 0,
+  }
+}
+
 export default {
   precision: {
+    pass: eq1,
     examples: [
       { query: 'Cassils Time lapse', ratings: ['ftqy78zj'] },
       { query: 'stim', ratings: ['e8qxq5mv'] },
@@ -24,6 +47,7 @@ export default {
     },
   },
   recall: {
+    pass: eq1,
     examples: [
       {
         query: 'Atherosclerosis : an introduction to atherosclerosis',
@@ -38,6 +62,7 @@ export default {
     },
   },
   languages: {
+    pass: eq1,
     examples: [
       { query: 'at-tib', ratings: ['qmm9mauk'] },
       { query: 'Aṭ-ṭib', ratings: ['qmm9mauk'] },
@@ -60,6 +85,7 @@ export default {
     },
   },
   negative: {
+    pass: eq0,
     examples: [
       { query: 'Deptford', ratings: ['pb4rbujd', 'g2awspp9'] }, // shouldn't match "dartford" or "hertford"
       { query: 'Sahagún', ratings: ['neumfv84', 'dzhxzxcr'] }, // shouldn't match "gahagan"
