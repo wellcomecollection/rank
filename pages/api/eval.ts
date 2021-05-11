@@ -10,6 +10,7 @@ import { Template, getSearchTemplates } from '../../services/search-templates'
 import { indexToQueryType } from '../index'
 import imageRatings from '../../data/ratings/images'
 import workRatings from '../../data/ratings/works'
+import { Pass } from '../../data/ratings/pass'
 
 function formatExamples(examples: Example[], template: Template) {
   return examples.map((example: Example) => {
@@ -64,17 +65,33 @@ export async function rankEvalRequest(
   const response = await rankClient
     .rankEval<RankEvalResponse>({ index, body })
     .then((resp) => {
+      const passes = Object.entries(resp.body.details).reduce(
+        (acc, [name, detail]: [string, RankDetail]) => {
+          return {
+            ...acc,
+            [name]: pass(detail),
+          }
+        },
+        {}
+      )
+
+      const totalScore: number = Object.values(passes).reduce(
+        (acc: number, pass: Pass) => {
+          return acc + pass.score
+        },
+        0
+      ) as number
+
       return {
         ...resp.body,
         index,
         pass: {
-          pass: Object.entries(resp.body.details).every(
-            ([, detail]: [string, RankDetail]) => {
-              return pass(detail)
-            }
-          ),
-          score: resp.body.metric_score,
+          pass: Object.values(passes).every((pass: Pass) => {
+            return pass.pass
+          }),
+          score: totalScore / Object.values(passes).length,
         },
+        passes,
         queryId: `${indexToQueryType(index)}-${name}`,
         query: {
           method: 'POST',

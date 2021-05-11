@@ -4,10 +4,10 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 import Head from 'next/head'
 import { QueryType } from '../types'
 import absoluteUrl from 'next-absolute-url'
-import { RankEvalResponse } from '../services/elasticsearch'
+import { RankEvalResponsWithMeta } from '../services/elasticsearch'
 
 type Data = {
-  rankings: RankEvalResponse[]
+  rankings: RankEvalResponsWithMeta[]
   pass: boolean
 }
 
@@ -50,7 +50,7 @@ export function indexToQueryType(index: string): QueryType {
 }
 
 type RankingComponentProps = {
-  ranking: RankEvalResponse
+  ranking: RankEvalResponsWithMeta
 }
 const RankingComponent = ({ ranking }: RankingComponentProps) => {
   const [showJson, setShowJson] = useState(false)
