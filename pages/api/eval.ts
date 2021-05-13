@@ -1,11 +1,16 @@
-import { Env, Example } from '../../types'
+import { Env, Example, Rating } from '../../types'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { RankEvalResponse, rankClient } from '../../services/elasticsearch'
+import {
+  RankEvalResponse,
+  rankClient,
+  RankEvalResponsWithMeta,
+  RankDetail,
+} from '../../services/elasticsearch'
 import { Template, getSearchTemplates } from '../../services/search-templates'
-
-import imageRatings from '../../data/ratings/images'
 import { indexToQueryType } from '../index'
+import imageRatings from '../../data/ratings/images'
 import workRatings from '../../data/ratings/works'
+import { Pass } from '../../data/ratings/pass'
 
 function formatExamples(examples: Example[], template: Template) {
   return examples.map((example: Example) => {
@@ -31,8 +36,10 @@ export function rankEvalRequests(
 ): Promise<RankEvalResponse>[] {
   const queryType = indexToQueryType(template.index)
   const ratings = { works: workRatings, images: imageRatings }[queryType]
-  const requests = Object.entries(ratings).map(([name, { examples, metric }]) =>
-    rankEvalRequest(template, name, examples, metric)
+  const requests = Object.entries(
+    ratings
+  ).map(([name, rating]: [string, Rating]) =>
+    rankEvalRequest(template, name, rating)
   )
   return requests
 }
@@ -40,42 +47,51 @@ export function rankEvalRequests(
 export async function rankEvalRequest(
   template: Template,
   name: string,
-  examples: Example[],
-  metric
-): Promise<RankEvalResponse> {
+  rating: Rating
+): Promise<RankEvalResponsWithMeta> {
   const { id, index } = template
+  const { examples, metric, searchTemplateAugmentation, pass } = rating
   const requests = formatExamples(examples, template)
+  const searchTemplate = searchTemplateAugmentation
+    ? searchTemplateAugmentation(rating, template.template)
+    : template.template
+
   const body = {
     requests,
     metric,
-    templates: [{ id, template: template.template }],
-  }
-
-  if (name === 'negative') {
-    // To avoid running exceptionally long recall queries for our negative
-    // examples, we intercept the template and add a filter to only include
-    // results from the set of target IDs. This should have no effect on the
-    // final result, as explained in the comment below.
-    const targetIds = examples.flatMap((x) => x.ratings)
-    const augmentedTemplate = {
-      source: {
-        query: {
-          bool: {
-            must: [body.templates[0].template.source.query],
-            filter: { terms: { _id: targetIds } },
-          },
-        },
-      },
-    }
-    body.templates[0].template = augmentedTemplate
+    templates: [{ id, template: searchTemplate }],
   }
 
   const response = await rankClient
     .rankEval<RankEvalResponse>({ index, body })
     .then((resp) => {
+      const passes = Object.entries(resp.body.details).reduce(
+        (acc, [name, detail]: [string, RankDetail]) => {
+          return {
+            ...acc,
+            [name]: pass(detail),
+          }
+        },
+        {}
+      )
+
+      const totalScore: number = Object.values(passes).reduce(
+        (acc: number, pass: Pass) => {
+          return acc + pass.score
+        },
+        0
+      ) as number
+
       return {
         ...resp.body,
         index,
+        pass: {
+          pass: Object.values(passes).every((pass: Pass) => {
+            return pass.pass
+          }),
+          score: totalScore / Object.values(passes).length,
+        },
+        passes,
         queryId: `${indexToQueryType(index)}-${name}`,
         query: {
           method: 'POST',
@@ -84,24 +100,6 @@ export async function rankEvalRequest(
         },
       }
     })
-
-  if (name === 'negative') {
-    // For our negative examples, we want to check that the target IDs _don't_
-    // appear in the list of results. Rank_eval doesn't have a neat way of doing
-    // this out of the box, but we know that the response's metric_score will be
-    // 0 if and only if the ID isn't included in the results. If the ID is
-    // included anywhere in the list, the score for the recall metric will be > 0.
-    //
-    // We therefore intercept the result here. If the score is 0, we manually
-    // set it to 1 (ie pass). Otherwise, it's set to 0 (ie fail).
-    Object.values(response.details).forEach((search) => {
-      if (search.metric_score === 0) {
-        search.metric_score = 1
-      } else {
-        search.metric_score = 0
-      }
-    })
-  }
 
   return response
 }

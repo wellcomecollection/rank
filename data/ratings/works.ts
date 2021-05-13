@@ -1,5 +1,10 @@
-export default {
+import { Rating } from '../../types'
+import { eq0, eq1 } from './pass'
+import { filterExamples } from './queryAugmentation'
+
+const ratings: Record<string, Rating> = {
   precision: {
+    pass: eq1,
     examples: [
       { query: 'Cassils Time lapse', ratings: ['ftqy78zj'] },
       { query: 'stim', ratings: ['e8qxq5mv'] },
@@ -24,6 +29,7 @@ export default {
     },
   },
   recall: {
+    pass: eq1,
     examples: [
       {
         query: 'Atherosclerosis : an introduction to atherosclerosis',
@@ -38,6 +44,7 @@ export default {
     },
   },
   languages: {
+    pass: eq1,
     examples: [
       { query: 'at-tib', ratings: ['qmm9mauk'] },
       { query: 'Aṭ-ṭib', ratings: ['qmm9mauk'] },
@@ -60,6 +67,8 @@ export default {
     },
   },
   negative: {
+    pass: eq0,
+    searchTemplateAugmentation: filterExamples,
     examples: [
       { query: 'Deptford', ratings: ['pb4rbujd', 'g2awspp9'] }, // shouldn't match "dartford" or "hertford"
       { query: 'Sahagún', ratings: ['neumfv84', 'dzhxzxcr'] }, // shouldn't match "gahagan"
@@ -77,3 +86,5 @@ export default {
     },
   },
 }
+
+export default ratings

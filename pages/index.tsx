@@ -4,10 +4,10 @@ import { CopyToClipboard } from 'react-copy-to-clipboard'
 import Head from 'next/head'
 import { QueryType } from '../types'
 import absoluteUrl from 'next-absolute-url'
-import { RankEvalResponse } from '../services/elasticsearch'
+import { RankEvalResponsWithMeta } from '../services/elasticsearch'
 
 type Data = {
-  rankings: RankEvalResponse[]
+  rankings: RankEvalResponsWithMeta[]
   pass: boolean
 }
 
@@ -50,7 +50,7 @@ export function indexToQueryType(index: string): QueryType {
 }
 
 type RankingComponentProps = {
-  ranking: RankEvalResponse
+  ranking: RankEvalResponsWithMeta
 }
 const RankingComponent = ({ ranking }: RankingComponentProps) => {
   const [showJson, setShowJson] = useState(false)
@@ -62,7 +62,7 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
   return (
     <div className="py-4 font-mono" key={ranking.index}>
       <h2 className="text-2xl font-bold">
-        {scoreToEmoji(ranking.metric_score)} {ranking.queryId}
+        {scoreToEmoji(ranking.pass.score)} {ranking.queryId}
       </h2>
       <div className="space-x-4">
         <span>JSON</span>
@@ -104,7 +104,7 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
       <ul>
         {Object.entries(ranking.details).map((key) => {
           const query = key[0]
-          const score = ranking.details[query].metric_score
+          const score = ranking.passes[query].score
           const encodedQuery = encodeURIComponent(query)
           const queryType = indexToQueryType(ranking.index)
           const searchURL = `https://wellcomecollection.org/${queryType}?query=${encodedQuery}`
