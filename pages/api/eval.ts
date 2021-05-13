@@ -33,7 +33,7 @@ function formatExamples(examples: Example[], template: Template) {
 
 export function rankEvalRequests(
   template: Template
-): Promise<RankEvalResponse>[] {
+): Promise<RankEvalResponsWithMeta>[] {
   const queryType = indexToQueryType(template.index)
   const ratings = { works: workRatings, images: imageRatings }[queryType]
   const requests = Object.entries(
