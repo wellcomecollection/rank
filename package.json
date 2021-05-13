@@ -1,11 +1,12 @@
 {
   "scripts": {
     "build": "next build",
-    "createTestIndex": "ts-node -r dotenv/config ./scripts/createTestIndex",
     "dev": "next dev",
     "env": "vercel env pull",
     "link": "vercel link",
-    "lint": "yarn eslint . --fix"
+    "lint": "yarn eslint . --fix",
+    "createTestIndex": "ts-node -r dotenv/config ./scripts/createTestIndex",
+    "deleteTestIndex": "ts-node -r dotenv/config ./scripts/deleteTestIndex"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.11.0",
