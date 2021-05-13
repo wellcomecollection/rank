@@ -167,7 +167,7 @@ const Search: NextPage<Props> = ({ data, search }) => {
       <ul>
         {data.hits.hits.map((hit) => (
           <li key={hit._id}>
-            <Hit hit={hit} endpoint={search.endpoint} />
+            <Hit hit={hit} endpoint={search.endpoint as Endpoint} />
           </li>
         ))}
       </ul>
