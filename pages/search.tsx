@@ -124,7 +124,7 @@ const RankEval = ({ rankEval, search }) => {
       </button>
       {showRankEval && (
         <div className="flex flex-wrap">
-          {Object.entries(rankEval.details).map(([title, ranking], i) => (
+          {Object.entries(rankEval.details).map(([title], i) => (
             <Link
               href={{
                 pathname: '/search',
