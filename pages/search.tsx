@@ -148,7 +148,7 @@ const RankEval: FunctionComponent<RankEvalProps> = ({ rankEval, search }) => {
             >
               <a className="flex flex-auto items-center mr-2 mb-2 p-2 bg-indigo-200 rounded-full">
                 <RankEvalStatus pass={rankEval.passes[title]} />
-                <div>{rating.label || title}</div>
+                <div>{title}</div>
               </a>
             </Link>
           ))}
