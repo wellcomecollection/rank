@@ -58,11 +58,6 @@ export function rankEvalRequest(
   return req
 }
 
-type ReqWithTest = {
-  res: RankEvalResponse
-  test: Test
-}
-
 type TestResult = {
   label: string
   description: string
