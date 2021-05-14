@@ -4,7 +4,7 @@ import { GetServerSideProps, NextPage } from 'next'
 import Link from 'next/link'
 import QueryForm from '../components/QueryForm'
 import absoluteUrl from 'next-absolute-url'
-import { Pass } from '../data/ratings/pass'
+import { Pass } from '../data/tests/pass'
 import { ApiResponse as ApiSearchResponse } from './api/search'
 import { RankEvalResponsWithMeta } from '../services/elasticsearch'
 
