@@ -70,20 +70,18 @@ type TestResult = {
 
 function runTests(tests: Test[], template: SearchTemplate) {
   const testResults: Promise<TestResult>[] = tests.map((test) =>
-    rankEvalRequest(template, test)
-      .then((res) => ({ res, test }))
-      .then(({ res, test }) => {
-        const results = Object.entries(res.details).map(([query, detail]) => ({
-          query,
-          result: test.pass(detail),
-        }))
-        return {
-          label: test.label,
-          description: test.description,
-          pass: results.every((result) => result.result.pass),
-          results,
-        }
-      })
+    rankEvalRequest(template, test).then((res) => {
+      const results = Object.entries(res.details).map(([query, detail]) => ({
+        query,
+        result: test.pass(detail),
+      }))
+      return {
+        label: test.label,
+        description: test.description,
+        pass: results.every((result) => result.result.pass),
+        results,
+      }
+    })
   )
 
   return testResults
