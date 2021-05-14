@@ -11,6 +11,8 @@ export type Example = {
 }
 
 export type Rating = {
+  label?: string
+  description?: string
   pass: PassFn
   examples: Example[]
   metric: Metric

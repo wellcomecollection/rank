@@ -4,14 +4,18 @@ import { GetServerSideProps, NextPage } from 'next'
 import Link from 'next/link'
 import QueryForm from '../components/QueryForm'
 import absoluteUrl from 'next-absolute-url'
+import { Pass } from '../data/ratings/pass'
+import { ApiResponse as ApiSearchResponse } from './api/search'
+import { RankEvalResponsWithMeta } from '../services/elasticsearch'
 
+type SearchProps = {
+  query?: string
+  useTestQuery?: true
+  endpoint?: string
+}
 type Props = {
-  data?: any
-  search: {
-    query?: string
-    useTestQuery?: true
-    endpoint?: string
-  }
+  data: ApiSearchResponse
+  search: SearchProps
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
@@ -28,8 +32,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
     .join('&')
 
-  const resp = await fetch(`${origin}/api/search?${reqQs}`)
-  const data = await resp.json()
+  const data: ApiSearchResponse = await fetch(
+    `${origin}/api/search?${reqQs}`
+  ).then((res) => res.json())
 
   return {
     props: {
@@ -46,21 +51,22 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 }
 
 type RankEvalStatusProps = {
-  score: number
+  pass: Pass
 }
-const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ score }) => {
+const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ pass }) => {
   return (
     <div
       className={`w-5 h-5 mr-2 rounded-full bg-${
-        score === 1 ? 'green' : 'red'
+        pass.score === 1 ? 'green' : 'red'
       }-200`}
     >
-      <span className="sr-only">{score === 1 ? 'pass' : 'fail'}</span>
+      <span className="sr-only">{pass.score === 1 ? 'pass' : 'fail'}</span>
     </div>
   )
 }
 
-type HitProps = { hit: any; endpoint }
+export type Endpoint = 'images' | 'works'
+type HitProps = { hit: any; endpoint: Endpoint }
 const Hit: FunctionComponent<HitProps> = ({ hit, endpoint }) => {
   const [showExplanation, setShowExplanation] = useState(false)
   const title =
@@ -105,7 +111,11 @@ const Hit: FunctionComponent<HitProps> = ({ hit, endpoint }) => {
   )
 }
 
-const RankEval = ({ rankEval, search }) => {
+type RankEvalProps = {
+  search: SearchProps
+  rankEval: RankEvalResponsWithMeta
+}
+const RankEval: FunctionComponent<RankEvalProps> = ({ rankEval, search }) => {
   const [showRankEval, setShowRankEval] = useState(true)
 
   return (
@@ -117,27 +127,19 @@ const RankEval = ({ rankEval, search }) => {
         } rounded-full`}
         onClick={() => setShowRankEval(!showRankEval)}
       >
-        <RankEvalStatus
-          score={
-            Object.values(rankEval.details).every(
-              (ranking) => ((ranking as any).metric_score as any) === 1
-            )
-              ? 1
-              : 0
-          }
-        />
+        <RankEvalStatus pass={rankEval.pass} />
         {rankEval.queryId}
       </button>
       {showRankEval && (
         <div className="flex flex-wrap">
-          {Object.entries(rankEval.details).map(([title, ranking], i) => (
+          {Object.entries(rankEval.details).map(([title, rating], i) => (
             <Link
               href={{
                 pathname: '/search',
                 query: JSON.parse(
                   JSON.stringify({
                     query: title,
-                    queryId: search.queryId,
+                    queryId: search.query,
                     endpoint: search.endpoint,
                   })
                 ),
@@ -145,8 +147,8 @@ const RankEval = ({ rankEval, search }) => {
               key={i}
             >
               <a className="flex flex-auto items-center mr-2 mb-2 p-2 bg-indigo-200 rounded-full">
-                <RankEvalStatus score={(ranking as any).metric_score} />
-                <div>{title}</div>
+                <RankEvalStatus pass={rankEval.passes[title]} />
+                <div>{rating.label || title}</div>
               </a>
             </Link>
           ))}
@@ -173,7 +175,7 @@ const Search: NextPage<Props> = ({ data, search }) => {
       <ul>
         {data.hits.hits.map((hit) => (
           <li key={hit._id}>
-            <Hit hit={hit} endpoint={search.endpoint} />
+            <Hit hit={hit} endpoint={search.endpoint as Endpoint} />
           </li>
         ))}
       </ul>
