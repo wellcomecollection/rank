@@ -67,6 +67,9 @@ const ratings: Record<string, Rating> = {
     },
   },
   negative: {
+    label: 'False positives',
+    description:
+      "Due to fuzzy matching on alternative spellings, we need to ensure we aren't too fuzzy.",
     pass: eq0,
     searchTemplateAugmentation: filterExamples,
     examples: [

@@ -5,14 +5,17 @@ import Link from 'next/link'
 import QueryForm from '../components/QueryForm'
 import absoluteUrl from 'next-absolute-url'
 import { Pass } from '../data/ratings/pass'
+import { ApiResponse as ApiSearchResponse } from './api/search'
+import { RankEvalResponsWithMeta } from '../services/elasticsearch'
 
+type SearchProps = {
+  query?: string
+  useTestQuery?: true
+  endpoint?: string
+}
 type Props = {
-  data?: any
-  search: {
-    query?: string
-    useTestQuery?: true
-    endpoint?: string
-  }
+  data: ApiSearchResponse
+  search: SearchProps
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({
@@ -29,8 +32,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
     .join('&')
 
-  const resp = await fetch(`${origin}/api/search?${reqQs}`)
-  const data = await resp.json()
+  const data: ApiSearchResponse = await fetch(
+    `${origin}/api/search?${reqQs}`
+  ).then((res) => res.json())
 
   return {
     props: {
@@ -61,7 +65,7 @@ const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ pass }) => {
   )
 }
 
-type Endpoint = 'images' | 'works'
+export type Endpoint = 'images' | 'works'
 type HitProps = { hit: any; endpoint: Endpoint }
 const Hit: FunctionComponent<HitProps> = ({ hit, endpoint }) => {
   const [showExplanation, setShowExplanation] = useState(false)
@@ -107,7 +111,11 @@ const Hit: FunctionComponent<HitProps> = ({ hit, endpoint }) => {
   )
 }
 
-const RankEval = ({ rankEval, search }) => {
+type RankEvalProps = {
+  search: SearchProps
+  rankEval: RankEvalResponsWithMeta
+}
+const RankEval: FunctionComponent<RankEvalProps> = ({ rankEval, search }) => {
   const [showRankEval, setShowRankEval] = useState(true)
 
   return (
@@ -124,14 +132,14 @@ const RankEval = ({ rankEval, search }) => {
       </button>
       {showRankEval && (
         <div className="flex flex-wrap">
-          {Object.entries(rankEval.details).map(([title], i) => (
+          {Object.entries(rankEval.details).map(([title, rating], i) => (
             <Link
               href={{
                 pathname: '/search',
                 query: JSON.parse(
                   JSON.stringify({
                     query: title,
-                    queryId: search.queryId,
+                    queryId: search.query,
                     endpoint: search.endpoint,
                   })
                 ),
@@ -140,7 +148,7 @@ const RankEval = ({ rankEval, search }) => {
             >
               <a className="flex flex-auto items-center mr-2 mb-2 p-2 bg-indigo-200 rounded-full">
                 <RankEvalStatus pass={rankEval.passes[title]} />
-                <div>{title}</div>
+                <div>{rating.label || title}</div>
               </a>
             </Link>
           ))}
