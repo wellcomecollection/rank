@@ -73,29 +73,11 @@ type TestResult = {
   }[]
 }
 
-export default async (
-  req: NextApiRequest,
-  res: NextApiResponse
-): Promise<void> => {
-  const env = req.query.env ? req.query.env : 'prod'
-  const searchTemplates = await getSearchTemplates(env as Env)
-
-  // We run multiple tests with different metrics against different indexes
-  // see: https://github.com/elastic/elasticsearch/issues/51680
-  const reqsWithTests = searchTemplates
-    .map((template) => {
-      const reqsWithTests: Promise<ReqWithTest>[] = tests[
-        template.namespace
-      ].map((test) =>
-        rankEvalRequest(template, test).then((res) => ({ res, test }))
-      )
-      return reqsWithTests
-    })
-    .reduce((cur, acc) => cur.concat(acc), [])
-
-  const responses: TestResult[] = await Promise.all(reqsWithTests).then(
-    (resWithTests) => {
-      return resWithTests.map(({ res, test }) => {
+function runTests(tests: Test[], template: SearchTemplate) {
+  const testResults: Promise<TestResult>[] = tests.map((test) =>
+    rankEvalRequest(template, test)
+      .then((res) => ({ res, test }))
+      .then(({ res, test }) => {
         const results = Object.entries(res.details).map(([query, detail]) => ({
           query,
           result: test.pass(detail),
@@ -107,7 +89,24 @@ export default async (
           results,
         }
       })
-    }
+  )
+
+  return testResults
+}
+
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<void> => {
+  const env = req.query.env ? req.query.env : 'prod'
+  const searchTemplates = await getSearchTemplates(env as Env)
+
+  // We run multiple tests with different metrics against different indexes
+  // see: https://github.com/elastic/elasticsearch/issues/51680
+  const responses = await Promise.all(
+    searchTemplates
+      .map((template) => runTests(tests[template.namespace], template))
+      .reduce((cur, acc) => cur.concat(acc), [])
   )
 
   res.statusCode = 200
