@@ -39,8 +39,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   }
 }
 
-function scoreToEmoji(score: number): string {
-  return score === 1 ? '✅' : '❌'
+function scoreToEmoji(pass: boolean): string {
+  return pass ? '✅' : '❌'
 }
 
 export function indexToQueryType(index: string): QueryType {
@@ -62,7 +62,7 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
   return (
     <div className="py-4 font-mono" key={ranking.index}>
       <h2 className="text-2xl font-bold">
-        {scoreToEmoji(ranking.pass.score)} {ranking.queryId}
+        {scoreToEmoji(ranking.pass.pass)} {ranking.queryId}
       </h2>
       <div className="space-x-4">
         <span>JSON</span>
@@ -104,13 +104,13 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
       <ul>
         {Object.entries(ranking.details).map((key) => {
           const query = key[0]
-          const score = ranking.passes[query].score
+          const { pass } = ranking.passes[query]
           const encodedQuery = encodeURIComponent(query)
           const queryType = indexToQueryType(ranking.index)
           const searchURL = `https://wellcomecollection.org/${queryType}?query=${encodedQuery}`
           return (
             <li key={query}>
-              {scoreToEmoji(score)} <a href={searchURL}>{query}</a>
+              {scoreToEmoji(pass)} <a href={searchURL}>{query}</a>
             </li>
           )
         })}
