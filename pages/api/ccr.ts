@@ -31,7 +31,6 @@ export default async (
 
   const searchTemplates = await getSearchTemplates('prod')
   const { body: allIndices } = await rankClient.indices.get({ index: '_all' })
-  console.info(allIndices)
 
   const state: State[] = (
     await Promise.all(
