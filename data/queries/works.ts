@@ -51,12 +51,11 @@ export default {
             },
             {
               multi_match: {
-                _name: 'title exact spellings',
+                _name: 'title and contributor exact spellings',
                 fields: [
-                  'data.title^100.0',
-                  'data.title.english^100.0',
-                  'data.title.shingles^100.0',
-                  'data.alternativeTitles^100.0',
+                  'search.titlesAndContributors.^100.0',
+                  'search.titlesAndContributors.english^100.0',
+                  'search.titlesAndContributors.shingles^100.0',
                 ],
                 operator: 'And',
                 query: '{{query}}',
@@ -65,23 +64,24 @@ export default {
             },
             {
               multi_match: {
-                _name: 'title alternative spellings',
+                _name: 'title and contributor alternative spellings',
                 fields: [
-                  'data.title^80.0',
-                  'data.title.english^80.0',
-                  'data.title.shingles^80.0',
-                  'data.alternativeTitles^80.0',
+                  'search.titlesAndContributors^80.0',
+                  'search.titlesAndContributors.shingles^80.0',
                 ],
                 fuzziness: 'AUTO',
                 operator: 'And',
                 query: '{{query}}',
                 type: 'best_fields',
+                prefix_length: '2',
               },
             },
             {
               multi_match: {
-                _name: 'non-english titles',
-                fields: languages.map((language) => `data.title.${language}`),
+                _name: 'non-english titles and contributors',
+                fields: languages.map(
+                  (language) => `search.titlesAndContributors.${language}`
+                ),
                 query: '{{query}}',
                 operator: 'And',
                 type: 'best_fields',

@@ -1,12 +1,12 @@
 import { FunctionComponent, useState } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
 
-import Link from 'next/link'
-import QueryForm from '../components/QueryForm'
-import absoluteUrl from 'next-absolute-url'
-import { Pass } from '../data/ratings/pass'
 import { ApiResponse as ApiSearchResponse } from './api/search'
+import Link from 'next/link'
+import { Pass } from '../data/ratings/pass'
+import QueryForm from '../components/QueryForm'
 import { RankEvalResponsWithMeta } from '../services/elasticsearch'
+import absoluteUrl from 'next-absolute-url'
 
 type SearchProps = {
   query?: string
@@ -57,7 +57,7 @@ const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ pass }) => {
   return (
     <div
       className={`w-5 h-5 mr-2 rounded-full bg-${
-        pass.score === 1 ? 'green' : 'red'
+        pass.pass ? 'green' : 'red'
       }-200`}
     >
       <span className="sr-only">{pass.score === 1 ? 'pass' : 'fail'}</span>

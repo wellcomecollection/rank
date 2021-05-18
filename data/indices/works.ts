@@ -1,3 +1,5 @@
+import { asciifoldedFields, multilingualFields, shinglesFields } from './common'
+
 export default {
   aliases: {},
   mappings: {
@@ -7,10 +9,24 @@ export default {
       'model.versions.3901': '38491d332dea9a960759a428659838395bc94a5b',
     },
     properties: {
+      search: {
+        dynamic: 'false',
+        properties: {
+          titlesAndContributors: {
+            type: 'text',
+            fields: {
+              ...asciifoldedFields,
+              ...multilingualFields,
+              ...shinglesFields,
+            },
+          },
+        },
+      },
       data: {
         dynamic: 'false',
         properties: {
           alternativeTitles: {
+            copy_to: 'search.titlesAndContributors',
             type: 'text',
             fields: {
               arabic: {
@@ -87,6 +103,7 @@ export default {
               agent: {
                 properties: {
                   label: {
+                    copy_to: 'search.titlesAndContributors',
                     type: 'text',
                     fields: {
                       keyword: {
@@ -458,6 +475,7 @@ export default {
             },
           },
           title: {
+            copy_to: 'search.titlesAndContributors',
             type: 'text',
             fields: {
               arabic: {
@@ -548,7 +566,10 @@ export default {
               },
             },
           },
-          modifiedTime: {
+          indexedTime: {
+            type: 'date',
+          },
+          mergedTime: {
             type: 'date',
           },
           relations: {
@@ -652,6 +673,9 @@ export default {
                 normalizer: 'lowercase_normalizer',
               },
             },
+          },
+          sourceModifiedTime: {
+            type: 'date',
           },
         },
       },
