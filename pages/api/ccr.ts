@@ -3,8 +3,9 @@ import { rankClient } from '../../services/elasticsearch'
 import { getSearchTemplates } from '../../services/search-templates'
 
 function getNamespace(indexName: string) {
-  return indexName.split('-')[0]
+  return indexName.replace('ccr--', '').split('-')[0]
 }
+
 type State = {
   index: string
   state: 'delete' | 'exists' | 'follow'
@@ -30,21 +31,51 @@ export default async (
 
   const searchTemplates = await getSearchTemplates('prod')
   const { body: allIndices } = await rankClient.indices.get({ index: '_all' })
+  console.info(allIndices)
 
   const state: State[] = (
     await Promise.all(
       searchTemplates.templates.map(async (template) => {
         const namespace = getNamespace(template.index)
-        const ccrIndexName = `ccr--${template.index}`
+        const ccrIndexName = `${template.index}`
         // we're only working with works for now, but should extend to images
 
-        const { body: indexExists } = await rankClient.indices.exists({
-          index: ccrIndexName,
-        })
+        console.info(`searching for ${ccrIndexName}`)
+        const { body: indexExists } = await rankClient.indices
+          .exists({
+            index: ccrIndexName,
+          })
+          .catch(() => ({
+            body: false,
+          }))
+
+        // delete previous indices
+        const deleteIndices = Object.keys(allIndices).filter(
+          (index) =>
+            ccrIndexName !== index && index.startsWith(`ccr--${namespace}`)
+        )
+
+        if (deleteIndices.length > 0) {
+          console.info(`deleting ${deleteIndices}`)
+          await rankClient.indices
+            .delete({
+              index: deleteIndices,
+            })
+            .catch((err) => ({ body: err }))
+        } else {
+          console.info(`nothing to delete`)
+        }
 
         if (indexExists) {
           console.info(`${ccrIndexName} exists, moving on`)
           return [
+            ...deleteIndices.map(
+              (index) =>
+                ({
+                  index,
+                  state: 'delete',
+                } as State)
+            ),
             {
               index: ccrIndexName,
               state: 'exists',
@@ -52,24 +83,11 @@ export default async (
           ]
         }
 
-        // delete previous indices
-        const indices = Object.keys(allIndices).filter((index) =>
-          index.startsWith(`ccr--${namespace}`)
-        )
-        if (indices.length > 0) {
-          console.info(`deleting ${indices}`)
-          await rankClient.indices
-            .delete({
-              index: indices,
-            })
-            .catch((err) => ({ body: err }))
-        }
-
         await rankClient.ccr.follow({
           index: ccrIndexName,
           body: {
             remote_cluster: 'catalogue',
-            leader_index: template.index,
+            leader_index: template.index.replace('ccr--', ''),
             settings: {
               'index.number_of_replicas': 0,
             },
@@ -77,7 +95,7 @@ export default async (
         })
 
         return [
-          ...indices.map(
+          ...deleteIndices.map(
             (index) =>
               ({
                 index,
