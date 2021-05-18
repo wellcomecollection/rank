@@ -18,6 +18,8 @@ Not fixing typos
 Crêpe => Crêpe & Crepe
 Crepe =>  Crepe & Crêpe
 
+Another thing to do will be to publish a release note
+
 What are we expecting
 * Searches with less results
 * More searches with 0 results
