@@ -5,7 +5,6 @@ import {
   getSearchTemplates,
 } from '../../services/search-templates'
 import { TestResult, runTests } from './eval'
-
 import { Namespace } from '../search'
 import tests from '../../data/tests'
 
