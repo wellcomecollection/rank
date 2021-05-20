@@ -1,14 +1,14 @@
 import { rankClient } from '../services/elasticsearch'
 
 async function go() {
-  const [namespace, indexName] = process.argv.slice(2)
-  if (!namespace || !indexName) {
+  const [indexName] = process.argv.slice(2)
+  if (!indexName) {
     throw new Error(
-      'Please specifiy a `namespace` and `indexName` e.g. yarn createTestIndex works works-100'
+      'Please specifiy an `indexName` e.g. yarn createTestIndex works works-100'
     )
   }
 
-  const indexConfig = await import(`../data/indices/${namespace}`).then(
+  const indexConfig = await import(`../data/indices/${indexName}`).then(
     (mod) => mod.default
   )
   const { body: putIndexRes } = await rankClient.indices

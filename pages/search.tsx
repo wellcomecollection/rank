@@ -4,11 +4,11 @@ import Link from 'next/link'
 import QueryForm from '../components/QueryForm'
 import absoluteUrl from 'next-absolute-url'
 import { ApiResponse as SearchApiResponse } from './api/search'
+import { Hit as HitType } from '../services/elasticsearch'
 
 type SearchProps = {
   query?: string
-  useTestQuery?: true
-  namespace?: string
+  rankId?: string
 }
 type Props = {
   data: SearchApiResponse
@@ -20,11 +20,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   req,
 }) => {
   const query = qs.query ? qs.query.toString() : undefined
-  const useTestQuery =
-    qs.useTestQuery && qs.useTestQuery === 'true' ? true : undefined
-  const namespace = qs.endpoint ? qs.endpoint.toString() : 'works'
+  const rankId = qs.rankId ? qs.rankId.toString() : undefined
   const { origin } = absoluteUrl(req)
-  const reqQs = Object.entries({ query, useTestQuery, namespace })
+  const reqQs = Object.entries({ query, rankId })
     .filter(([, v]) => Boolean(v))
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
     .join('&')
@@ -39,8 +37,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
       search: JSON.parse(
         JSON.stringify({
           query,
-          useTestQuery,
-          namespace,
         })
       ),
     },
@@ -62,13 +58,11 @@ const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ pass }) => {
 
 export type Namespace = 'images' | 'works'
 
-type HitProps = { hit: any; namespace: Namespace }
-const Hit: FunctionComponent<HitProps> = ({ hit, namespace }) => {
+type HitProps = { hit: HitType }
+const Hit: FunctionComponent<HitProps> = ({ hit }) => {
   const [showExplanation, setShowExplanation] = useState(false)
   const title =
-    namespace === 'images'
-      ? hit._source.source.canonicalWork.data.title
-      : hit._source.data.title
+    hit._source?.source.canonicalWork.data.title ?? hit._source?.data.title
   return (
     <>
       <h2 className="mt-5 text-xl border-t-4">{title}</h2>
@@ -89,7 +83,7 @@ const Hit: FunctionComponent<HitProps> = ({ hit, namespace }) => {
               return (
                 <div key={key}>
                   <h3 className="font-bold">{key}</h3>
-                  {(highlight as any[]).map((text) => (
+                  {highlight.map((text) => (
                     <div
                       key={key}
                       dangerouslySetInnerHTML={{
@@ -146,7 +140,7 @@ const Result: FunctionComponent<ResultProps> = ({ result, search }) => {
                     JSON.stringify({
                       query,
                       queryId: search.query,
-                      namespace: search.namespace,
+                      rankId: search.rankId,
                     })
                   ),
                 }}
@@ -168,11 +162,7 @@ const Result: FunctionComponent<ResultProps> = ({ result, search }) => {
 const Search: NextPage<Props> = ({ data, search }) => {
   return (
     <>
-      <QueryForm
-        query={search.query}
-        useTestQuery={search.useTestQuery}
-        namespace={search.namespace}
-      />
+      <QueryForm query={search.query} rankId={search.rankId} />
 
       <h1 className="text-4xl font-bold">Tests</h1>
       {data.results.map((result, i) => (
@@ -182,7 +172,7 @@ const Search: NextPage<Props> = ({ data, search }) => {
       <ul>
         {data.hits.hits.map((hit) => (
           <li key={hit._id}>
-            <Hit hit={hit} namespace={search.namespace as Namespace} />
+            <Hit hit={hit} />
           </li>
         ))}
       </ul>
