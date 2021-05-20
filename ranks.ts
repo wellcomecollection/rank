@@ -10,7 +10,7 @@ type Rank = {
   id: string
   label: string
   searchTemplate: () => Promise<SearchTemplate>
-  tests: () => Promise<Test[]>
+  tests: () => Test[]
 }
 
 const ranks: Rank[] = [
@@ -21,7 +21,7 @@ const ranks: Rank[] = [
       const templates = await getSearchTemplates('prod')
       return templates.find((template) => template.namespace === 'images')
     },
-    tests: async () => {
+    tests: () => {
       return tests.works
     },
   },
@@ -32,7 +32,7 @@ const ranks: Rank[] = [
       const templates = await getSearchTemplates('prod')
       return templates.find((template) => template.namespace === 'works')
     },
-    tests: async () => {
+    tests: () => {
       return tests.images
     },
   },
@@ -53,7 +53,7 @@ const ranks: Rank[] = [
 
       return template
     },
-    tests: async () => {
+    tests: () => {
       return tests.works
     },
   },

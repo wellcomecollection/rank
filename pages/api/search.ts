@@ -1,34 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { SearchResponse, rankClient } from '../../services/elasticsearch'
-import {
-  SearchTemplate,
-  getSearchTemplates,
-} from '../../services/search-templates'
 import { TestResult, runTests } from './eval'
 import { Namespace } from '../search'
-import tests from '../../data/tests'
-
-async function getCurrentQuery(namespace: Namespace): Promise<SearchTemplate> {
-  const searchTemplates = await getSearchTemplates('prod')
-  const template = searchTemplates.find((template) =>
-    template.index.startsWith(`ccr--${namespace}`)
-  )
-  return template
-}
-
-async function getTestQuery(namespace: Namespace): Promise<SearchTemplate> {
-  const currentTemplate = await getCurrentQuery(namespace)
-  const query = await import(`../../data/queries/${namespace}`).then(
-    (q) => q.default
-  )
-
-  return {
-    id: 'test',
-    index: currentTemplate.index,
-    namespace: namespace,
-    source: { query: query },
-  }
-}
+import ranks from '../../ranks'
 
 export type ApiResponse = SearchResponse & {
   results: TestResult[]
@@ -43,24 +17,18 @@ export type ApiRequest = {
 type Q = NextApiRequest['query']
 const decoder = (q: Q) => ({
   query: q.query ? q.query.toString() : undefined,
-  namespace:
-    q.namspace === 'works' || q.namspace === 'images'
-      ? (q.namspace as Namespace)
-      : ('works' as Namespace),
-  useTestQuery: q.useTestQuery === 'true' ?? false,
+  id: q.id ? q.id.toString() : 'works-prod',
 })
 
 export default async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> => {
-  const { namespace, query, useTestQuery } = decoder(req.query)
-
-  const template = useTestQuery
-    ? await getTestQuery(namespace)
-    : await getCurrentQuery(namespace)
-
-  const resultsReq = runTests(tests[template.namespace], template)
+  const { query, id } = decoder(req.query)
+  const rank = ranks.find((r) => r[id])
+  const template = await rank.searchTemplate()
+  const tests = rank.tests()
+  const resultsReq = runTests(tests, template)
   const searchReq = rankClient
     .searchTemplate<SearchResponse>({
       index: template.index,
