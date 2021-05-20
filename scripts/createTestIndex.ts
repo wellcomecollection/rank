@@ -14,7 +14,17 @@ async function go() {
   const { body: putIndexRes } = await rankClient.indices
     .create({
       index: indexName,
-      body: indexConfig,
+      body: {
+        ...indexConfig,
+        settings: {
+          ...indexConfig.settings,
+          index: {
+            ...indexConfig.settings.index,
+            number_of_shards: 1,
+            number_of_replicas: 0,
+          },
+        },
+      },
     })
     .catch((err) => {
       console.error(err.meta.body)
