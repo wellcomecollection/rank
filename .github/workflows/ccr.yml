@@ -1,9 +1,10 @@
-name: ccr-manage-everyday-at-8-am
+name: Manage CCR everyday at 8am
 on:
   schedule:
     - cron: '0 8 * * *'
 jobs:
-  cron:
+  hit-ccr-endpoint:
+    name: Hit CCR endpoint
     runs-on: ubuntu-latest
     steps:
       - name: Manage CCR
