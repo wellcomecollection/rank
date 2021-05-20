@@ -19,7 +19,7 @@ const ranks: Rank[] = [
     label: 'Works',
     searchTemplate: async () => {
       const templates = await getSearchTemplates('prod')
-      return templates.find((template) => template.namespace === 'images')
+      return templates.find((template) => template.namespace === 'works')
     },
     tests: () => {
       return tests.works
@@ -27,10 +27,10 @@ const ranks: Rank[] = [
   },
   {
     id: 'images-prod',
-    label: 'Works',
+    label: 'Images',
     searchTemplate: async () => {
       const templates = await getSearchTemplates('prod')
-      return templates.find((template) => template.namespace === 'works')
+      return templates.find((template) => template.namespace === 'images')
     },
     tests: () => {
       return tests.images

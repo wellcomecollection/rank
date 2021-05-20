@@ -95,7 +95,7 @@ export type RankEvalResponsWithMeta = RankEvalResponse & {
   }
 }
 
-type Hit<DocType = Record<string, any>> = {
+export type Hit<DocType = Record<string, any>> = {
   _id: string
   _score: string
   _source: DocType

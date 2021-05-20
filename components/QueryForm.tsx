@@ -1,15 +1,14 @@
 import { FunctionComponent, useEffect, useState } from 'react'
+import ranks from '../ranks'
 
 type Props = {
   query?: string
-  useTestQuery?: true
-  namespace?: string
+  rankId?: string
 }
 
 const QueryForm: FunctionComponent<Props> = (props) => {
   const [query, setQuery] = useState(props.query)
-  const [useTestQuery, setUseTestQuery] = useState(props.useTestQuery)
-  const [namespace, setNamespace] = useState(props.namespace)
+  const [rankId, setsetRankId] = useState(props.rankId)
 
   useEffect(() => {
     setQuery(props.query)
@@ -30,31 +29,22 @@ const QueryForm: FunctionComponent<Props> = (props) => {
           />
         </label>
         <label className="p-2 mr-4 inline-block">
-          Endpoint
+          Rank
           <select
             className="ml-2"
-            name="endpoint"
-            onChange={(event) => setNamespace(event.currentTarget.value)}
-            value={namespace}
+            name="rankId"
+            onChange={(event) => setsetRankId(event.currentTarget.value)}
+            value={rankId}
           >
-            <option value="works">works</option>
-            <option value="images">images</option>
+            {ranks.map((rank) => (
+              <option key={rank.id} value={rank.id}>
+                {rank.label}
+              </option>
+            ))}
           </select>
         </label>
       </div>
       <div className="flex-shrink">
-        <label className="p-2 inline-block">
-          🧪 <span className="sr-only">Test query</span>
-          <input
-            type="checkbox"
-            name="useTestQuery"
-            value="true"
-            checked={useTestQuery || false}
-            onChange={(event) => {
-              setUseTestQuery(event.currentTarget.checked ? true : undefined)
-            }}
-          />
-        </label>
         <button
           className="p-2 ml-3"
           aria-label="Search catalogue"

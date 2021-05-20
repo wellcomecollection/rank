@@ -17,15 +17,15 @@ export type ApiRequest = {
 type Q = NextApiRequest['query']
 const decoder = (q: Q) => ({
   query: q.query ? q.query.toString() : undefined,
-  id: q.id ? q.id.toString() : 'works-prod',
+  rankId: q.rankId ? q.rankId.toString() : 'works-prod',
 })
 
 export default async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> => {
-  const { query, id } = decoder(req.query)
-  const rank = ranks.find((r) => r[id])
+  const { query, rankId } = decoder(req.query)
+  const rank = ranks.find((r) => r.id === rankId)
   const template = await rank.searchTemplate()
   const tests = rank.tests()
   const resultsReq = runTests(tests, template)
