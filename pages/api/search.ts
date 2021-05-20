@@ -1,51 +1,52 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { Template, getSearchTemplates } from '../../services/search-templates'
 import {
-  rankClient,
-  RankEvalResponsWithMeta,
-  SearchResponse,
-} from '../../services/elasticsearch'
-import { rankEvalRequests } from './eval'
-import { Endpoint } from '../search'
+  SearchTemplate,
+  getSearchTemplates,
+} from '../../services/search-templates'
+import { rankClient, SearchResponse } from '../../services/elasticsearch'
+import { Namespace } from '../search'
+import { runTests, TestResult } from './eval'
+import tests from '../../data/tests'
 
-async function getCurrentQuery(endpoint: Endpoint): Promise<Template> {
+async function getCurrentQuery(namespace: Namespace): Promise<SearchTemplate> {
   const searchTemplates = await getSearchTemplates('prod')
-  const template = searchTemplates.templates.find((template) =>
-    template.index.startsWith(`ccr--${endpoint}`)
+  const template = searchTemplates.find((template) =>
+    template.index.startsWith(`ccr--${namespace}`)
   )
   return template
 }
 
-async function getTestQuery(endpoint: Endpoint): Promise<Template> {
-  const currentTemplate = await getCurrentQuery(endpoint)
-  const query = await import(`../../data/queries/${endpoint}`).then(
+async function getTestQuery(namespace: Namespace): Promise<SearchTemplate> {
+  const currentTemplate = await getCurrentQuery(namespace)
+  const query = await import(`../../data/queries/${namespace}`).then(
     (q) => q.default
   )
 
   return {
     id: 'test',
     index: currentTemplate.index,
-    template: { source: { query: query } },
+    namespace: namespace,
+    source: { query: query },
   }
 }
 
 export type ApiResponse = SearchResponse & {
-  rankEval: RankEvalResponsWithMeta[]
+  results: TestResult[]
 }
 
 export type ApiRequest = {
   query?: string
   useTestQuery?: 'true' | 'false'
-  endpoint?: Endpoint
+  namespace?: Namespace
 }
 
 type Q = NextApiRequest['query']
 const decoder = (q: Q) => ({
   query: q.query ? q.query.toString() : undefined,
-  endpoint:
-    q.endpoint === 'works' || q.endpoint === 'images'
-      ? (q.endpoint as Endpoint)
-      : ('works' as Endpoint),
+  namespace:
+    q.namspace === 'works' || q.namspace === 'images'
+      ? (q.namspace as Namespace)
+      : ('works' as Namespace),
   useTestQuery: q.useTestQuery === 'true' ?? false,
 })
 
@@ -53,20 +54,20 @@ export default async (
   req: NextApiRequest,
   res: NextApiResponse
 ): Promise<void> => {
-  const { endpoint, query, useTestQuery } = decoder(req.query)
+  const { namespace, query, useTestQuery } = decoder(req.query)
 
   const template = useTestQuery
-    ? await getTestQuery(endpoint)
-    : await getCurrentQuery(endpoint)
+    ? await getTestQuery(namespace)
+    : await getCurrentQuery(namespace)
 
-  const rankEvalReqs = rankEvalRequests(template)
+  const resultsReq = runTests(tests[template.namespace], template)
   const searchReq = rankClient
     .searchTemplate<SearchResponse>({
       index: template.index,
       body: {
         explain: true,
         source: {
-          ...template.template.source,
+          ...template.source,
           track_total_hits: true,
           highlight: {
             pre_tags: ['<em class="bg-yellow-200">'],
@@ -79,15 +80,15 @@ export default async (
     })
     .then((res) => res.body)
 
-  const requests: [
-    Promise<SearchResponse>,
-    Promise<RankEvalResponsWithMeta[]>
-  ] = [searchReq, Promise.all(rankEvalReqs)]
+  const requests: [Promise<SearchResponse>, Promise<TestResult[]>] = [
+    searchReq,
+    Promise.all(resultsReq),
+  ]
 
-  const [searchResp, ...[rankEvalResps]] = await Promise.all(requests)
+  const [searchResp, ...[results]] = await Promise.all(requests)
   const response: ApiResponse = {
     ...searchResp,
-    rankEval: rankEvalResps,
+    results,
   }
 
   res.statusCode = 200

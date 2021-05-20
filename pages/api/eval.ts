@@ -58,18 +58,22 @@ export function rankEvalRequest(
   return req
 }
 
-type TestResult = {
+export type TestResult = {
   label: string
   description: string
   pass: boolean
+  namespace: string
   results: {
     query: string
     result: Pass
   }[]
 }
 
-function runTests(tests: Test[], template: SearchTemplate) {
-  const testResults: Promise<TestResult>[] = tests.map((test) =>
+export function runTests(
+  tests: Test[],
+  template: SearchTemplate
+): Promise<TestResult>[] {
+  const testResults = tests.map((test) =>
     rankEvalRequest(template, test).then((res) => {
       const results = Object.entries(res.details).map(([query, detail]) => ({
         query,
@@ -78,6 +82,7 @@ function runTests(tests: Test[], template: SearchTemplate) {
       return {
         label: test.label,
         description: test.description,
+        namespace: template.namespace,
         pass: results.every((result) => result.result.pass),
         results,
       }
@@ -85,6 +90,10 @@ function runTests(tests: Test[], template: SearchTemplate) {
   )
 
   return testResults
+}
+
+export type ApiResponse = {
+  results: TestResult[]
 }
 
 export default async (
@@ -96,7 +105,7 @@ export default async (
 
   // We run multiple tests with different metrics against different indexes
   // see: https://github.com/elastic/elasticsearch/issues/51680
-  const responses = await Promise.all(
+  const results: TestResult[] = await Promise.all(
     searchTemplates
       .map((template) => runTests(tests[template.namespace], template))
       .reduce((cur, acc) => cur.concat(acc), [])
@@ -104,5 +113,5 @@ export default async (
 
   res.statusCode = 200
   res.setHeader('Content-Type', 'application/json')
-  res.end(JSON.stringify(responses))
+  res.end(JSON.stringify({ results }))
 }

@@ -1,18 +1,10 @@
 import { GetServerSideProps, NextPage } from 'next'
-import { useState } from 'react'
-import { CopyToClipboard } from 'react-copy-to-clipboard'
 import Head from 'next/head'
-import { QueryType } from '../types'
 import absoluteUrl from 'next-absolute-url'
-import { RankEvalResponsWithMeta } from '../services/elasticsearch'
-
-type Data = {
-  rankings: RankEvalResponsWithMeta[]
-  pass: boolean
-}
+import { ApiResponse as EvalApiResponse } from './api/eval'
 
 type Props = {
-  data: Data
+  data: EvalApiResponse
   search: {
     queryId?: string
   }
@@ -25,7 +17,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   const queryId = qs.queryId ? qs.queryId.toString() : undefined
   const { origin } = absoluteUrl(req)
   const resp = await fetch(`${origin}/api/eval?env=prod`)
-  const data = await resp.json()
+  const data: EvalApiResponse = await resp.json()
 
   return {
     props: {
@@ -43,74 +35,26 @@ function scoreToEmoji(pass: boolean): string {
   return pass ? '✅' : '❌'
 }
 
-export function indexToQueryType(index: string): QueryType {
-  // the name of the index should indicate the queryType, eg "images-2021-01-12"
-  // should result in an "images" query
-  return index.replace('ccr--', '').split('-')[0] as QueryType
+type ResultComponentProps = {
+  result: EvalApiResponse['results'][number]
 }
 
-type RankingComponentProps = {
-  ranking: RankEvalResponsWithMeta
-}
-const RankingComponent = ({ ranking }: RankingComponentProps) => {
-  const [showJson, setShowJson] = useState(false)
-  const elasticJson = `${ranking.query.method} ${
-    ranking.query.path
-  }\n${JSON.stringify(JSON.parse(ranking.query.body), null, 2)}`
-  const [copied, setCopied] = useState(false)
-
+const ResultsComponent = ({ result }: ResultComponentProps) => {
+  const { namespace } = result
   return (
-    <div className="py-4 font-mono" key={ranking.index}>
+    <div className="py-4 font-mono">
       <h2 className="text-2xl font-bold">
-        {scoreToEmoji(ranking.pass.pass)} {ranking.queryId}
+        {scoreToEmoji(result.pass)} {result.label}
       </h2>
-      <div className="space-x-4">
-        <span>JSON</span>
-        <button
-          type="button"
-          onClick={() => {
-            setShowJson(!showJson)
-          }}
-        >
-          👁️
-        </button>
-        <CopyToClipboard
-          text={elasticJson}
-          onCopy={() => {
-            setCopied(true)
-            const t = setTimeout(() => {
-              setCopied(false)
-              clearTimeout(t)
-            }, 1000)
-          }}
-        >
-          <button type="button">📋</button>
-        </CopyToClipboard>
-        {copied && <span>Copied</span>}
-        <pre
-          style={{
-            display: showJson ? 'block' : 'none',
-          }}
-        >
-          {elasticJson}
-        </pre>
-      </div>
-      <p>
-        <b>Index:</b> {ranking.index}
-      </p>
-      <h3>
-        <b>Queries:</b>
-      </h3>
+
+      <h3 className="font-bold">Queries:</h3>
       <ul>
-        {Object.entries(ranking.details).map((key) => {
-          const query = key[0]
-          const { pass } = ranking.passes[query]
+        {Object.entries(result.results).map(([key, { query, result }]) => {
           const encodedQuery = encodeURIComponent(query)
-          const queryType = indexToQueryType(ranking.index)
-          const searchURL = `https://wellcomecollection.org/${queryType}?query=${encodedQuery}`
+          const searchURL = `https://wellcomecollection.org/${namespace}?query=${encodedQuery}`
           return (
-            <li key={query}>
-              {scoreToEmoji(pass)} <a href={searchURL}>{query}</a>
+            <li key={key}>
+              {scoreToEmoji(result.pass)} <a href={searchURL}>{query}</a>
             </li>
           )
         })}
@@ -119,7 +63,7 @@ const RankingComponent = ({ ranking }: RankingComponentProps) => {
   )
 }
 
-const Index: NextPage<Props> = ({ data: { rankings } }: Props) => {
+const Index: NextPage<Props> = ({ data: { results } }: Props) => {
   return (
     <>
       <Head>
@@ -149,8 +93,8 @@ const Index: NextPage<Props> = ({ data: { rankings } }: Props) => {
         .
       </p>
 
-      {rankings.map((ranking) => (
-        <RankingComponent ranking={ranking} key={ranking.queryId} />
+      {results.map((result) => (
+        <ResultsComponent result={result} key={result.label} />
       ))}
     </>
   )

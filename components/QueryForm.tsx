@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react'
+import { FunctionComponent, useEffect, useState } from 'react'
 
 type Props = {
   query?: string
   useTestQuery?: true
-  endpoint?: string
+  namespace?: string
 }
 
-const QueryForm = (props: Props) => {
+const QueryForm: FunctionComponent<Props> = (props) => {
   const [query, setQuery] = useState(props.query)
   const [useTestQuery, setUseTestQuery] = useState(props.useTestQuery)
-  const [endpoint, setEndpoint] = useState(props.endpoint)
+  const [namespace, setNamespace] = useState(props.namespace)
 
   useEffect(() => {
     setQuery(props.query)
@@ -34,8 +34,8 @@ const QueryForm = (props: Props) => {
           <select
             className="ml-2"
             name="endpoint"
-            onChange={(event) => setEndpoint(event.currentTarget.value)}
-            value={endpoint}
+            onChange={(event) => setNamespace(event.currentTarget.value)}
+            value={namespace}
           >
             <option value="works">works</option>
             <option value="images">images</option>
