@@ -37,6 +37,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
       search: JSON.parse(
         JSON.stringify({
           query,
+          rankId,
         })
       ),
     },
@@ -62,7 +63,7 @@ type HitProps = { hit: HitType }
 const Hit: FunctionComponent<HitProps> = ({ hit }) => {
   const [showExplanation, setShowExplanation] = useState(false)
   const title =
-    hit._source?.source.canonicalWork.data.title ?? hit._source?.data.title
+    hit._source.source?.canonicalWork.data.title ?? hit._source.data?.title
   return (
     <>
       <h2 className="mt-5 text-xl border-t-4">{title}</h2>
@@ -139,7 +140,6 @@ const Result: FunctionComponent<ResultProps> = ({ result, search }) => {
                   query: JSON.parse(
                     JSON.stringify({
                       query,
-                      queryId: search.query,
                       rankId: search.rankId,
                     })
                   ),
