@@ -1,10 +1,12 @@
-import { Rating } from '../../types'
+import { Test } from '../../types'
 import { eq1 } from './pass'
 
-const ratings: Record<string, Rating> = {
-  precision: {
+const tests: Test[] = [
+  {
+    label: 'Precision',
+    description: 'TBD',
     pass: eq1,
-    examples: [
+    cases: [
       { query: 'crick dna sketch', ratings: ['gzv2hhgy'] },
       { query: 'gzv2hhgy', ratings: ['gzv2hhgy'] },
       { query: 'kmebmktz', ratings: ['gzv2hhgy'] }, // search for work ID and get associated images
@@ -17,9 +19,11 @@ const ratings: Record<string, Rating> = {
       },
     },
   },
-  recall: {
+  {
+    label: 'Recall',
+    description: 'TBD',
     pass: eq1,
-    examples: [
+    cases: [
       { query: 'horse battle', ratings: ['ud35y7c8'] },
       {
         query: 'everest chest',
@@ -76,9 +80,11 @@ const ratings: Record<string, Rating> = {
       },
     },
   },
-  languages: {
+  {
+    label: 'Languages',
+    description: 'TBD',
     pass: eq1,
-    examples: [
+    cases: [
       { query: 'arbeiten', ratings: ['sr4kxmk3', 'utbtee43'] },
       { query: 'conosco', ratings: ['nnh3nh47'] },
       { query: 'allons', ratings: ['dqnapkdx'] },
@@ -90,6 +96,6 @@ const ratings: Record<string, Rating> = {
       },
     },
   },
-}
+]
 
-export default ratings
+export default tests

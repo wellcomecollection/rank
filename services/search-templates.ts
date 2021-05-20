@@ -1,25 +1,26 @@
 import { Env } from '../types'
 
-export type TemplateSource = { source: { query: unknown } }
-
-export type Template = {
+export type Namespace = 'images' | 'works'
+export type SearchTemplateSource = { query: unknown }
+export type SearchTemplate = {
   id: string
   index: string
-  template: TemplateSource // Should probably call this source
+  namespace: Namespace
+  source: SearchTemplateSource
 }
 
-type TemplatesResponse = {
-  templates: Template[]
-}
-
-type TemplateWithStringQuery = {
+type ApiSearchTemplate = {
   id: string
   index: string
-  query: string
+  query: string // this is a JSON string
 }
 
-type TemplatesWithStringQueryResponse = {
-  templates: TemplateWithStringQuery[]
+type ApiSearchTemplateRes = {
+  templates: ApiSearchTemplate[]
+}
+
+function getNamespace(template: ApiSearchTemplate): Namespace {
+  return template.index.split('-')[0] as Namespace
 }
 
 const endpoints = {
@@ -28,21 +29,19 @@ const endpoints = {
   prod: 'https://api.wellcomecollection.org/catalogue/v2/search-templates.json',
 }
 
-async function getSearchTemplates(env: Env): Promise<TemplatesResponse> {
+async function getSearchTemplates(env: Env): Promise<SearchTemplate[]> {
   const res = await fetch(endpoints[env])
-  const json: TemplatesWithStringQueryResponse = await res.json()
+  const json: ApiSearchTemplateRes = await res.json()
 
   // The query is returned as a string from the API
-  const templates: Template[] = json.templates.map((template) => ({
+  return json.templates.map((template) => ({
     id: template.id,
     index: `ccr--${template.index}`,
-    template: {
-      source: {
-        query: JSON.parse(template.query),
-      },
+    namespace: getNamespace(template),
+    source: {
+      query: JSON.parse(template.query),
     },
   }))
-  return { templates }
 }
 
 export { getSearchTemplates }

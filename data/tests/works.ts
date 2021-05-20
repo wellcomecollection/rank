@@ -1,11 +1,13 @@
-import { Rating } from '../../types'
+import { Test } from '../../types'
 import { eq0, eq1 } from './pass'
-import { filterExamples } from './queryAugmentation'
+import { filterCaseRatings } from './queryAugmentation'
 
-const ratings: Record<string, Rating> = {
-  precision: {
+const tests: Test[] = [
+  {
+    label: 'Precision',
+    description: 'TBD',
     pass: eq1,
-    examples: [
+    cases: [
       { query: 'Cassils Time lapse', ratings: ['ftqy78zj'] },
       { query: 'stim', ratings: ['e8qxq5mv'] },
       { query: 'bulloch history of bacteriology', ratings: ['rkcux48q'] }, // Contributor and title
@@ -28,9 +30,11 @@ const ratings: Record<string, Rating> = {
       },
     },
   },
-  recall: {
+  {
+    label: 'Recall',
+    description: 'TBD',
     pass: eq1,
-    examples: [
+    cases: [
       {
         query: 'Atherosclerosis : an introduction to atherosclerosis',
         ratings: ['bcwvtknn', 'rty8296y'],
@@ -43,9 +47,11 @@ const ratings: Record<string, Rating> = {
       },
     },
   },
-  languages: {
+  {
+    label: 'Languages',
+    description: 'TBD',
     pass: eq1,
-    examples: [
+    cases: [
       { query: 'at-tib', ratings: ['qmm9mauk'] },
       { query: 'Aṭ-ṭib', ratings: ['qmm9mauk'] },
       { query: 'nuğūm', ratings: ['jtbenqbq'] },
@@ -66,13 +72,13 @@ const ratings: Record<string, Rating> = {
       },
     },
   },
-  negative: {
+  {
     label: 'False positives',
     description:
       "Due to fuzzy matching on alternative spellings, we need to ensure we aren't too fuzzy.",
     pass: eq0,
-    searchTemplateAugmentation: filterExamples,
-    examples: [
+    searchTemplateAugmentation: filterCaseRatings,
+    cases: [
       { query: 'Deptford', ratings: ['pb4rbujd', 'g2awspp9'] }, // shouldn't match "dartford" or "hertford"
       { query: 'Sahagún', ratings: ['neumfv84', 'dzhxzxcr'] }, // shouldn't match "gahagan"
       { query: 'posters', ratings: ['z85jd9f4', 'qpkfxsst'] }, // shouldn't match "porter"
@@ -88,6 +94,6 @@ const ratings: Record<string, Rating> = {
       },
     },
   },
-}
+]
 
-export default ratings
+export default tests

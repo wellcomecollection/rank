@@ -1,20 +1,17 @@
 import { FunctionComponent, useState } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
-
 import Link from 'next/link'
 import QueryForm from '../components/QueryForm'
 import absoluteUrl from 'next-absolute-url'
-import { Pass } from '../data/ratings/pass'
-import { ApiResponse as ApiSearchResponse } from './api/search'
-import { RankEvalResponsWithMeta } from '../services/elasticsearch'
+import { ApiResponse as SearchApiResponse } from './api/search'
 
 type SearchProps = {
   query?: string
   useTestQuery?: true
-  endpoint?: string
+  namespace?: string
 }
 type Props = {
-  data: ApiSearchResponse
+  data: SearchApiResponse
   search: SearchProps
 }
 
@@ -25,14 +22,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   const query = qs.query ? qs.query.toString() : undefined
   const useTestQuery =
     qs.useTestQuery && qs.useTestQuery === 'true' ? true : undefined
-  const endpoint = qs.endpoint ? qs.endpoint.toString() : 'works'
+  const namespace = qs.endpoint ? qs.endpoint.toString() : 'works'
   const { origin } = absoluteUrl(req)
-  const reqQs = Object.entries({ query, useTestQuery, endpoint })
+  const reqQs = Object.entries({ query, useTestQuery, namespace })
     .filter(([, v]) => Boolean(v))
     .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
     .join('&')
 
-  const data: ApiSearchResponse = await fetch(
+  const data: SearchApiResponse = await fetch(
     `${origin}/api/search?${reqQs}`
   ).then((res) => res.json())
 
@@ -43,7 +40,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
         JSON.stringify({
           query,
           useTestQuery,
-          endpoint,
+          namespace,
         })
       ),
     },
@@ -51,26 +48,25 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
 }
 
 type RankEvalStatusProps = {
-  pass: Pass
+  pass: boolean
 }
 const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ pass }) => {
   return (
     <div
-      className={`w-5 h-5 mr-2 rounded-full bg-${
-        pass.score === 1 ? 'green' : 'red'
-      }-200`}
+      className={`w-5 h-5 mr-2 rounded-full bg-${pass ? 'green' : 'red'}-200`}
     >
-      <span className="sr-only">{pass.score === 1 ? 'pass' : 'fail'}</span>
+      <span className="sr-only">{pass ? 'pass' : 'fail'}</span>
     </div>
   )
 }
 
-export type Endpoint = 'images' | 'works'
-type HitProps = { hit: any; endpoint: Endpoint }
-const Hit: FunctionComponent<HitProps> = ({ hit, endpoint }) => {
+export type Namespace = 'images' | 'works'
+
+type HitProps = { hit: any; namespace: Namespace }
+const Hit: FunctionComponent<HitProps> = ({ hit, namespace }) => {
   const [showExplanation, setShowExplanation] = useState(false)
   const title =
-    endpoint === 'images'
+    namespace === 'images'
       ? hit._source.source.canonicalWork.data.title
       : hit._source.data.title
   return (
@@ -111,11 +107,11 @@ const Hit: FunctionComponent<HitProps> = ({ hit, endpoint }) => {
   )
 }
 
-type RankEvalProps = {
+type ResultProps = {
   search: SearchProps
-  rankEval: RankEvalResponsWithMeta
+  result: SearchApiResponse['results'][number]
 }
-const RankEval: FunctionComponent<RankEvalProps> = ({ rankEval, search }) => {
+const Result: FunctionComponent<ResultProps> = ({ result, search }) => {
   const [showRankEval, setShowRankEval] = useState(true)
 
   return (
@@ -127,31 +123,42 @@ const RankEval: FunctionComponent<RankEvalProps> = ({ rankEval, search }) => {
         } rounded-full`}
         onClick={() => setShowRankEval(!showRankEval)}
       >
-        <RankEvalStatus pass={rankEval.pass} />
-        {rankEval.queryId}
+        <RankEvalStatus pass={result.pass} />
+        {result.label}
       </button>
       {showRankEval && (
         <div className="flex flex-wrap">
-          {Object.entries(rankEval.details).map(([title, rating], i) => (
-            <Link
-              href={{
-                pathname: '/search',
-                query: JSON.parse(
-                  JSON.stringify({
-                    query: title,
-                    queryId: search.query,
-                    endpoint: search.endpoint,
-                  })
-                ),
-              }}
-              key={i}
-            >
-              <a className="flex flex-auto items-center mr-2 mb-2 p-2 bg-indigo-200 rounded-full">
-                <RankEvalStatus pass={rankEval.passes[title]} />
-                <div>{title}</div>
-              </a>
-            </Link>
-          ))}
+          {Object.entries(result.results).map(
+            (
+              [
+                key,
+                {
+                  query,
+                  result: { pass },
+                },
+              ],
+              i
+            ) => (
+              <Link
+                href={{
+                  pathname: '/search',
+                  query: JSON.parse(
+                    JSON.stringify({
+                      query,
+                      queryId: search.query,
+                      namespace: search.namespace,
+                    })
+                  ),
+                }}
+                key={i}
+              >
+                <a className="flex flex-auto items-center mr-2 mb-2 p-2 bg-indigo-200 rounded-full">
+                  <RankEvalStatus pass={pass} />
+                  <div>{query}</div>
+                </a>
+              </Link>
+            )
+          )}
         </div>
       )}
     </div>
@@ -164,18 +171,18 @@ const Search: NextPage<Props> = ({ data, search }) => {
       <QueryForm
         query={search.query}
         useTestQuery={search.useTestQuery}
-        endpoint={search.endpoint}
+        namespace={search.namespace}
       />
 
       <h1 className="text-4xl font-bold">Tests</h1>
-      {data.rankEval.map((rankEval, i) => (
-        <RankEval key={i} rankEval={rankEval} search={search} />
+      {data.results.map((result, i) => (
+        <Result key={i} result={result} search={search} />
       ))}
       <h1 className="text-4xl font-bold">Hits</h1>
       <ul>
         {data.hits.hits.map((hit) => (
           <li key={hit._id}>
-            <Hit hit={hit} endpoint={search.endpoint as Endpoint} />
+            <Hit hit={hit} namespace={search.namespace as Namespace} />
           </li>
         ))}
       </ul>

@@ -1,23 +1,23 @@
-import { PassFn } from './data/ratings/pass'
+import { PassFn } from './data/tests/pass'
 import { Metric } from './services/elasticsearch'
-import { TemplateSource } from './services/search-templates'
+import { SearchTemplateSource } from './services/search-templates'
 
 export type QueryType = 'works' | 'images'
 export type Env = 'prod' | 'stage'
 
-export type Example = {
+export type TestCase = {
   query: string
   ratings: string[]
 }
 
-export type Rating = {
-  label?: string
-  description?: string
+export type Test = {
+  label: string
+  description: string
   pass: PassFn
-  examples: Example[]
+  cases: TestCase[]
   metric: Metric
   searchTemplateAugmentation?: (
-    rating: Rating,
-    source: TemplateSource
-  ) => TemplateSource
+    test: Test,
+    source: SearchTemplateSource
+  ) => SearchTemplateSource
 }

@@ -10,6 +10,7 @@ type State = {
   index: string
   state: 'delete' | 'exists' | 'follow'
 }
+
 export default async (
   req: NextApiRequest,
   res: NextApiResponse
@@ -34,7 +35,7 @@ export default async (
 
   const state: State[] = (
     await Promise.all(
-      searchTemplates.templates.map(async (template) => {
+      searchTemplates.map(async (template) => {
         const namespace = getNamespace(template.index)
         const ccrIndexName = `${template.index}`
         // we're only working with works for now, but should extend to images

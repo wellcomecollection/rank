@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { Client } from '@elastic/elasticsearch'
-import { Pass } from '../data/ratings/pass'
+import { Pass } from '../data/tests/pass'
 
 const {
   ES_RANK_USER,
@@ -61,7 +61,7 @@ type RankEvalRequestRating<Rating = 0 | 1 | 2 | 3> = {
   rating: Rating
 }
 
-type RankEvalRequestRequest<Params> = {
+export type RankEvalRequestRequest<Params> = {
   id: string
   template_id: string
   params: Params
