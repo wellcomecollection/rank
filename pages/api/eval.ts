@@ -1,16 +1,17 @@
 import { Env, Test, TestCase } from '../../types'
 import { NextApiRequest, NextApiResponse } from 'next'
 import {
-  rankClient,
-  RankEvalResponse,
   RankEvalRequestRequest,
+  RankEvalResponse,
+  rankClient,
 } from '../../services/elasticsearch'
 import {
   SearchTemplate,
   getSearchTemplates,
 } from '../../services/search-templates'
-import tests from '../../data/tests'
+
 import { Pass } from '../../data/tests/pass'
+import tests from '../../data/tests'
 
 function casesToRankEvalRequest(
   cases: TestCase[],

@@ -1,11 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next'
+import { SearchResponse, rankClient } from '../../services/elasticsearch'
 import {
   SearchTemplate,
   getSearchTemplates,
 } from '../../services/search-templates'
-import { rankClient, SearchResponse } from '../../services/elasticsearch'
+import { TestResult, runTests } from './eval'
+
 import { Namespace } from '../search'
-import { runTests, TestResult } from './eval'
 import tests from '../../data/tests'
 
 async function getCurrentQuery(namespace: Namespace): Promise<SearchTemplate> {
