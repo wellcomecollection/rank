@@ -1,16 +1,17 @@
 import { Env, Example, Rating } from '../../types'
 import { NextApiRequest, NextApiResponse } from 'next'
 import {
+  RankDetail,
+  RankEvalResponsWithMeta,
   RankEvalResponse,
   rankClient,
-  RankEvalResponsWithMeta,
-  RankDetail,
 } from '../../services/elasticsearch'
 import { Template, getSearchTemplates } from '../../services/search-templates'
-import { indexToQueryType } from '../index'
-import imageRatings from '../../data/ratings/images'
-import workRatings from '../../data/ratings/works'
+
 import { Pass } from '../../data/ratings/pass'
+import imageRatings from '../../data/ratings/images'
+import { indexToQueryType } from '../index'
+import workRatings from '../../data/ratings/works'
 
 function formatExamples(examples: Example[], template: Template) {
   return examples.map((example: Example) => {

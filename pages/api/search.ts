@@ -1,12 +1,13 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-import { Template, getSearchTemplates } from '../../services/search-templates'
 import {
-  rankClient,
   RankEvalResponsWithMeta,
   SearchResponse,
+  rankClient,
 } from '../../services/elasticsearch'
-import { rankEvalRequests } from './eval'
+import { Template, getSearchTemplates } from '../../services/search-templates'
+
 import { Endpoint } from '../search'
+import { rankEvalRequests } from './eval'
 
 async function getCurrentQuery(endpoint: Endpoint): Promise<Template> {
   const searchTemplates = await getSearchTemplates('prod')
