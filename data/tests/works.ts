@@ -19,6 +19,7 @@ const tests: Test[] = [
       { query: 'L0033046', ratings: ['kmebmktz'] },
       { query: 'kmebmktz', ratings: ['kmebmktz'] },
       { query: 'gzv2hhgy', ratings: ['kmebmktz'] },
+      { query: 'den', ratings: ['avqn5jd8', 'vsp8ce9z'] },
       {
         query: 'Oxford dictionary of national biography',
         ratings: ['ruedafcw'],

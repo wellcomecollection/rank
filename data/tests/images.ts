@@ -110,6 +110,20 @@ const tests: Test[] = [
       { query: 'Deptford', ratings: ['c5zv5zqh', 'eq4pvgmu'] }, // shouldn't match "dartford" or "hertford"
       { query: 'Maclise', ratings: ['sxbgjm4y'] }, // shouldn't match "machine"
       { query: 'machine', ratings: ['uyym87vg', 'hpjx2g82'] }, // shouldn't match "martin" or "vaccine"
+      { query: 'asylum', ratings: ['bzsscsgq', 'abshch65'] }, // shouldn't match "slums", "assumed"
+      { query: 'vestiges', ratings: ['zeqtq26h', 'ym9awu5d'] }, // shouldn't match "vestitus", "festival"
+      { query: 'revolutions', ratings: ['rbznrd3v', 'nwgs7wtg'] }, // shouldn't match  "resolutive" or "Renoult"
+      {
+        query: 'macaronic',
+        ratings: [
+          'c2c9phsz',
+          'p9usexyk',
+          'jfd42bs9',
+          'uqtw6x7a',
+          'cfwn8qpp',
+          'emfaj7a7',
+        ],
+      }, // shouldn't match Macao, Aaron, matron, Martinez, Macon, Arago,
     ],
     metric: {
       recall: {
