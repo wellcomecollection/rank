@@ -15,7 +15,6 @@ const with_slashes_char_filter = {
 }
 
 const standard_with_slashes_analyzer = {
-  type: 'custom',
   ...standard_analyzer,
   char_filter: ['with_slashes_char_filter'],
 }
