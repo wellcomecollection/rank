@@ -32,7 +32,7 @@ export default {
         dynamic: 'false',
         properties: {
           alternativeTitles: {
-            copy_to: ['search.titlesAndContributors'],
+            copy_to: 'search.titlesAndContributors',
             type: 'text',
             fields: {
               arabic: {
@@ -80,7 +80,6 @@ export default {
                 analyzer: 'standard',
               },
               label: {
-                copy_to: ['search.textWithSlashes'],
                 type: 'text',
                 fields: {
                   keyword: {
@@ -100,10 +99,7 @@ export default {
                     type: 'keyword',
                   },
                 },
-                copy_to: [
-                  'data.collectionPath.depth',
-                  'search.textWithSlashes',
-                ],
+                copy_to: ['data.collectionPath.depth'],
                 analyzer: 'path_hierarchy_analyzer',
               },
             },
@@ -113,7 +109,7 @@ export default {
               agent: {
                 properties: {
                   label: {
-                    copy_to: ['search.titlesAndContributors'],
+                    copy_to: 'search.titlesAndContributors',
                     type: 'text',
                     fields: {
                       keyword: {
@@ -485,7 +481,7 @@ export default {
             },
           },
           title: {
-            copy_to: ['search.titlesAndContributors'],
+            copy_to: 'search.titlesAndContributors',
             type: 'text',
             fields: {
               arabic: {
