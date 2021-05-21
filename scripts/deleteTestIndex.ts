@@ -4,7 +4,7 @@ async function go() {
   const [indexName] = process.argv.slice(2)
   if (!indexName) {
     throw new Error(
-      'Please specifiy `indexName` e.g. yarn deleteTestIndex works-100'
+      'Please specifiy `indexName` e.g. yarn deleteTestIndex works-with-secret-sauce'
     )
   }
 
