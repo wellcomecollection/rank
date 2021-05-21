@@ -9,12 +9,15 @@ const standard_analyzer = {
 
 // This analyzer "keeps" the slash, by turning it into
 // `__` which isn't removed by the standard tokenizer
-const standard_with_slashes_analyzer = {
-  ...standard_analyzer,
-  char_filter: {
-    type: 'mapping',
-    mappings: ['/ => __'],
-  },
+const with_slashes_char_filter = {
+  type: 'mapping',
+  mappings: ['/ => __'],
 }
 
-export { standard_with_slashes_analyzer }
+const standard_with_slashes_analyzer = {
+  type: 'custom',
+  ...standard_analyzer,
+  char_filter: ['with_slashes_char_filter'],
+}
+
+export { standard_with_slashes_analyzer, with_slashes_char_filter }
