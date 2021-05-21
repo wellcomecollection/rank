@@ -1,7 +1,8 @@
 import { GetServerSideProps, NextPage } from 'next'
+
+import { ApiResponse as EvalApiResponse } from './api/eval'
 import Head from 'next/head'
 import absoluteUrl from 'next-absolute-url'
-import { ApiResponse as EvalApiResponse } from './api/eval'
 
 type Props = {
   data: EvalApiResponse
@@ -44,7 +45,7 @@ const ResultsComponent = ({ result }: ResultComponentProps) => {
   return (
     <div className="py-4 font-mono">
       <h2 className="text-2xl font-bold">
-        {scoreToEmoji(result.pass)} {result.label}
+        {scoreToEmoji(result.pass)} {result.namespace} {result.label}
       </h2>
 
       <h3 className="font-bold">Queries:</h3>
