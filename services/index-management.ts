@@ -1,14 +1,15 @@
 import { rankClient } from './elasticsearch'
+import { readdirSync } from 'fs'
 
-export async function getLocalIndicies() {
-  return []
+export function getLocalIndicies() {
+  return readdirSync('data/indices').map((f) => f.replace('.ts', ''))
 }
 
-export async function getCloudIndicies() {
+export async function getClusterIndicies() {
   const response = await rankClient.cat.indices({ format: 'json' })
   return response.body
     .map((index) => index.index)
-    .filter((index) => !index.startsWith('.'))
+    .filter((index) => !index.startsWith('.')) // don't expose internal indexes
 }
 
 async function getIndexConfig(indexName: string) {
