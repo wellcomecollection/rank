@@ -1,3 +1,5 @@
+// eslint-disable-next-line camelcase
+import { standard_with_slashes_analyzer } from './analyzers'
 import { asciifoldedFields, multilingualFields, shinglesFields } from './common'
 
 export default {
@@ -12,6 +14,10 @@ export default {
       search: {
         dynamic: 'false',
         properties: {
+          textWithSlashes: {
+            type: 'text',
+            analyzer: 'standard_with_slashes_analyzer',
+          },
           titlesAndContributors: {
             type: 'text',
             fields: {
@@ -26,7 +32,7 @@ export default {
         dynamic: 'false',
         properties: {
           alternativeTitles: {
-            copy_to: 'search.titlesAndContributors',
+            copy_to: ['search.titlesAndContributors'],
             type: 'text',
             fields: {
               arabic: {
@@ -74,6 +80,7 @@ export default {
                 analyzer: 'standard',
               },
               label: {
+                copy_to: ['search.textWithSlashes'],
                 type: 'text',
                 fields: {
                   keyword: {
@@ -93,7 +100,10 @@ export default {
                     type: 'keyword',
                   },
                 },
-                copy_to: ['data.collectionPath.depth'],
+                copy_to: [
+                  'data.collectionPath.depth',
+                  'search.textWithSlashes',
+                ],
                 analyzer: 'path_hierarchy_analyzer',
               },
             },
@@ -103,7 +113,7 @@ export default {
               agent: {
                 properties: {
                   label: {
-                    copy_to: 'search.titlesAndContributors',
+                    copy_to: ['search.titlesAndContributors'],
                     type: 'text',
                     fields: {
                       keyword: {
@@ -475,7 +485,7 @@ export default {
             },
           },
           title: {
-            copy_to: 'search.titlesAndContributors',
+            copy_to: ['search.titlesAndContributors'],
             type: 'text',
             fields: {
               arabic: {
@@ -740,6 +750,7 @@ export default {
           },
         },
         analyzer: {
+          standard_with_slashes_analyzer,
           hindi_analyzer: {
             filter: ['lowercase', 'hindi_token_filter'],
             type: 'custom',

@@ -6,7 +6,8 @@
     "link": "vercel link",
     "lint": "yarn eslint . --fix",
     "createTestIndex": "ts-node -r dotenv/config ./scripts/createTestIndex",
-    "deleteTestIndex": "ts-node -r dotenv/config ./scripts/deleteTestIndex"
+    "deleteTestIndex": "ts-node -r dotenv/config ./scripts/deleteTestIndex",
+    "updateTestIndex": "ts-node -r dotenv/config ./scripts/updateTestIndex"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.11.0",
