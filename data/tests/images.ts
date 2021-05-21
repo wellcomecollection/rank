@@ -1,11 +1,11 @@
 import { Test } from '../../types'
-import { eq1 } from './pass'
+import { equalTo1 } from './pass'
 
 const tests: Test[] = [
   {
     label: 'Precision',
     description: 'TBD',
-    pass: eq1,
+    pass: equalTo1,
     cases: [
       { query: 'crick dna sketch', ratings: ['gzv2hhgy'] },
       { query: 'gzv2hhgy', ratings: ['gzv2hhgy'] },
@@ -22,7 +22,7 @@ const tests: Test[] = [
   {
     label: 'Recall',
     description: 'TBD',
-    pass: eq1,
+    pass: equalTo1,
     cases: [
       { query: 'horse battle', ratings: ['ud35y7c8'] },
       {
@@ -83,7 +83,7 @@ const tests: Test[] = [
   {
     label: 'Languages',
     description: 'TBD',
-    pass: eq1,
+    pass: equalTo1,
     cases: [
       { query: 'arbeiten', ratings: ['sr4kxmk3', 'utbtee43'] },
       { query: 'conosco', ratings: ['nnh3nh47'] },

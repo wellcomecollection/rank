@@ -1,12 +1,13 @@
+import { equalTo0, equalTo1 } from './pass'
+
 import { Test } from '../../types'
-import { eq0, eq1 } from './pass'
 import { filterCaseRatings } from './queryAugmentation'
 
 const tests: Test[] = [
   {
     label: 'Precision',
     description: 'TBD',
-    pass: eq1,
+    pass: equalTo1,
     cases: [
       { query: 'Cassils Time lapse', ratings: ['ftqy78zj'] },
       { query: 'stim', ratings: ['e8qxq5mv'] },
@@ -33,7 +34,7 @@ const tests: Test[] = [
   {
     label: 'Recall',
     description: 'TBD',
-    pass: eq1,
+    pass: equalTo1,
     cases: [
       {
         query: 'Atherosclerosis : an introduction to atherosclerosis',
@@ -50,7 +51,7 @@ const tests: Test[] = [
   {
     label: 'Languages',
     description: 'TBD',
-    pass: eq1,
+    pass: equalTo1,
     cases: [
       { query: 'at-tib', ratings: ['qmm9mauk'] },
       { query: 'Aṭ-ṭib', ratings: ['qmm9mauk'] },
@@ -76,7 +77,7 @@ const tests: Test[] = [
     label: 'False positives',
     description:
       "Due to fuzzy matching on alternative spellings, we need to ensure we aren't too fuzzy.",
-    pass: eq0,
+    pass: equalTo0,
     searchTemplateAugmentation: filterCaseRatings,
     cases: [
       { query: 'Deptford', ratings: ['pb4rbujd', 'g2awspp9'] }, // shouldn't match "dartford" or "hertford"
@@ -85,7 +86,8 @@ const tests: Test[] = [
       { query: 'gout', ratings: ['t67v2y55'] }, // shouldn't match "out"
       { query: 'L0062541', ratings: ['wsqmrqfj'] }, // shouldn't match "L0032741" in the title
       { query: 'Maori', ratings: ['h464szg9', 'y48zg6af', 'uf2ds6qs'] }, // shouldn't match "mary" or "amoris" or "maris"
-      { query: 'test', ratings: ['t67v2y55'] },
+      { query: 'monsters', ratings: ['uyueynsp', 'd592f8ff'] }, // should not match "Monastery" or "Ministers"
+      { query: 'Maclise', ratings: ['kft2kzec'] }, // should not match "machine"
     ],
     metric: {
       recall: {
