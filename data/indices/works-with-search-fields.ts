@@ -1,3 +1,5 @@
+// eslint-disable-next-line camelcase
+import { standard_with_slashes_analyzer } from './analyzers'
 import { asciifoldedFields, multilingualFields, shinglesFields } from './common'
 
 export default {
@@ -12,6 +14,10 @@ export default {
       search: {
         dynamic: 'false',
         properties: {
+          textWithSlashes: {
+            type: 'text',
+            analyzer: 'standard_with_slashes_analyzer',
+          },
           titlesAndContributors: {
             type: 'text',
             fields: {
@@ -740,6 +746,7 @@ export default {
           },
         },
         analyzer: {
+          standard_with_slashes_analyzer,
           hindi_analyzer: {
             filter: ['lowercase', 'hindi_token_filter'],
             type: 'custom',
