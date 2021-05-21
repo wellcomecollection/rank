@@ -5,7 +5,7 @@ import { filterCaseRatings } from './queryAugmentation'
 
 const tests: Test[] = [
   {
-    label: 'Precision',
+    label: 'precision',
     description: 'TBD',
     pass: equalTo1,
     cases: [
@@ -32,7 +32,7 @@ const tests: Test[] = [
     },
   },
   {
-    label: 'Recall',
+    label: 'recall',
     description: 'TBD',
     pass: equalTo1,
     cases: [
@@ -49,7 +49,7 @@ const tests: Test[] = [
     },
   },
   {
-    label: 'Languages',
+    label: 'languages',
     description: 'TBD',
     pass: equalTo1,
     cases: [
@@ -74,7 +74,7 @@ const tests: Test[] = [
     },
   },
   {
-    label: 'False positives',
+    label: 'false-positives',
     description:
       "Due to fuzzy matching on alternative spellings, we need to ensure we aren't too fuzzy.",
     pass: equalTo0,

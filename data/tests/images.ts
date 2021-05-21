@@ -1,9 +1,11 @@
+import { equalTo0, equalTo1 } from './pass'
+
 import { Test } from '../../types'
-import { equalTo1 } from './pass'
+import { filterCaseRatings } from './queryAugmentation'
 
 const tests: Test[] = [
   {
-    label: 'Precision',
+    label: 'precision',
     description: 'TBD',
     pass: equalTo1,
     cases: [
@@ -20,7 +22,7 @@ const tests: Test[] = [
     },
   },
   {
-    label: 'Recall',
+    label: 'recall',
     description: 'TBD',
     pass: equalTo1,
     cases: [
@@ -81,7 +83,7 @@ const tests: Test[] = [
     },
   },
   {
-    label: 'Languages',
+    label: 'languages',
     description: 'TBD',
     pass: equalTo1,
     cases: [
@@ -93,6 +95,26 @@ const tests: Test[] = [
       recall: {
         relevant_rating_threshold: 3,
         k: 100,
+      },
+    },
+  },
+  {
+    label: 'false-positives',
+    description:
+      "Due to fuzzy matching on alternative spellings, we need to ensure we aren't too fuzzy.",
+    pass: equalTo0,
+    searchTemplateAugmentation: filterCaseRatings,
+    cases: [
+      { query: 'monsters', ratings: ['n7r5s65w'] }, // shouldn't match "Monastery"
+      { query: 'maori', ratings: ['fgksh2cc', 'tqk8vfq2'] }, // shouldn't match "mary" or "mori"
+      { query: 'Deptford', ratings: ['c5zv5zqh', 'eq4pvgmu'] }, // shouldn't match "dartford" or "hertford"
+      { query: 'Maclise', ratings: ['sxbgjm4y'] }, // shouldn't match "machine"
+      { query: 'machine', ratings: ['uyym87vg', 'hpjx2g82'] }, // shouldn't match "martin" or "vaccine"
+    ],
+    metric: {
+      recall: {
+        relevant_rating_threshold: 3,
+        k: 10,
       },
     },
   },
