@@ -9,6 +9,9 @@ services:
       - type: bind
         source: $PWD/work
         target: /home/jovyan/work
+      - type: bind
+        source: $PWD/../data
+        target: /home/jovyan/work/data
     env_file:
       - ../.env
     environment:
