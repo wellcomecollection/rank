@@ -5,15 +5,29 @@ import { filterCaseRatings } from './queryAugmentation'
 
 const tests: Test[] = [
   {
-    label: 'precision',
+    label: 'Precision',
     description: 'TBD',
     pass: equalTo1,
     cases: [
       { query: 'Cassils Time lapse', ratings: ['ftqy78zj'] },
       { query: 'stim', ratings: ['e8qxq5mv'] },
-      { query: 'bulloch history of bacteriology', ratings: ['rkcux48q'] }, // Contributor and title
-      { query: 'stimming', ratings: ['uuem7v9a'] }, // ensure that we return non-typos over typos e.g. query:stimming matches:stimming > swimming
-      { query: 'The Piggle', ratings: ['vp7q52gs'] }, // Example of a known title's prefix, but not the full thing
+      {
+        query: 'bulloch history of bacteriology',
+        ratings: ['rkcux48q'],
+        description: 'Contributor and title',
+      },
+      {
+        query: 'stimming',
+        ratings: ['uuem7v9a'],
+        description:
+          'ensure that we return non-typos over typos e.g. query:stimming matches:stimming > swimming',
+      },
+      {
+        query: 'The Piggle',
+        ratings: ['vp7q52gs'],
+        description:
+          "Example of a known title's prefix, but not the full thing",
+      },
       { query: 'Das neue Naturheilverfahren', ratings: ['execg22x'] },
       { query: 'bills of mortality', ratings: ['xwtcsk93'] },
       { query: 'L0033046', ratings: ['kmebmktz'] },
@@ -33,7 +47,7 @@ const tests: Test[] = [
     },
   },
   {
-    label: 'recall',
+    label: 'Recall',
     description: 'TBD',
     pass: equalTo1,
     cases: [
@@ -50,7 +64,7 @@ const tests: Test[] = [
     },
   },
   {
-    label: 'languages',
+    label: 'Languages',
     description: 'TBD',
     pass: equalTo1,
     cases: [
@@ -75,20 +89,52 @@ const tests: Test[] = [
     },
   },
   {
-    label: 'false-positives',
+    label: 'False positives',
     description:
       "Due to fuzzy matching on alternative spellings, we need to ensure we aren't too fuzzy.",
     pass: equalTo0,
     searchTemplateAugmentation: filterCaseRatings,
     cases: [
-      { query: 'Deptford', ratings: ['pb4rbujd', 'g2awspp9'] }, // shouldn't match "dartford" or "hertford"
-      { query: 'Sahagún', ratings: ['neumfv84', 'dzhxzxcr'] }, // shouldn't match "gahagan"
-      { query: 'posters', ratings: ['z85jd9f4', 'qpkfxsst'] }, // shouldn't match "porter"
-      { query: 'gout', ratings: ['t67v2y55'] }, // shouldn't match "out"
-      { query: 'L0062541', ratings: ['wsqmrqfj'] }, // shouldn't match "L0032741" in the title
-      { query: 'Maori', ratings: ['h464szg9', 'y48zg6af', 'uf2ds6qs'] }, // shouldn't match "mary" or "amoris" or "maris"
-      { query: 'monsters', ratings: ['uyueynsp', 'd592f8ff'] }, // should not match "Monastery" or "Ministers"
-      { query: 'Maclise', ratings: ['kft2kzec'] }, // should not match "machine"
+      {
+        query: 'Deptford',
+        ratings: ['pb4rbujd', 'g2awspp9'],
+        description: "shouldn't match 'dartford' or 'hertford'",
+      },
+      {
+        query: 'Sahagún',
+        ratings: ['neumfv84', 'dzhxzxcr'],
+        description: "shouldn't match 'gahagan'",
+      },
+      {
+        query: 'posters',
+        ratings: ['z85jd9f4', 'qpkfxsst'],
+        description: "shouldn't match 'porter'",
+      },
+      {
+        query: 'gout',
+        ratings: ['t67v2y55'],
+        description: "shouldn't match 'out'",
+      },
+      {
+        query: 'L0062541',
+        ratings: ['wsqmrqfj'],
+        description: "shouldn't match 'L0032741' in the title",
+      },
+      {
+        query: 'Maori',
+        ratings: ['h464szg9', 'y48zg6af', 'uf2ds6qs'],
+        description: "shouldn't match 'mary' or 'amoris' or 'maris'",
+      },
+      {
+        query: 'monsters',
+        ratings: ['uyueynsp', 'd592f8ff'],
+        description: "should not match 'Monastery' or 'Ministers'",
+      },
+      {
+        query: 'Maclise',
+        ratings: ['kft2kzec'],
+        description: "should not match 'machine'",
+      },
     ],
     metric: {
       recall: {
