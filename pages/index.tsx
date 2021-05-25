@@ -45,20 +45,23 @@ const ResultsComponent = ({ result }: ResultComponentProps) => {
   return (
     <div className="py-4 font-mono">
       <h2 className="text-2xl font-bold">
-        {scoreToEmoji(result.pass)} {result.namespace} {result.label}
+        {scoreToEmoji(result.pass)} {result.label} in {result.namespace}
       </h2>
 
       <h3 className="font-bold">Queries:</h3>
       <ul>
-        {Object.entries(result.results).map(([key, { query, result }]) => {
-          const encodedQuery = encodeURIComponent(query)
-          const searchURL = `https://wellcomecollection.org/${namespace}?query=${encodedQuery}`
-          return (
-            <li key={key}>
-              {scoreToEmoji(result.pass)} <a href={searchURL}>{query}</a>
-            </li>
-          )
-        })}
+        {Object.entries(result.results).map(
+          ([key, { query, result, description }]) => {
+            const encodedQuery = encodeURIComponent(query)
+            const searchURL = `https://wellcomecollection.org/${namespace}?query=${encodedQuery}`
+            return (
+              <li key={key} className="py-1">
+                {scoreToEmoji(result.pass)} <a href={searchURL}>{query}</a>{' '}
+                <p className="text-gray-500 text-sm">{description || null}</p>
+              </li>
+            )
+          }
+        )}
       </ul>
     </div>
   )
