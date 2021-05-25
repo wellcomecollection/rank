@@ -66,6 +66,7 @@ export type TestResult = {
   namespace: string
   results: {
     query: string
+    description?: string
     result: Pass
   }[]
 }
@@ -76,10 +77,13 @@ export function runTests(
 ): Promise<TestResult>[] {
   const testResults = tests.map((test) =>
     rankEvalRequest(template, test).then((res) => {
-      const results = Object.entries(res.details).map(([query, detail]) => ({
-        query,
-        result: test.pass(detail),
-      }))
+      const results = Object.entries(res.details).map(([query, detail]) => {
+        return {
+          query,
+          description: test.cases.find((c) => c.query === query).description,
+          result: test.pass(detail),
+        }
+      })
       return {
         label: test.label,
         description: test.description,

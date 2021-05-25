@@ -1,11 +1,13 @@
+import { equalTo0, equalTo1 } from './pass'
+
 import { Test } from '../../types'
-import { eq1 } from './pass'
+import { filterCaseRatings } from './queryAugmentation'
 
 const tests: Test[] = [
   {
     label: 'Precision',
     description: 'TBD',
-    pass: eq1,
+    pass: equalTo1,
     cases: [
       { query: 'crick dna sketch', ratings: ['gzv2hhgy'] },
       { query: 'gzv2hhgy', ratings: ['gzv2hhgy'] },
@@ -22,7 +24,7 @@ const tests: Test[] = [
   {
     label: 'Recall',
     description: 'TBD',
-    pass: eq1,
+    pass: equalTo1,
     cases: [
       { query: 'horse battle', ratings: ['ud35y7c8'] },
       {
@@ -83,7 +85,7 @@ const tests: Test[] = [
   {
     label: 'Languages',
     description: 'TBD',
-    pass: eq1,
+    pass: equalTo1,
     cases: [
       { query: 'arbeiten', ratings: ['sr4kxmk3', 'utbtee43'] },
       { query: 'conosco', ratings: ['nnh3nh47'] },
@@ -93,6 +95,72 @@ const tests: Test[] = [
       recall: {
         relevant_rating_threshold: 3,
         k: 100,
+      },
+    },
+  },
+  {
+    label: 'False positives',
+    description:
+      "Due to fuzzy matching on alternative spellings, we need to ensure we aren't too fuzzy.",
+    pass: equalTo0,
+    searchTemplateAugmentation: filterCaseRatings,
+    cases: [
+      {
+        query: 'monsters',
+        ratings: ['n7r5s65w'],
+        description: "shouldn't match 'Monastery'",
+      },
+      {
+        query: 'maori',
+        ratings: ['fgksh2cc', 'tqk8vfq2'],
+        description: "shouldn't match 'mary' or 'mori'",
+      },
+      {
+        query: 'Deptford',
+        ratings: ['c5zv5zqh', 'eq4pvgmu'],
+        description: "shouldn't match 'dartford' or 'hertford'",
+      },
+      {
+        query: 'Maclise',
+        ratings: ['sxbgjm4y'],
+        description: "shouldn't match 'machine'",
+      },
+      {
+        query: 'machine',
+        ratings: ['uyym87vg', 'hpjx2g82'],
+        description: "shouldn't match 'martin' or 'vaccine'",
+      },
+      {
+        query: 'asylum',
+        ratings: ['bzsscsgq', 'abshch65'],
+        description: "shouldn't match 'slums', 'assumed'",
+      },
+      {
+        query: 'vestiges',
+        ratings: ['zeqtq26h', 'ym9awu5d'],
+        description: "shouldn't match 'vestitus', 'festival'",
+      },
+      {
+        query: 'revolutions',
+        ratings: ['rbznrd3v', 'nwgs7wtg'],
+        description: "shouldn't match  'resolutive' or 'Renoult'",
+      },
+      {
+        query: 'macaronic',
+        ratings: [
+          'c2c9phsz',
+          'p9usexyk',
+          'jfd42bs9',
+          'uqtw6x7a',
+          'cfwn8qpp',
+          'emfaj7a7',
+        ],
+      }, // shouldn't match Macao, Aaron, matron, Martinez, Macon, Arago,
+    ],
+    metric: {
+      recall: {
+        relevant_rating_threshold: 3,
+        k: 10,
       },
     },
   },

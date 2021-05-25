@@ -1,10 +1,11 @@
 import { FunctionComponent, useState } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
+
+import { Hit as HitType } from '../services/elasticsearch'
 import Link from 'next/link'
 import QueryForm from '../components/QueryForm'
-import absoluteUrl from 'next-absolute-url'
 import { ApiResponse as SearchApiResponse } from './api/search'
-import { Hit as HitType } from '../services/elasticsearch'
+import absoluteUrl from 'next-absolute-url'
 
 type SearchProps = {
   query?: string

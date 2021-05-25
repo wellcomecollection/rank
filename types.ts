@@ -1,5 +1,5 @@
-import { PassFn } from './data/tests/pass'
 import { Metric } from './services/elasticsearch'
+import { PassFn } from './data/tests/pass'
 import { SearchTemplateSource } from './services/search-templates'
 
 export type QueryType = 'works' | 'images'
@@ -8,6 +8,7 @@ export type Env = 'prod' | 'stage'
 export type TestCase = {
   query: string
   ratings: string[]
+  description?: string
 }
 
 export type Test = {

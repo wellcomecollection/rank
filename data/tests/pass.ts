@@ -6,19 +6,19 @@ type Pass = {
 }
 type PassFn = (score: RankDetail) => Pass
 
-const eq1: PassFn = (rankDetail: RankDetail) => {
+const equalTo1: PassFn = (rankDetail: RankDetail) => {
   return {
     score: rankDetail.metric_score,
     pass: rankDetail.metric_score === 1,
   }
 }
 
-const eq0: PassFn = (rankDetail: RankDetail) => {
+const equalTo0: PassFn = (rankDetail: RankDetail) => {
   return {
     score: rankDetail.metric_score,
     pass: rankDetail.metric_score === 0,
   }
 }
 
-export { eq0, eq1 }
+export { equalTo0, equalTo1 }
 export type { Pass, PassFn }
