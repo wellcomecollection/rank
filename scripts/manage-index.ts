@@ -26,7 +26,7 @@ async function main() {
   if (action === 'Create a new index') {
     const local = await getLocalIndicies()
     const cluster = await getClusterIndicies()
-    // should only be able to update indexes which exist locally and NOT in cluster
+    // should only be able to create indices which don't exist
     const indexNames = local.filter((n) => !cluster.includes(n))
     const { indexName } = await inquirer.prompt([
       {
