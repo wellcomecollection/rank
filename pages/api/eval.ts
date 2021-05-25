@@ -78,13 +78,11 @@ export function runTests(
   const testResults = tests.map((test) =>
     rankEvalRequest(template, test).then((res) => {
       const results = Object.entries(res.details).map(([query, detail]) => {
-        const result = {
+        return {
           query,
           description: test.cases.find((c) => c.query === query).description,
           result: test.pass(detail),
         }
-
-        return result
       })
       return {
         label: test.label,
