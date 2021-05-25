@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { SearchResponse, rankClient } from '../../services/elasticsearch'
 import { TestResult, runTests } from './eval'
-import { Namespace } from '../search'
 import ranks from '../../ranks'
+import { Namespace } from '../../types'
 
 export type ApiResponse = SearchResponse & {
   results: TestResult[]

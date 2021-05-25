@@ -21,3 +21,12 @@ export type Test = {
     source: SearchTemplateSource
   ) => SearchTemplateSource
 }
+
+const namespaces = ['images', 'works'] as const
+export type Namespace = typeof namespaces[number]
+export function isNamespace(v: any): v is Namespace {
+  return namespaces.includes(v)
+}
+export function getNamespace(v: any): Namespace {
+  return isNamespace(v) ? v : undefined
+}
