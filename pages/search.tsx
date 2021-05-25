@@ -57,8 +57,6 @@ const RankEvalStatus: FunctionComponent<RankEvalStatusProps> = ({ pass }) => {
   )
 }
 
-export type Namespace = 'images' | 'works'
-
 type HitProps = { hit: HitType }
 const Hit: FunctionComponent<HitProps> = ({ hit }) => {
   const [showExplanation, setShowExplanation] = useState(false)

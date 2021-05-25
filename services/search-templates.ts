@@ -1,6 +1,5 @@
-import { Env } from '../types'
+import { Env, Namespace } from '../types'
 
-export type Namespace = 'images' | 'works'
 export type SearchTemplateSource = { query: unknown }
 export type SearchTemplate = {
   id: string
