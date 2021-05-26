@@ -91,11 +91,18 @@ export default {
         },
       },
       {
+        match: {
+          'search.relations': {
+            _name: 'relations',
+            query: '{{query}}',
+            operator: 'And',
+          },
+        },
+      },
+      {
         multi_match: {
           _name: 'data',
           fields: [
-            'data.collectionPath.label',
-            'data.collectionPath.path',
             'data.contributors.agent.label^1000.0',
             'data.description',
             'data.edition',

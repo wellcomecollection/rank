@@ -55,6 +55,14 @@ const tests: Test[] = [
         query: 'Atherosclerosis : an introduction to atherosclerosis',
         ratings: ['bcwvtknn', 'rty8296y'],
       },
+      {
+        query: 'wa/hmm durham',
+        ratings: ['euf49qkx', 'tpxy78kr', 'gu3z98y4', 'ad3rfubw'],
+      },
+      {
+        query: 'eugenics society annual reports',
+        ratings: ['euf49qkx', 'tpxy78kr', 'gu3z98y4', 'ad3rfubw'],
+      },
     ],
     metric: {
       recall: {

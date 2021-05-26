@@ -90,6 +90,7 @@ export function runTests(
         namespace: template.namespace,
         pass: results.every((result) => result.result.pass),
         results,
+        d: res.details,
       }
     })
   )
