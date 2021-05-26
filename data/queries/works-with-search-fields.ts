@@ -96,6 +96,7 @@ export default {
             _name: 'relations',
             query: '{{query}}',
             operator: 'And',
+            boost: 1000.0,
           },
         },
       },

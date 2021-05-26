@@ -61,7 +61,7 @@ const tests: Test[] = [
       },
       {
         query: 'eugenics society annual reports',
-        ratings: ['euf49qkx', 'tpxy78kr', 'gu3z98y4', 'ad3rfubw'],
+        ratings: ['k9w95csw', 'asqf8kzb', 'n499pzsr'],
       },
     ],
     metric: {
