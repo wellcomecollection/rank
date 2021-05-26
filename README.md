@@ -1,3 +1,9 @@
+# Deprecated
+
+This repo is deprecated, and work will continue over in [the catalogue API repo](https://github.com/wellcomecollection/catalogue-api/tree/main/rank).
+
+---_
+
 # Rank
 
 Rank is our source of truth for the goodness of search on wellcomecollection.org.
