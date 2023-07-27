@@ -11,6 +11,7 @@ PATH=$HOME/.local/bin:$PATH
 if [[ ! -x "$(command -v black)}" || "$(black --version)" != "$BLACK_VERSION" ]]; then
     mkdir -p $HOME/.local/bin
     wget -O $HOME/.local/bin/black https://github.com/psf/black/releases/download/${BLACK_VERSION}/black_linux
+    chmod +x $HOME/.local/bin/black
 fi
 
 # Run the formatter
