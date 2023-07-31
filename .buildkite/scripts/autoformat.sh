@@ -9,7 +9,7 @@ PATH=$HOME/.local/bin:$PATH
 
 # Install black
 if [[ ! -x "$(command -v black)}" || "$(black --version)" != "$BLACK_VERSION" ]]; then
-    sudo amazon-linux-extras install python3.10
+    sudo amazon-linux-extras install -y python3.10
     pip3.10 install black==$BLACK_VERSION
 fi
 
