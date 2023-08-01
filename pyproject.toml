@@ -17,6 +17,7 @@ pytest = "^7.4.0"
 elasticsearch = "^8.9.0"
 boto3 = "^1.28.16"
 httpx = "^0.24.1"
+pydantic = "^2.1.1"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["d"], version = "^23.7.0"}
@@ -31,3 +32,6 @@ profile = "black"
 
 [tool.black]
 line-length = 80
+
+[tool.pytest.ini_options]
+addopts = "--tb=short -r=N --no-header"
