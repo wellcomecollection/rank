@@ -1,0 +1,11 @@
+steps:
+  - label: "autoformat"
+    command: ".buildkite/scripts/autoformat.sh"
+    plugins:
+      - docker-compose#v4.11.0:
+          run: tooling
+          mount-ssh-agent: true
+          mount-buildkite-agent: true
+          propagate-environment: true
+    agents:
+      queue: "nano"
