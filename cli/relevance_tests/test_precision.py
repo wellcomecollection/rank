@@ -56,14 +56,14 @@ def test_precision(test_case: PrecisionTestCase):
     # if any of the expected IDs are missing, raise an error
     try:
         missing_ids = [
-            expected_id for expected_id in test_case.expected_ids
+            expected_id
+            for expected_id in test_case.expected_ids
             if expected_id not in result_ids
         ]
         assert not missing_ids
     except AssertionError:
         pytest.fail(
             f"{missing_ids} not found in the search results: {result_ids}",
-
         )
 
     # if an expected ID is between the first n positions and the threshold
@@ -82,7 +82,10 @@ def test_precision(test_case: PrecisionTestCase):
     # matches the order of the expected IDs. If they don't match, raise an error
     if test_case.strict:
         try:
-            assert result_ids[: test_case.threshold_position] == test_case.expected_ids
+            assert (
+                result_ids[: test_case.threshold_position]
+                == test_case.expected_ids
+            )
         except AssertionError:
             pytest.fail(
                 f"The order of the expected IDs {test_case.expected_ids} "
