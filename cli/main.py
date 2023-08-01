@@ -1,6 +1,12 @@
+import pytest
 import typer
 
-app = typer.Typer()
+app = typer.Typer(
+    name="rank",
+    help="A CLI for measuring search relevance",
+    no_args_is_help=True,
+    add_completion=False,
+)
 
 
 @app.command()
@@ -8,8 +14,7 @@ def hello(name: str):
     print(f"Hello {name}")
 
 
-# This is here temporarily while there is only one command
-# https://typer.tiangolo.com/tutorial/commands/one-or-multiple/#one-command-and-one-callback
-@app.callback()
-def callback():
-    pass
+@app.command()
+def test():
+    return_code = pytest.main(["cli/relevance_tests/"])
+    raise typer.Exit(code=return_code)

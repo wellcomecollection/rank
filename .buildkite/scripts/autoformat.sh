@@ -7,6 +7,7 @@ ROOT=$(git rev-parse --show-toplevel)
 
 # Run the formatter
 black $ROOT
+isort $ROOT/**/*.py
 
 # Commit any changes
 if [[ `git status --porcelain` ]]; then
