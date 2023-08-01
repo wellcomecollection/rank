@@ -1,6 +1,5 @@
 import boto3
 
-
 sts_client = boto3.client("sts")
 assumed_role = sts_client.assume_role(
     RoleArn="arn:aws:iam::760097843905:role/platform-developer",
@@ -11,6 +10,7 @@ session = boto3.session.Session(
     aws_secret_access_key=assumed_role["Credentials"]["SecretAccessKey"],
     aws_session_token=assumed_role["Credentials"]["SessionToken"],
 )
+
 
 def get_secret(secret_id, session=session):
     client = session.client(
