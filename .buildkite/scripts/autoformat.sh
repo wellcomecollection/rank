@@ -6,7 +6,7 @@ set -o pipefail
 ROOT=$(git rev-parse --show-toplevel)
 
 # Run the formatter
-black $ROOT --line-length 80
+black $ROOT
 isort $ROOT/**/*.py
 
 # Commit any changes
