@@ -1,4 +1,4 @@
-import subprocess
+import pytest
 import typer
 
 app = typer.Typer(
@@ -16,4 +16,5 @@ def hello(name: str):
 
 @app.command()
 def test():
-    subprocess.run(["pytest", "cli/relevance_tests/"])
+    return_code = pytest.main(["cli/relevance_tests/"])
+    raise typer.Exit(code=return_code)
