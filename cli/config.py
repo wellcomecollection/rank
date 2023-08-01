@@ -1,27 +1,17 @@
-import boto3
 import httpx
 
-elastic_config = httpx.get(
-    "https://api.wellcomecollection.org/catalogue/v2/_elasticConfig"
-).json()
+search_templates = httpx.get(
+    "https://api.wellcomecollection.org/catalogue/v2/search-templates.json"
+).json()["templates"]
 
-images_index = elastic_config["imagesIndex"]
-works_index = elastic_config["worksIndex"]
+# the works template is the one which has an index starting with "works"
+works_template = next(
+    template
+    for template in search_templates
+    if template["index"].startswith("works")
+)
+
+works_index = works_template["index"]
+works_query = works_template["query"]
 
 pipeline_date = "-".join(works_index.split("-")[-3:])
-
-
-def get_secret(secret_id, region_name="eu-west-1"):
-    sts_client = boto3.client("sts")
-    assumed_role = sts_client.assume_role(
-        RoleArn="arn:aws:iam::760097843905:role/platform-developer",
-        RoleSessionName="platform-dev-session",
-    )
-    session = boto3.session.Session(
-        aws_access_key_id=assumed_role["Credentials"]["AccessKeyId"],
-        aws_secret_access_key=assumed_role["Credentials"]["SecretAccessKey"],
-        aws_session_token=assumed_role["Credentials"]["SessionToken"],
-    )
-    client = session.client(service_name="secretsmanager", region_name=region_name)
-    response = client.get_secret_value(SecretId=secret_id)
-    return response["SecretString"]

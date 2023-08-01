@@ -2,7 +2,8 @@ from time import sleep
 
 from elasticsearch import Elasticsearch
 
-from .config import get_secret, pipeline_date
+from .config import pipeline_date
+from .secrets import get_secret
 
 
 def get_pipeline_elastic_client() -> Elasticsearch:
