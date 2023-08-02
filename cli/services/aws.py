@@ -11,7 +11,7 @@ def get_session(role_arn: str) -> boto3.session.Session:
         aws_access_key_id=assumed_role["Credentials"]["AccessKeyId"],
         aws_secret_access_key=assumed_role["Credentials"]["SecretAccessKey"],
         aws_session_token=assumed_role["Credentials"]["SessionToken"],
-        region_name="eu-west-1"
+        region_name="eu-west-1",
     )
     return session
 

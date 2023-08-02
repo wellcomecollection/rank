@@ -7,7 +7,9 @@ from elasticsearch import Elasticsearch
 from .aws import get_secret
 
 
-def get_pipeline_elastic_client(session: boto3.session.Session, *, pipeline_date: str) -> Elasticsearch:
+def get_pipeline_elastic_client(
+    session: boto3.session.Session, *, pipeline_date: str
+) -> Elasticsearch:
     secret_prefix = f"elasticsearch/pipeline_storage_{pipeline_date}/"
     session_get_secret = functools.partial(get_secret, session)
     es_password = session_get_secret(secret_prefix + "es_password")

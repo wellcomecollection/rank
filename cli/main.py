@@ -3,7 +3,6 @@ import typer
 
 from .rank_plugin import RankPlugin
 
-
 app = typer.Typer(
     name="rank",
     help="A CLI for measuring search relevance",
@@ -19,7 +18,7 @@ app.add_typer(test_app, name="test")
 def run():
     rank_plugin = RankPlugin(
         role_arn="arn:aws:iam::760097843905:role/platform-developer",
-        catalogue_api_url="https://api.wellcomecollection.org/catalogue/v2"
+        catalogue_api_url="https://api.wellcomecollection.org/catalogue/v2",
     )
     return_code = pytest.main(["cli/relevance_tests/"], plugins=[rank_plugin])
     raise typer.Exit(code=return_code)
@@ -27,8 +26,4 @@ def run():
 
 @test_app.command()
 def list():
-    pytest.main([
-        "--collect-only",
-        "--quiet",
-        "cli/relevance_tests/"
-    ])
+    pytest.main(["--collect-only", "--quiet", "cli/relevance_tests/"])

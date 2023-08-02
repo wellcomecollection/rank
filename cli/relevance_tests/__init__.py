@@ -1,5 +1,3 @@
-
-
 def nth(n) -> str:
     "Return the ordinal form of a number"
     number_string = str(n)
