@@ -9,3 +9,13 @@ steps:
           propagate-environment: true
     agents:
       queue: "nano"
+  - label: "autodoc"
+    command: ".buildkite/scripts/autodoc.sh"
+    plugins:
+      - docker-compose#v4.11.0:
+          run: tooling
+          mount-ssh-agent: true
+          mount-buildkite-agent: true
+          propagate-environment: true
+    agents:
+      queue: "nano"
