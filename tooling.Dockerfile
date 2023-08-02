@@ -13,4 +13,6 @@ RUN poetry config virtualenvs.create false && \
 
 COPY . ./
 
+RUN poetry install --no-cache --no-interaction --only-root
+
 CMD ["true"]
