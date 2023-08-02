@@ -1,6 +1,6 @@
 steps:
-  - label: "autoformat"
-    command: ".buildkite/scripts/autoformat.sh"
+  - label: "format-python"
+    command: ".buildkite/scripts/format-python.sh"
     plugins:
       - docker-compose#v4.11.0:
           run: tooling
@@ -9,8 +9,8 @@ steps:
           propagate-environment: true
     agents:
       queue: "nano"
-  - label: "autodoc"
-    command: ".buildkite/scripts/autodoc.sh"
+  - label: "generate-cli-docs"
+    command: ".buildkite/scripts/generate-cli-docs.sh"
     plugins:
       - docker-compose#v4.11.0:
           run: tooling
