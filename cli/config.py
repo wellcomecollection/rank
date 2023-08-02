@@ -14,4 +14,13 @@ works_template = next(
 works_index = works_template["index"]
 works_query = works_template["query"]
 
+images_template = next(
+    template
+    for template in search_templates
+    if template["index"].startswith("images")
+)
+
+images_index = images_template["index"]
+images_query = images_template["query"]
+
 pipeline_date = "-".join(works_index.split("-")[-3:])
