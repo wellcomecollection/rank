@@ -10,6 +10,7 @@ steps:
     agents:
       queue: "nano"
   - label: "generate-cli-docs"
+    if: build.branch == "main"
     command: ".buildkite/scripts/generate-cli-docs.sh"
     plugins:
       - docker-compose#v4.11.0:
