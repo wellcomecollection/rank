@@ -9,8 +9,10 @@ WORKDIR /project
 
 COPY poetry.lock pyproject.toml ./
 RUN poetry config virtualenvs.create false && \
-    poetry install --no-cache --no-interaction
+    poetry install --no-cache --no-interaction --no-root
 
 COPY . ./
+
+RUN poetry install --no-cache --no-interaction --only-root
 
 CMD ["true"]
