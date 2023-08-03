@@ -2,8 +2,8 @@ import warnings
 
 import pytest
 
-from . import nth
-from .models import PrecisionTestCase
+from .. import nth
+from ..models import PrecisionTestCase
 
 test_cases = [
     PrecisionTestCase(search_terms="horse", expected_ids=["pgwnkf2h"]),
@@ -29,6 +29,15 @@ test_cases = [
         strict=True,
         # should fail, because the expected IDs are both present but are
         # in the wrong order
+    ),
+    PrecisionTestCase(
+        search_terms="information law",
+        expected_ids=["zkg7xqm7"],
+        description=(
+            "Multi-word exact matches at the start of a title should be "
+            "prioritised over other single-word matches. See"
+            "https://github.com/wellcomecollection/catalogue-api/issues/466"
+        ),
     ),
 ]
 
