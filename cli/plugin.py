@@ -20,6 +20,7 @@ class SearchUnderTest:
         search_templates = requests.get(
             f"{catalogue_api_url}/search-templates.json"
         ).json()["templates"]
+
         works = next(
             template
             for template in search_templates
@@ -27,6 +28,15 @@ class SearchUnderTest:
         )
         self.works_query_template = works["query"]
         self.works_index = works["index"]
+
+        images = next(
+            template
+            for template in search_templates
+            if template["index"].startswith("images")
+        )
+        self.images_query_template = images["query"]
+        self.images_index = images["index"]
+
         self.pipeline_date = re.search(
             r"^works-indexed-(?P<date>\d{4}-\d{2}-\d{2}.?)", self.works_index
         ).group("date")
@@ -49,13 +59,26 @@ class RankPlugin:
 
     @pytest.fixture()
     def works_search(self):
-        def _get_search_params(query: str):
+        def _get_search_params(search_terms: str):
             rendered = chevron.render(
-                self.sut.works_query_template, {"query": query}
+                self.sut.works_query_template, {"query": search_terms}
             )
             return {
                 "query": json.loads(rendered),
                 "index": self.sut.works_index,
+            }
+
+        return _get_search_params
+
+    @pytest.fixture()
+    def images_search(self):
+        def _get_search_params(search_terms: str):
+            rendered = chevron.render(
+                self.sut.images_query_template, {"query": search_terms}
+            )
+            return {
+                "query": json.loads(rendered),
+                "index": self.sut.images_index,
             }
 
         return _get_search_params

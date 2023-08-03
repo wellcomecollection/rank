@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, ClassVar
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -62,7 +62,8 @@ class PrecisionTestCase(TestCase):
 
     @model_validator(mode="after")
     def check_expected_ids(self):
-        """Check that the expected IDs are unique"""
+        if len(self.expected_ids) == 0:
+            raise ValueError("expected_ids must not be empty")
         if len(self.expected_ids) != len(set(self.expected_ids)):
             raise ValueError("expected_ids must be unique")
         return self
@@ -101,7 +102,43 @@ class RecallTestCase(TestCase):
 
     @model_validator(mode="after")
     def check_expected_ids(self):
-        """Check that the expected IDs are unique"""
+        if len(self.expected_ids) == 0:
+            raise ValueError("expected_ids must not be empty")
         if len(self.expected_ids) != len(set(self.expected_ids)):
             raise ValueError("expected_ids must be unique")
+        return self
+
+
+class OrderTestCase(TestCase):
+    before_ids: list[str] = Field(
+        ...,
+        description=(
+            "The IDs which are expected to be returned by the search before "
+            "the IDs in the 'after_ids' field."
+        ),
+    )
+    after_ids: list[str] = Field(
+        ...,
+        description=(
+            "The IDs which are expected to be returned by the search after the "
+            "IDs in the 'before_ids' field."
+        ),
+    )
+
+    threshold_position: ClassVar[int] = 10_000
+
+    @model_validator(mode="after")
+    def check_expected_ids(self):
+        if len(self.before_ids) != len(set(self.before_ids)):
+            raise ValueError("before_ids must be unique")
+        if len(self.after_ids) != len(set(self.after_ids)):
+            raise ValueError("after_ids must be unique")
+        if len(set(self.before_ids).intersection(set(self.after_ids))) > 0:
+            raise ValueError(
+                "before_ids and after_ids must not contain the same IDs"
+            )
+        if len(self.before_ids) == 0:
+            raise ValueError("before_ids must not be empty")
+        if len(self.after_ids) == 0:
+            raise ValueError("after_ids must not be empty")
         return self

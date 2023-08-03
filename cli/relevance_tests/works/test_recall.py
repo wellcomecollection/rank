@@ -1,4 +1,3 @@
-import json
 import pytest
 
 from ..models import RecallTestCase
@@ -7,7 +6,9 @@ test_cases = [
     RecallTestCase(
         search_terms="indian journal of medical research 1930-1931",
         expected_ids=["p444t8rp", "kccp8d5t"],
-        description="Most search terms (but not all) are in the title",
+        description=(
+            "Query where most search terms (but not all) are in the title"
+        ),
     ),
     RecallTestCase(
         search_terms="Atherosclerosis: an introduction to atherosclerosis",
@@ -18,6 +19,46 @@ test_cases = [
         search_terms="2013i 2599i",
         expected_ids=["djmjw2cu", "xxskepr5"],
         description="Multiple IDs",
+    ),
+    RecallTestCase(
+        search_terms="wa/hmm durham",
+        expected_ids=["euf49qkx", "tpxy78kr", "gu3z98y4", "ad3rfubw"],
+        description="Archive refno and a word from the title",
+    ),
+    RecallTestCase(
+        search_terms="wa/hmm benin",
+        expected_ids=["qfdvkegw", "je5pm2gj", "dppjjtqz"],
+        description="Archive refno and a word from the description",
+    ),
+    RecallTestCase(
+        search_terms="WA/HMM/CM benin",
+        expected_ids=["qfdvkegw", "je5pm2gj", "dppjjtqz"],
+        description="Archive refno and a word from the description",
+    ),
+    RecallTestCase(
+        search_terms="eugenics society annual reports",
+        expected_ids=["k9w95csw", "asqf8kzb", "n499pzsr"],
+        description="Matches archives without providing refnos",
+    ),
+    RecallTestCase(
+        search_terms="لكشف",
+        expected_ids=["ymnmz59p"],
+        description="Matches stemmed arabic text",
+    ),
+    RecallTestCase(
+        search_terms="الكشف",
+        expected_ids=["ymnmz59p"],
+        description="Matches arabic text",
+    ),
+    RecallTestCase(
+        search_terms="معرفت",
+        expected_ids=["a9w79fzj"],
+        description="Matches arabic text",
+    ),
+    RecallTestCase(
+        search_terms="عرف",
+        expected_ids=["a9w79fzj"],
+        description="Matches stemmed arabic text",
     ),
 ]
 
