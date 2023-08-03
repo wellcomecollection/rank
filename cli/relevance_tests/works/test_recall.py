@@ -1,12 +1,7 @@
 import json
 import pytest
 
-from .. import get_pipeline_elastic_client, works_index, works_query
-
 from ..models import RecallTestCase
-
-client = get_pipeline_elastic_client()
-
 
 test_cases = [
     RecallTestCase(
@@ -30,13 +25,9 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", test_cases, ids=[tc.id for tc in test_cases]
 )
-def test_recall(test_case: RecallTestCase):
-    populated_query = json.loads(
-        works_query.replace("{{query}}", test_case.search_terms)
-    )
-    response = client.search(
-        index=works_index,
-        query=populated_query,
+def test_recall(test_case: RecallTestCase, pipeline_client, works_search):
+    response = pipeline_client.search(
+        **works_search(test_case.search_terms),
         size=test_case.threshold_position,
         _source=False,
     )

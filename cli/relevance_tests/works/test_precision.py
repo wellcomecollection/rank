@@ -1,12 +1,9 @@
-import json
 import warnings
 
 import pytest
 
-from .. import get_pipeline_elastic_client, nth, works_index, works_query
+from .. import nth
 from ..models import PrecisionTestCase
-
-client = get_pipeline_elastic_client()
 
 test_cases = [
     PrecisionTestCase(search_terms="horse", expected_ids=["pgwnkf2h"]),
@@ -48,13 +45,9 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", test_cases, ids=[tc.id for tc in test_cases]
 )
-def test_precision(test_case: PrecisionTestCase):
-    populated_query = json.loads(
-        works_query.replace("{{query}}", test_case.search_terms)
-    )
-    response = client.search(
-        index=works_index,
-        query=populated_query,
+def test_precision(test_case: PrecisionTestCase, pipeline_client, works_search):
+    response = pipeline_client.search(
+        **works_search(test_case.search_terms),
         # only return the necessary number of results to run the tests
         size=test_case.threshold_position,
         # we only need the IDs, so don't return the full documents
