@@ -1,4 +1,3 @@
-import json
 import warnings
 
 import pytest
@@ -31,7 +30,9 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", test_cases, ids=[tc.id for tc in test_cases]
 )
-def test_precision(test_case: PrecisionTestCase, pipeline_client, images_search):
+def test_precision(
+    test_case: PrecisionTestCase, pipeline_client, images_search
+):
     response = pipeline_client.search(
         **images_search(test_case.search_terms),
         size=test_case.threshold_position,

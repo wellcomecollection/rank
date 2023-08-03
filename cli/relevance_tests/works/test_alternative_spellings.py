@@ -1,5 +1,3 @@
-import json
-
 import pytest
 
 from ..models import RecallTestCase
@@ -213,7 +211,9 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", test_cases, ids=[tc.id for tc in test_cases]
 )
-def test_alternative_spellings(test_case: RecallTestCase, pipeline_client, works_search):
+def test_alternative_spellings(
+    test_case: RecallTestCase, pipeline_client, works_search
+):
     response = pipeline_client.search(
         **works_search(test_case.search_terms),
         size=test_case.threshold_position,
