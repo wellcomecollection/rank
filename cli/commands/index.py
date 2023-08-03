@@ -1,13 +1,38 @@
 import typer
 
 
-index_app = typer.Typer(
+app = typer.Typer(
     name="index",
     help="Manage the rank cluster and its indexes",
     no_args_is_help=True,
 )
 
 
-@index_app.command(help="hello world")
-def hello():
-    typer.echo("hello world")
+@app.command()
+def list():
+    raise NotImplementedError
+
+
+@app.command()
+def create():
+    raise NotImplementedError
+
+
+@app.command()
+def update():
+    raise NotImplementedError
+
+
+@app.command()
+def delete():
+    raise NotImplementedError
+
+
+@app.command()
+def get():
+    raise NotImplementedError
+
+
+@app.command()
+def replicate():
+    raise NotImplementedError

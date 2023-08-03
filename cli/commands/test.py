@@ -6,14 +6,14 @@ from .. import ContentType, root_test_directory
 
 from ..plugin import RankPlugin
 
-test_app = typer.Typer(
+app = typer.Typer(
     name="test",
     help="Run tests for the rank CLI",
 )
 
 
-@test_app.callback(invoke_without_command=True)
-def test(
+@app.callback(invoke_without_command=True)
+def main(
     ctx: typer.Context,
     test_id: Annotated[
         str,
@@ -56,7 +56,7 @@ def test(
         raise typer.Exit(code=return_code)
 
 
-@test_app.command(
+@app.command(
     help="List all tests that can be run",
 )
 def list():
