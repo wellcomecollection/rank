@@ -3,10 +3,8 @@ import warnings
 
 import pytest
 
-from .. import get_pipeline_elastic_client, nth, images_index, images_query
+from .. import nth
 from ..models import PrecisionTestCase
-
-client = get_pipeline_elastic_client()
 
 test_cases = [
     PrecisionTestCase(
@@ -33,16 +31,10 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", test_cases, ids=[tc.id for tc in test_cases]
 )
-def test_precision(test_case: PrecisionTestCase):
-    populated_query = json.loads(
-        images_query.replace("{{query}}", test_case.search_terms)
-    )
-    response = client.search(
-        index=images_index,
-        query=populated_query,
-        # only return the necessary number of results to run the tests
+def test_precision(test_case: PrecisionTestCase, pipeline_client, images_search):
+    response = pipeline_client.search(
+        **images_search(test_case.search_terms),
         size=test_case.threshold_position,
-        # we only need the IDs, so don't return the full documents
         _source=False,
     )
     result_ids = [result["_id"] for result in response["hits"]["hits"]]

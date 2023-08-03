@@ -1,5 +1,6 @@
-import pytest
 import typer
+
+from .commands import index, test
 
 app = typer.Typer(
     name="rank",
@@ -8,13 +9,5 @@ app = typer.Typer(
     add_completion=False,
 )
 
-
-@app.command()
-def hello(name: str):
-    print(f"Hello {name}")
-
-
-@app.command()
-def test():
-    return_code = pytest.main(["cli/relevance_tests/"])
-    raise typer.Exit(code=return_code)
+app.add_typer(test)
+app.add_typer(index)

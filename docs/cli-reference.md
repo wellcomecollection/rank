@@ -14,31 +14,43 @@ $ rank [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `hello`
 * `test`
-
-## `rank hello`
-
-**Usage**:
-
-```console
-$ rank hello [OPTIONS] NAME
-```
-
-**Arguments**:
-
-* `NAME`: [required]
-
-**Options**:
-
-* `--help`: Show this message and exit.
 
 ## `rank test`
 
 **Usage**:
 
 ```console
-$ rank test [OPTIONS]
+$ rank test [OPTIONS] COMMAND [ARGS]...
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+**Commands**:
+
+* `list`
+* `run`
+
+### `rank test list`
+
+**Usage**:
+
+```console
+$ rank test list [OPTIONS]
+```
+
+**Options**:
+
+* `--help`: Show this message and exit.
+
+### `rank test run`
+
+**Usage**:
+
+```console
+$ rank test run [OPTIONS]
 ```
 
 **Options**:

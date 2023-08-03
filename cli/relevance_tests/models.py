@@ -32,8 +32,7 @@ class PrecisionTestCase(TestCase):
             "The IDs which should be returned first by the search. Unless "
             "strict is set to True, these results can appear in any order, "
             "as long as they make up the first results."
-        ),
-        default_factory=list,
+        )
     )
     threshold_position: Optional[int] = Field(
         description=(
@@ -81,4 +80,28 @@ class PrecisionTestCase(TestCase):
                     "threshold_position must be greater than the number of "
                     "expected IDs"
                 )
+        return self
+
+
+class RecallTestCase(TestCase):
+    expected_ids: List[str] = Field(
+        description=(
+            "The IDs which should be returned by the search. Unless "
+            "strict is set to True, these results can appear in any order."
+        )
+    )
+
+    threshold_position: Optional[int] = Field(
+        description=(
+            "The last possible position for the expected ID in the search "
+            "results",
+        ),
+        default=10_000,
+    )
+
+    @model_validator(mode="after")
+    def check_expected_ids(self):
+        """Check that the expected IDs are unique"""
+        if len(self.expected_ids) != len(set(self.expected_ids)):
+            raise ValueError("expected_ids must be unique")
         return self

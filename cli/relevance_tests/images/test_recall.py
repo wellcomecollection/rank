@@ -2,11 +2,7 @@ import json
 
 import pytest
 
-from .. import get_pipeline_elastic_client, images_index, images_query
 from ..models import RecallTestCase
-
-client = get_pipeline_elastic_client()
-
 
 test_cases = [
     RecallTestCase(search_terms="horse battle", expected_ids=["ud35y7c8"]),
@@ -63,13 +59,9 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", test_cases, ids=[tc.id for tc in test_cases]
 )
-def test_recall(test_case: RecallTestCase):
-    populated_query = json.loads(
-        images_query.replace("{{query}}", test_case.search_terms)
-    )
-    response = client.search(
-        index=images_index,
-        query=populated_query,
+def test_recall(test_case: RecallTestCase, pipeline_client, images_search):
+    response = pipeline_client.search(
+        **images_search(test_case.search_terms),
         size=test_case.threshold_position,
         _source=False,
     )

@@ -1,39 +1,11 @@
-import json
 import warnings
 
 import pytest
 
-from . import get_pipeline_elastic_client, nth, works_index, works_query
-from .models import PrecisionTestCase
-
-client = get_pipeline_elastic_client()
+from .. import nth
+from ..models import PrecisionTestCase
 
 test_cases = [
-<<<<<<< Updated upstream:cli/relevance_tests/test_precision.py
-    PrecisionTestCase(search_terms="horse", expected_ids=["pgwnkf2h"]),
-    PrecisionTestCase(search_terms="cow", expected_ids=["wm8wy47d"]),
-    PrecisionTestCase(
-        search_terms="duck", expected_ids=["wdh6g4qr", "ard3c5j6", "qjjmrt22"]
-    ),
-    PrecisionTestCase(
-        search_terms="sheep",
-        expected_ids=["eegnx7ce"],
-        threshold_position=10,
-        # should raise a warning, because the expected ID is between the first
-        # position and the threshold position
-    ),
-    PrecisionTestCase(
-        search_terms="pig",
-        expected_ids=["eegnx7ce"],
-        # should fail, because the expected ID isn't in the results
-    ),
-    PrecisionTestCase(
-        search_terms="chicken",
-        expected_ids=["utmghxff", "vcxa3w6h"],
-        strict=True,
-        # should fail, because the expected IDs are both present but are
-        # in the wrong order
-=======
     PrecisionTestCase(
         search_terms="information law",
         expected_ids=["zkg7xqm7"],
@@ -159,7 +131,15 @@ test_cases = [
             "Searching for a term including an apostrophe should match the "
             "same term"
         ),
->>>>>>> Stashed changes:cli/relevance_tests/works/test_precision.py
+    ),
+    PrecisionTestCase(
+        search_terms="information law",
+        expected_ids=["zkg7xqm7"],
+        description=(
+            "Multi-word exact matches at the start of a title should be "
+            "prioritised over other single-word matches. See"
+            "https://github.com/wellcomecollection/catalogue-api/issues/466"
+        ),
     ),
 ]
 
@@ -167,16 +147,10 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", test_cases, ids=[tc.id for tc in test_cases]
 )
-def test_precision(test_case: PrecisionTestCase):
-    populated_query = json.loads(
-        works_query.replace("{{query}}", test_case.search_terms)
-    )
-    response = client.search(
-        index=works_index,
-        query=populated_query,
-        # only return the necessary number of results to run the tests
+def test_precision(test_case: PrecisionTestCase, pipeline_client, works_search):
+    response = pipeline_client.search(
+        **works_search(test_case.search_terms),
         size=test_case.threshold_position,
-        # we only need the IDs, so don't return the full documents
         _source=False,
     )
     result_ids = [result["_id"] for result in response["hits"]["hits"]]
