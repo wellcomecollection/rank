@@ -1,6 +1,6 @@
 import typer
 
-from .commands import test, index
+from .commands import index, test
 
 app = typer.Typer(
     name="rank",

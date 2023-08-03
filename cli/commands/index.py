@@ -7,6 +7,7 @@ index_app = typer.Typer(
     no_args_is_help=True,
 )
 
+
 @index_app.command(help="hello world")
 def hello():
     typer.echo("hello world")

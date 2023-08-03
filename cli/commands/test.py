@@ -11,6 +11,7 @@ test_app = typer.Typer(
     help="Run tests for the rank CLI",
 )
 
+
 @test_app.callback(invoke_without_command=True)
 def test(
     ctx: typer.Context,
@@ -55,6 +56,8 @@ def test(
         raise typer.Exit(code=return_code)
 
 
-@test_app.command(help="List all tests that can be run",)
+@test_app.command(
+    help="List all tests that can be run",
+)
 def list():
     pytest.main(["--collect-only", "--quiet", root_test_directory])
