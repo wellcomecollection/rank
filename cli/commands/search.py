@@ -1,20 +1,12 @@
 import json
 
 from .. import ContentType, term_directory
-from . import prompt_user_to_choose_a_content_type
+from . import prompt_user_to_choose_a_content_type, session
 import typer
 from typing import Optional
 from datetime import datetime
-from ..services.elasticsearch import (
-    get_rank_elastic_client,
-    get_reporting_elastic_client,
-    get_pipeline_elastic_client,
-)
-from ..services.aws import get_session
+from ..services import elasticsearch
 
-session = get_session(
-    role_arn="arn:aws:iam::760097843905:role/platform-developer"
-)
 
 app = typer.Typer(
     name="search",
@@ -38,8 +30,8 @@ def get_terms(
         callback=prompt_user_to_choose_a_content_type,
     ),
 ):
-    client = get_reporting_elastic_client(session)
-    response = client.search(
+    reporting_client = elasticsearch.reporting_client(session)
+    response = reporting_client.search(
         query={
             "bool": {
                 "filter": [

@@ -8,8 +8,7 @@ from elasticsearch import Elasticsearch
 
 import chevron
 
-from .services.aws import get_session
-from .services.elasticsearch import get_pipeline_elastic_client
+from .services import aws, elasticsearch
 
 
 class SearchUnderTest:
@@ -40,11 +39,11 @@ class RankPlugin:
 
     @pytest.fixture(scope="session")
     def aws_session(self) -> boto3.session.Session:
-        return get_session(role_arn=self.role_arn)
+        return aws.get_session(role_arn=self.role_arn)
 
     @pytest.fixture(scope="session")
     def pipeline_client(self, aws_session) -> Elasticsearch:
-        return get_pipeline_elastic_client(
+        return elasticsearch.pipeline_client(
             aws_session, pipeline_date=self.sut.pipeline_date
         )
 

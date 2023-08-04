@@ -7,7 +7,7 @@ from elasticsearch import Elasticsearch
 from .aws import get_secret
 
 
-def get_pipeline_elastic_client(
+def pipeline_client(
     session: boto3.session.Session, *, pipeline_date: str
 ) -> Elasticsearch:
     secret_prefix = f"elasticsearch/pipeline_storage_{pipeline_date}/"
@@ -26,7 +26,7 @@ def get_pipeline_elastic_client(
     return client
 
 
-def get_rank_elastic_client(session: boto3.session.Session) -> Elasticsearch:
+def rank_client(session: boto3.session.Session) -> Elasticsearch:
     secret_prefix = "elasticsearch/rank/"
     session_get_secret = functools.partial(get_secret, session)
     es_password = session_get_secret(secret_prefix + "ES_RANK_PASSWORD")
@@ -40,7 +40,7 @@ def get_rank_elastic_client(session: boto3.session.Session) -> Elasticsearch:
     return client
 
 
-def get_reporting_elastic_client(
+def reporting_client(
     session: boto3.session.Session,
 ) -> Elasticsearch:
     session_get_secret = functools.partial(get_secret, session)

@@ -3,13 +3,12 @@ import typer
 import beaupy
 from typing import Optional
 from .. import index_config_directory
-from ..services.elasticsearch import get_rank_elastic_client
-from ..services.aws import get_session
+from ..services import aws, elasticsearch
 
-session = get_session(
+session = aws.get_session(
     role_arn="arn:aws:iam::760097843905:role/platform-developer"
 )
-rank_client = get_rank_elastic_client(session)
+rank_client = elasticsearch.rank_client(session)
 
 
 def get_valid_indices():

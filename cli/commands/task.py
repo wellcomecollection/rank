@@ -2,8 +2,7 @@ import time
 from typing import Optional
 import typer
 import beaupy
-from ..services.elasticsearch import get_rank_elastic_client
-from ..services.aws import get_session
+from . import rank_client
 from rich.progress import Progress
 
 
@@ -13,19 +12,13 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 
-session = get_session(
-    role_arn="arn:aws:iam::760097843905:role/platform-developer"
-)
-
-client = get_rank_elastic_client(session)
-
 
 def get_valid_tasks():
     actions = [
         "indices:data/write/reindex",
         "indices:data/write/update/byquery",
     ]
-    nodes = client.tasks.list(detailed=True, actions=actions)["nodes"]
+    nodes = rank_client.tasks.list(detailed=True, actions=actions)["nodes"]
     return [
         {"task_id": task_id, **task}
         for node_id, node in nodes.items()
@@ -68,7 +61,7 @@ def status(
     )
 ):
     """Get the status of a task"""
-    task = client.tasks.get(task_id=task_id)
+    task = rank_client.tasks.get(task_id=task_id)
     # set up a progress bar
     with Progress() as progress:
         task_progress = progress.add_task(
@@ -83,7 +76,7 @@ def status(
             )
             progress.update(task_progress, completed=created_or_updated)
             time.sleep(1)
-            task = client.tasks.get(task_id=task_id)
+            task = rank_client.tasks.get(task_id=task_id)
             if task["completed"]:
                 progress.stop()
                 break
@@ -99,4 +92,4 @@ def cancel(
 ):
     """Cancel a task"""
     if typer.confirm(f"Are you sure you want to cancel {task}?", abort=True):
-        client.tasks.cancel(task_id=task)
+        rank_client.tasks.cancel(task_id=task)
