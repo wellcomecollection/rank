@@ -18,12 +18,14 @@ session = get_session(
 
 client = get_rank_elastic_client(session)
 
+
 def get_valid_indices():
     return [
         index["index"]
         for index in client.cat.indices(format="json", h="index", s="index")
         if not index["index"].startswith(".")
     ]
+
 
 def get_valid_configs():
     return [p for p in index_config_directory.glob("*.json")]
@@ -41,6 +43,7 @@ def prompt_user_to_choose_a_remote_index(index: Optional[str]) -> str:
             raise typer.BadParameter(f"{index} is a system index")
     return index
 
+
 def prompt_user_to_choose_a_local_config(config_path: Optional[str]) -> str:
     if config_path is None:
         typer.echo("Select a config file")
@@ -50,6 +53,7 @@ def prompt_user_to_choose_a_local_config(config_path: Optional[str]) -> str:
             preprocessor=lambda x: x.stem,
         )
     return config_path
+
 
 def raise_if_index_already_exists(index: str):
     if client.indices.exists(index=index):
@@ -81,6 +85,15 @@ def create(
         ),
         callback=prompt_user_to_choose_a_local_config,
     ),
+    source_index: Optional[str] = typer.Option(
+        None,
+        help=(
+            "The name of an existing index to reindex from. If a source index "
+            "is not provided, you will be prompted to select one from the "
+            "rank cluster"
+        ),
+        callback=prompt_user_to_choose_a_remote_index,
+    ),
 ):
     """Create an index in the rank cluster"""
     with open(config_path, "r", encoding="utf-8") as f:
@@ -89,8 +102,25 @@ def create(
     client.indices.create(
         index=index, mappings=config["mappings"], settings=config["settings"]
     )
-    
+
     typer.echo(f"Created {index} with config {config_path}")
+
+    if typer.confirm(
+        f"Do you want to reindex {source_index} into {index}?",
+        abort=True,
+    ):
+        task = client.reindex(
+            body={
+                "source": {"index": source_index, "size": 100},
+                "dest": {"index": index},
+            },
+            wait_for_completion=False,
+        )
+        typer.echo(f"Reindex task {task['task']} started")
+        typer.echo(
+            f"Run `rank task status {task['task']}` to monitor its progress"
+        )
+
 
 @app.command()
 def update(
@@ -110,7 +140,7 @@ def update(
             "one from the index config directory"
         ),
         callback=prompt_user_to_choose_a_local_config,
-    )
+    ),
 ):
     """Update an index in the rank cluster"""
     with open(config_path, "r", encoding="utf-8") as f:
@@ -162,7 +192,9 @@ def get(
     """Get the mappings and settings for an index in the rank cluster"""
     config = dict(client.indices.get(index=index))[index]
     # only keep the analysis section of the settings
-    config["settings"] = config["settings"]["index"]["analysis"]
+    config["settings"] = {
+        "index": {"analysis": config["settings"]["index"]["analysis"]}
+    }
 
     config_path = index_config_directory / f"{index}.json"
     with open(config_path, "w") as f:
