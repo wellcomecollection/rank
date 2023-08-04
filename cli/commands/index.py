@@ -1,64 +1,20 @@
 from typing import Optional
 import json
 import typer
-from ..services.elasticsearch import get_rank_elastic_client
-from ..services.aws import get_session
+from . import (
+    get_valid_indices,
+    prompt_user_to_choose_a_remote_index,
+    prompt_user_to_choose_a_local_config,
+    raise_if_index_already_exists,
+    rank_client,
+)
 from .. import index_config_directory
-import beaupy
 
 app = typer.Typer(
     name="index",
     help="Manage indices in the rank cluster",
     no_args_is_help=True,
 )
-
-session = get_session(
-    role_arn="arn:aws:iam::760097843905:role/platform-developer"
-)
-
-client = get_rank_elastic_client(session)
-
-
-def get_valid_indices():
-    return [
-        index["index"]
-        for index in client.cat.indices(format="json", h="index", s="index")
-        if not index["index"].startswith(".")
-    ]
-
-
-def get_valid_configs():
-    return [p for p in index_config_directory.glob("*.json")]
-
-
-def prompt_user_to_choose_a_remote_index(index: Optional[str]) -> str:
-    if index is None:
-        typer.echo("Select an index")
-        valid_indices = get_valid_indices()
-        index = beaupy.select(valid_indices)
-    else:
-        if not client.indices.exists(index=index):
-            raise typer.BadParameter(f"{index} does not exist")
-        elif index.startswith(".") or (index == "_all"):
-            raise typer.BadParameter(f"{index} is a system index")
-    return index
-
-
-def prompt_user_to_choose_a_local_config(config_path: Optional[str]) -> str:
-    if config_path is None:
-        typer.echo("Select a config file")
-        valid_configs = get_valid_configs()
-        config_path = beaupy.select(
-            valid_configs,
-            preprocessor=lambda x: x.stem,
-        )
-    return config_path
-
-
-def raise_if_index_already_exists(index: str):
-    if client.indices.exists(index=index):
-        raise typer.BadParameter(f"{index} already exists")
-    return index
 
 
 @app.command()
@@ -99,7 +55,7 @@ def create(
     with open(config_path, "r", encoding="utf-8") as f:
         config = json.load(f)
 
-    client.indices.create(
+    rank_client.indices.create(
         index=index, mappings=config["mappings"], settings=config["settings"]
     )
 
@@ -109,7 +65,7 @@ def create(
         f"Do you want to reindex {source_index} into {index}?",
         abort=True,
     ):
-        task = client.reindex(
+        task = rank_client.reindex(
             body={
                 "source": {"index": source_index, "size": 100},
                 "dest": {"index": index},
@@ -146,14 +102,16 @@ def update(
     with open(config_path, "r", encoding="utf-8") as f:
         config = json.load(f)
 
-    client.indices.put_settings(index=index, body=config["settings"])
-    client.indices.put_mapping(index=index, body=config["mappings"])
+    rank_client.indices.put_settings(index=index, body=config["settings"])
+    rank_client.indices.put_mapping(index=index, body=config["mappings"])
     typer.echo(f"{index} updated")
 
     if typer.confirm(
         f"Do you want to update the documents in {index} to use the new mapping?"
     ):
-        task = client.update_by_query(index=index, wait_for_completion=False)
+        task = rank_client.update_by_query(
+            index=index, wait_for_completion=False
+        )
         typer.echo(f"Update task {task['task']} started")
         typer.echo(
             f"Run `rank task status {task['task']}` to monitor its progress"
@@ -173,7 +131,7 @@ def delete(
 ):
     """Delete an index from the rank cluster"""
     if typer.confirm(f"Are you sure you want to delete {index}?", abort=True):
-        client.indices.delete(index=index)
+        rank_client.indices.delete(index=index)
         typer.echo(f"{index} deleted")
 
 
@@ -190,7 +148,7 @@ def get(
     ),
 ):
     """Get the mappings and settings for an index in the rank cluster"""
-    config = dict(client.indices.get(index=index))[index]
+    config = dict(rank_client.indices.get(index=index))[index]
     # only keep the analysis section of the settings
     config["settings"] = {
         "index": {"analysis": config["settings"]["index"]["analysis"]}

@@ -40,7 +40,9 @@ def get_rank_elastic_client(session: boto3.session.Session) -> Elasticsearch:
     return client
 
 
-def get_reporting_es_client(session: boto3.session.Session) -> Elasticsearch:
+def get_reporting_elastic_client(
+    session: boto3.session.Session,
+) -> Elasticsearch:
     session_get_secret = functools.partial(get_secret, session)
     host = session_get_secret("reporting/es_host")
     es_password = session_get_secret("reporting/read_only/es_password")
