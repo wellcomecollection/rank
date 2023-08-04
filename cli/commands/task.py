@@ -9,7 +9,7 @@ app = typer.Typer(
 
 
 @app.command()
-def check():
+def status():
     raise NotImplementedError
 
 

@@ -18,3 +18,8 @@ ContentType = Enum(
 # make sure the contenttype plays nicely with paths and strings
 ContentType.__str__ = lambda self: self.name
 ContentType.__fspath__ = lambda self: self.name
+
+data_directory = Path("data/")
+index_config_directory = data_directory / "index_config"
+query_directory = data_directory / "queries"
+term_directory = data_directory / "terms"
