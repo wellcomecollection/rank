@@ -2,11 +2,10 @@ import json
 import re
 
 import boto3
+import chevron
 import pytest
 import requests
 from elasticsearch import Elasticsearch
-
-import chevron
 
 from .services import aws, elasticsearch
 
