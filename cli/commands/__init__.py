@@ -22,11 +22,43 @@ def get_valid_indices():
 
 
 def get_valid_configs():
-    return [p for p in index_config_directory.glob("*.json")]
+    """
+    Returns a list of the files containing index config (ie mappings/settings)
+    in the /data directory
+    """
+    if not index_config_directory.exists():
+        raise FileNotFoundError(
+            f"A local index config directory ({index_config_directory}) does "
+            "not exist. You can create it and add config files by running "
+            "`rank index get`"
+        )
+
+    valid_configs = [p for p in index_config_directory.glob("*.json")]
+
+    if len(valid_configs) == 0:
+        raise FileNotFoundError(
+            f"No config files found in {index_config_directory}"
+        )
+
+    return valid_configs
 
 
 def get_valid_queries():
-    return [p for p in query_directory.glob("*.json")]
+    """
+    Returns a list of the files containing queries in the /data directory
+    """
+    if not query_directory.exists():
+        raise FileNotFoundError(
+            f"A local query directory ({query_directory}) does not exist. You "
+            "can create it and add the current prod queries by running "
+            "`rank query get`."
+        )
+
+    valid_queries = [p for p in query_directory.glob("*.json")]
+
+    if len(valid_queries) == 0:
+        raise FileNotFoundError(f"No config files found in {query_directory}")
+    return valid_queries
 
 
 def get_valid_tasks():

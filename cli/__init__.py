@@ -1,6 +1,8 @@
 from enum import Enum
 from pathlib import Path
 
+catalogue_api_url = "https://api.wellcomecollection.org/catalogue/v2"
+
 ContentType = Enum("ContentType", ["works", "images"])
 
 # make sure that `ContentType`s play nicely with paths and strings

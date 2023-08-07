@@ -2,7 +2,7 @@ import pytest
 import typer
 from typing_extensions import Annotated
 from pathlib import Path
-from .. import ContentType
+from .. import ContentType, catalogue_api_url
 
 from ..plugin import RankPlugin
 
@@ -39,7 +39,7 @@ def main(
     if ctx.invoked_subcommand is None:
         rank_plugin = RankPlugin(
             role_arn="arn:aws:iam::760097843905:role/platform-developer",
-            catalogue_api_url="https://api.wellcomecollection.org/catalogue/v2",
+            catalogue_api_url=catalogue_api_url,
         )
 
         test_directory = root_test_directory

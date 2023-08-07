@@ -11,7 +11,4 @@ __pycache__/
 .pytest_cache
 
 # data directory
-data/**/*
-!data/**/
-!**/.gitkeep
-!**/README.md
+data/

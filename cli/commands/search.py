@@ -154,6 +154,8 @@ def get_terms(
     iso_date_without_time = datetime.now().date().isoformat()
     filename = f"{content_type.value}_{iso_date_without_time}.json"
     path = term_directory / filename
+
+    path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write(json.dumps(unique_terms, indent=2))
 

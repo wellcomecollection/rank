@@ -155,6 +155,7 @@ def get(
     }
 
     config_path = index_config_directory / f"{index}.json"
+    config_path.parent.mkdir(parents=True, exist_ok=True)
     with open(config_path, "w") as f:
         f.write(json.dumps(config, indent=2))
     typer.echo(f"Index config written to {config_path}")

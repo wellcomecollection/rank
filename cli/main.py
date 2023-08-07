@@ -1,6 +1,6 @@
 import typer
 
-from .commands import index, search, task, test
+from .commands import index, query, search, task, test
 
 app = typer.Typer(
     name="rank",
@@ -13,3 +13,4 @@ app.add_typer(test.app)
 app.add_typer(index.app)
 app.add_typer(search.app)
 app.add_typer(task.app)
+app.add_typer(query.app)
