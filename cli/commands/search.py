@@ -1,3 +1,4 @@
+import rich
 import json
 import chevron
 from .. import ContentType, term_directory
@@ -61,10 +62,27 @@ def main(
             ],
         )
 
-        typer.echo(f"Found {response['hits']['total']['value']} results\n")
+        total = response["hits"]["total"]["value"]
+
+        # Use rich tables to display the output
+        table = rich.table.Table(
+            caption=f"Found {total} results",
+            caption_justify="left",
+            show_header=True,
+            show_footer=False,
+            box=rich.box.HEAVY_EDGE,
+            leading=1,
+        )
+        table.add_column("i", justify="right", no_wrap=True)
+        table.add_column("Score", justify="right", no_wrap=True)
+        table.add_column("ID", justify="left", no_wrap=True)
+        table.add_column("Title", justify="left", no_wrap=False)
+        table.add_column("Dates", justify="left", no_wrap=True)
+        table.add_column("Reference number", justify="left", no_wrap=True)
 
         for i, hit in enumerate(response["hits"]["hits"]):
             url = f"https://wellcomecollection.org/{content_type}/{hit['_id']}"
+
             score = str(hit["_score"])
             title = hit["_source"]["display"]["title"]
 
@@ -86,15 +104,16 @@ def main(
             except KeyError:
                 reference_number = None
 
-            # TODO: Use rich tables to display output more neatly?
-            # https://rich.readthedocs.io/en/stable/tables.html
-            typer.echo(f"{i+1}.\t{url} ({score})")
-            typer.echo(f"\t{title}")
-            if reference_number:
-                typer.echo(f"\t{reference_number}")
-            if dates:
-                typer.echo(f"\t{dates}")
-            typer.echo("")
+            table.add_row(
+                str(i + 1),
+                score,
+                f"[link={url}]{hit['_id']}[/link]",
+                f"[link={url}]{title}[/link]",
+                dates,
+                reference_number,
+            )
+
+        rich.print(table)
 
 
 @app.command()

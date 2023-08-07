@@ -34,7 +34,6 @@ def main(
     ] = None,
 ):
     """Run relevance tests"""
-    # only run tests if no subcommand is invoked
     if ctx.invoked_subcommand is None:
         rank_plugin = RankPlugin(
             role_arn="arn:aws:iam::760097843905:role/platform-developer",
