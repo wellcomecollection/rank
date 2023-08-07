@@ -1,3 +1,4 @@
+import pytest
 from typing import List, Optional, ClassVar
 
 from pydantic import BaseModel, Field, model_validator
@@ -18,12 +19,28 @@ class TestCase(BaseModel):
         ),
         default=None,
     )
+    known_failure: bool = Field(
+        description=(
+            "If True, the test is expected to fail. If False, the test is "
+            "expected to pass."
+        ),
+        default=False,
+    )
 
     def __init__(self, **data):
         # if an id hasn't been set, use the search terms
         if "id" not in data:
             data["id"] = data["search_terms"]
         super().__init__(**data)
+
+    @property
+    def param(self):
+        """Return the test case as a pytest parameter"""
+        return pytest.param(
+            self,
+            id=self.id,
+            marks=pytest.mark.xfail if self.known_failure else None,
+        )
 
 
 class PrecisionTestCase(TestCase):
