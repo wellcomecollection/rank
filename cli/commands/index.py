@@ -107,7 +107,7 @@ def update(
     typer.echo(f"{index} updated")
 
     if typer.confirm(
-        f"Do you want to update the documents in {index} to use the new mapping?"
+        f"Do you want to update documents in {index} to use the new mapping?"
     ):
         task = rank_client.update_by_query(
             index=index, wait_for_completion=False

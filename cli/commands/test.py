@@ -6,10 +6,7 @@ from .. import ContentType, root_test_directory
 
 from ..plugin import RankPlugin
 
-app = typer.Typer(
-    name="test",
-    help="Run tests for the rank CLI",
-)
+app = typer.Typer(name="test", help="Run relevance tests")
 
 
 @app.callback(invoke_without_command=True)
@@ -36,6 +33,7 @@ def main(
         ),
     ] = None,
 ):
+    """Run relevance tests"""
     # only run tests if no subcommand is invoked
     if ctx.invoked_subcommand is None:
         rank_plugin = RankPlugin(
@@ -56,8 +54,7 @@ def main(
         raise typer.Exit(code=return_code)
 
 
-@app.command(
-    help="List all tests that can be run",
-)
+@app.command()
 def list():
+    """List all tests that can be run"""
     pytest.main(["--collect-only", "--quiet", root_test_directory])
