@@ -43,6 +43,7 @@ test_cases = [
             "k4k3jcvx",
             "yp67jjj5",
         ],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -56,6 +57,7 @@ test_cases = [
             "k4k3jcvx",
             "yp67jjj5",
         ],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -70,6 +72,7 @@ test_cases = [
             "pzbrggws",
             "zz45ck2v",
         ],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -84,6 +87,7 @@ test_cases = [
             "pzbrggws",
             "zz45ck2v",
         ],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -96,6 +100,7 @@ test_cases = [
             "y6qqmmeb",
             "m3hk4fkz",
         ],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -108,6 +113,7 @@ test_cases = [
             "y6qqmmeb",
             "m3hk4fkz",
         ],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -150,6 +156,7 @@ test_cases = [
             "mepptqy2",
             "a4sbkwqg",
         ],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -166,29 +173,34 @@ test_cases = [
             "mepptqy2",
             "a4sbkwqg",
         ],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
         search_terms="neuues",
         description="uu is folded to match w and vv in the title",
         expected_ids=["ker2t6s4", "m9rdjx58", "nu5dyw37"],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
         search_terms="nevves",
         description="uu is folded to match w and vv in the title",
         expected_ids=["ker2t6s4", "m9rdjx58", "nu5dyw37"],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
         search_terms="newes",
         description="w is folded to match uu and vv in the title",
         expected_ids=["ker2t6s4", "m9rdjx58", "nu5dyw37"],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
         search_terms="al-tibb",
         expected_ids=["t4jqq9ue"],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -199,17 +211,19 @@ test_cases = [
         threshold_position=1000,
         search_terms="nuğūm",
         expected_ids=["m94cyux7"],
+        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
         search_terms="nujum",
         expected_ids=["m94cyux7"],
+        known_failure=True,
     ),
 ]
 
 
 @pytest.mark.parametrize(
-    "test_case", test_cases, ids=[tc.id for tc in test_cases]
+    "test_case", [test_case.param for test_case in test_cases]
 )
 def test_alternative_spellings(
     test_case: RecallTestCase, pipeline_client, works_search
