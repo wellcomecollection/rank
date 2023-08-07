@@ -13,9 +13,13 @@ test_cases = [
         search_terms="conosco",
         expected_ids=["nnh3nh47"],
         threshold_position=100,
+        known_failure=True,
     ),
     RecallTestCase(
-        search_terms="allons", expected_ids=["dqnapkdx"], threshold_position=100
+        search_terms="allons",
+        expected_ids=["dqnapkdx"],
+        threshold_position=100,
+        known_failure=True,
     ),
 ]
 

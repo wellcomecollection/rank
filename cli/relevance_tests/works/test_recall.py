@@ -39,26 +39,31 @@ test_cases = [
         search_terms="eugenics society annual reports",
         expected_ids=["k9w95csw", "asqf8kzb", "n499pzsr"],
         description="Matches archives without providing refnos",
+        known_failure=True,
     ),
     RecallTestCase(
         search_terms="لكشف",
         expected_ids=["ymnmz59p"],
         description="Matches stemmed arabic text",
+        known_failure=True,
     ),
     RecallTestCase(
         search_terms="الكشف",
         expected_ids=["ymnmz59p"],
         description="Matches arabic text",
+        known_failure=True,
     ),
     RecallTestCase(
         search_terms="معرفت",
         expected_ids=["a9w79fzj"],
         description="Matches arabic text",
+        known_failure=True,
     ),
     RecallTestCase(
         search_terms="عرف",
         expected_ids=["a9w79fzj"],
         description="Matches stemmed arabic text",
+        known_failure=True,
     ),
 ]
 

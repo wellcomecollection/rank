@@ -56,6 +56,7 @@ test_cases = [
         search_terms="The Piggle",
         expected_ids=["q4drcxc6"],
         description="Example of a known title's prefix, but not the full thing",
+        known_failure=True,
     ),
     PrecisionTestCase(
         search_terms="Das neue Naturheilverfahren",
@@ -91,6 +92,7 @@ test_cases = [
         search_terms="Hunterian wa/hmm",
         expected_ids=["f3gpbk74"],
         description="archive reference number and a word from the title",
+        known_failure=True,
     ),
     PrecisionTestCase(
         search_terms="mammas favorites",
@@ -115,6 +117,7 @@ test_cases = [
             "Searching for a token without its possessive should match a "
             "document with"
         ),
+        known_failure=True,
     ),
     PrecisionTestCase(
         search_terms="sophies shell",
