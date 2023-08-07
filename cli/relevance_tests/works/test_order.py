@@ -85,7 +85,7 @@ test_cases = [
 
 
 @pytest.mark.parametrize(
-    "test_case", test_cases, ids=[tc.id for tc in test_cases]
+    "test_case", [test_case.param for test_case in test_cases]
 )
 def test_order(test_case: OrderTestCase, pipeline_client, works_search):
     response = pipeline_client.search(
