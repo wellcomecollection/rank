@@ -190,7 +190,7 @@ def get_terms(
 ):
     """Get a list of real search terms for a given content type"""
     reporting_client = elasticsearch.reporting_client(session)
-
+    # Page names and content types are currently the same but we don't want to rely on that
     page_name = {
         "works": "works",
         "images": "images",
