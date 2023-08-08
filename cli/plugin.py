@@ -16,6 +16,8 @@ class SearchUnderTest:
     pipeline_date: str
     works_query_template: str
     works_index: str
+    images_query_template: str
+    images_index: str
 
     def __init__(self, catalogue_api_url: str):
         search_templates = requests.get(
@@ -46,7 +48,8 @@ class SearchUnderTest:
 class RankPlugin:
     def __init__(self, *, context: typer.Context):
         self.role_arn = context.meta["role_arn"]
-        self.sut = SearchUnderTest(catalogue_api_url)
+        self.catalogue_api_url = context.meta["catalogue_api_url"]
+        self.sut = SearchUnderTest(self.catalogue_api_url)
 
     @pytest.fixture(scope="session")
     def aws_session(self) -> boto3.session.Session:

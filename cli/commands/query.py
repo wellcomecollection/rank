@@ -4,7 +4,7 @@ import beaupy
 import requests
 import typer
 
-from .. import catalogue_api_url, query_directory
+from .. import query_directory
 from . import get_valid_queries
 
 app = typer.Typer(
@@ -38,7 +38,7 @@ def get(
     directory `data/queries`
     """
     search_templates = requests.get(
-        f"{catalogue_api_url}/search-templates.json"
+        f"{context.meta['catalogue_api_url']}/search-templates.json"
     ).json()["templates"]
 
     selected = beaupy.select_multiple(

@@ -1,10 +1,14 @@
+import functools
+import beaupy
+import re
+import requests
 import json
 from typing import Optional
 
 import typer
 from elasticsearch import Elasticsearch
 
-from .. import index_config_directory
+from .. import index_config_directory, catalogue_api_url
 from ..services import aws, elasticsearch
 from . import (
     get_valid_indices,
@@ -32,7 +36,7 @@ def callback(context: typer.Context):
 @app.command(name="list")
 def list_indices(context: typer.Context):
     """List the indices in the rank cluster"""
-    valid_indices = get_valid_indices(context)
+    valid_indices = get_valid_indices(client=context.meta["rank_client"])
     typer.echo("\n".join(valid_indices))
 
 
@@ -69,6 +73,7 @@ def create(
     with open(config_path, "r", encoding="utf-8") as f:
         config = json.load(f)
 
+    rank_client: Elasticsearch = context.meta["rank_client"]
     rank_client.indices.create(
         index=index, mappings=config["mappings"], settings=config["settings"]
     )
@@ -151,6 +156,7 @@ def delete(
     """Delete an index from the rank cluster"""
     index = prompt_user_to_choose_a_remote_index(context, index)
     if typer.confirm(f"Are you sure you want to delete {index}?", abort=True):
+        rank_client: Elasticsearch = context.meta["rank_client"]
         rank_client.indices.delete(index=index)
         typer.echo(f"{index} deleted")
 
@@ -184,6 +190,65 @@ def get(
 
 
 @app.command()
-def replicate():
-    """Replicate an index from a production cluster to the rank cluster"""
-    raise NotImplementedError
+def replicate(
+    context: typer.Context,
+):
+    """Reindex an index from a production cluster to the rank cluster"""
+    rank_client: Elasticsearch = context.meta["rank_client"]
+    search_templates = requests.get(
+        f"{ context.meta['catalogue_api_url']}/search-templates.json"
+    ).json()["templates"]
+
+    works = next(
+        template
+        for template in search_templates
+        if template["index"].startswith("works")
+    )
+
+    pipeline_date = re.search(
+        r"^works-indexed-(?P<date>\d{4}-\d{2}-\d{2}.?)", works["index"]
+    ).group("date")
+
+    secret_prefix = f"elasticsearch/pipeline_storage_{pipeline_date}/"
+
+    get_secret = functools.partial(aws.get_secret, context.meta["session"])
+
+    pipeline_password = get_secret(secret_prefix + "es_password")
+    pipeline_username = get_secret(secret_prefix + "es_username")
+    protocol = get_secret(secret_prefix + "protocol")
+    public_host = get_secret(secret_prefix + "public_host")
+    port = get_secret(secret_prefix + "port")
+    pipeline_host = f"{protocol}://{public_host}:{port}"
+
+    pipeline_client = elasticsearch.pipeline_client(
+        session=context.meta["session"],
+        pipeline_date=pipeline_date,
+    )
+
+    valid_indices = get_valid_indices(client=pipeline_client)
+    source_index = beaupy.select(valid_indices)
+    dest_index = typer.prompt(
+        "What do you want to call the index in the rank cluster?",
+        default=source_index,
+    )
+
+    task = rank_client.reindex(
+        body={
+            "source": {
+                "remote": {
+                    "host": pipeline_host,
+                    "username": pipeline_username,
+                    "password": pipeline_password,
+                },
+                "index": source_index,
+            },
+            "dest": {"index": dest_index},
+        },
+        wait_for_completion=False,
+    )
+
+    task_id = task["task"]
+    typer.echo(f"Reindex task {task_id} started")
+    typer.echo(
+        f"Run `rank task status --task-id={task_id}` to monitor its progress"
+    )

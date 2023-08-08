@@ -7,13 +7,10 @@ from elasticsearch import Elasticsearch
 from .. import ContentType, index_config_directory, query_directory
 
 
-def get_valid_indices(context: typer.Context):
-    rank_client: Elasticsearch = context.meta["rank_client"]
+def get_valid_indices(client: Elasticsearch):
     return [
         index["index"]
-        for index in rank_client.cat.indices(
-            format="json", h="index", s="index"
-        )
+        for index in client.cat.indices(format="json", h="index", s="index")
         if not index["index"].startswith(".")
     ]
 
@@ -77,7 +74,7 @@ def prompt_user_to_choose_a_remote_index(
 ) -> str:
     if index is None:
         typer.echo("Select an index")
-        valid_indices = get_valid_indices(context)
+        valid_indices = get_valid_indices(client=context.meta["rank_client"])
         index = beaupy.select(valid_indices)
     else:
         rank_client: Elasticsearch = context.meta["rank_client"]
