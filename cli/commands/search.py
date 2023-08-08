@@ -190,12 +190,18 @@ def get_terms(
 ):
     """Get a list of real search terms for a given content type"""
     reporting_client = elasticsearch.reporting_client(session)
+
+    page_name = {
+        "works": "works",
+        "images": "images",
+    }[content_type.value]
+
     response = reporting_client.search(
         query={
             "bool": {
                 "filter": [
                     {"exists": {"field": "page.query.query"}},
-                    {"term": {"page.name": content_type.value}},
+                    {"term": {"page.name": page_name}},
                 ],
                 "must_not": [
                     {"match": {"properties.looksLikeSpam": "true"}},
