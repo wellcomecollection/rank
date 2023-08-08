@@ -7,7 +7,8 @@ from . import get_valid_queries
 
 app = typer.Typer(
     name="query",
-    help="Manage queries",
+    help="Manage local queries",
+    no_args_is_help=True,
 )
 
 
@@ -21,7 +22,15 @@ def list():
 
 @app.command()
 def get():
-    """Get the prod queries from the API"""
+    """
+    Get the prod queries from the API
+
+    Useful when you're working on a new relevance requirement, but don't
+    want to start completely from scratch
+
+    N.B. This command will overwrite any existing queries in the query
+    directory `data/queries`
+    """
     search_templates = requests.get(
         f"{catalogue_api_url}/search-templates.json"
     ).json()["templates"]
