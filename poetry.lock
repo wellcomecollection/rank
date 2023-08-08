@@ -163,6 +163,22 @@ tests = ["attrs[tests-no-zope]", "zope-interface"]
 tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-xdist[psutil]"]
 
 [[package]]
+name = "beaupy"
+version = "3.5.4"
+description = "A library of elements for interactive TUIs in Python"
+optional = false
+python-versions = ">=3.7.8,<4.0.0"
+files = [
+    {file = "beaupy-3.5.4-py3-none-any.whl", hash = "sha256:9bd9cdbc610efbb4c3ff6885827fc20b607b42d6b8ecbf9708cfe8cba55dd978"},
+    {file = "beaupy-3.5.4.tar.gz", hash = "sha256:f56e0f84f85832e13d91394ff7573841461e22e0b26aaa2a891d81bd5ab42e0e"},
+]
+
+[package.dependencies]
+emoji = ">=2.0.0,<3.0.0"
+python-yakh = ">=0.3.0,<0.4.0"
+rich = ">=12.2.0,<13.0.0"
+
+[[package]]
 name = "black"
 version = "23.7.0"
 description = "The uncompromising code formatter."
@@ -426,6 +442,19 @@ elastic-transport = ">=8,<9"
 [package.extras]
 async = ["aiohttp (>=3,<4)"]
 requests = ["requests (>=2.4.0,<3.0.0)"]
+
+[[package]]
+name = "emoji"
+version = "2.7.0"
+description = "Emoji for Python"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+files = [
+    {file = "emoji-2.7.0.tar.gz", hash = "sha256:375cc08589704266099846c553b6572ec5be591374b4d2cd1623b8343d5c9abb"},
+]
+
+[package.extras]
+dev = ["coverage", "coveralls", "pytest"]
 
 [[package]]
 name = "exceptiongroup"
@@ -890,6 +919,17 @@ files = [
 six = ">=1.5"
 
 [[package]]
+name = "python-yakh"
+version = "0.3.1"
+description = "Yet Another Keypress Handler"
+optional = false
+python-versions = ">=3.7.8,<4.0.0"
+files = [
+    {file = "python_yakh-0.3.1-py3-none-any.whl", hash = "sha256:4eaaa5c0a369fa414c5f83d63d15b199ca8ed4b7df519cb38b8b9adec700fba5"},
+    {file = "python_yakh-0.3.1.tar.gz", hash = "sha256:cadf04077cc3a42285c54b0a65bce0e50b7850a64c24f9c76d9ee14d9b1cbd0f"},
+]
+
+[[package]]
 name = "requests"
 version = "2.31.0"
 description = "Python HTTP for Humans."
@@ -1134,4 +1174,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "3f2ae8c7e8560c5eda920e7fe57e3ee7b11913d16fc3ebbd6054db0215e7d896"
+content-hash = "0d38c7ac4f4acadfcb55400d564178390817302011b53e3d0bec5e80bf5c43b7"
