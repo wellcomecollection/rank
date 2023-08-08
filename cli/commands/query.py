@@ -1,8 +1,10 @@
 import json
+
 import beaupy
 import requests
 import typer
-from .. import query_directory, catalogue_api_url
+
+from .. import catalogue_api_url, query_directory
 from . import get_valid_queries
 
 app = typer.Typer(
@@ -12,16 +14,20 @@ app = typer.Typer(
 )
 
 
-@app.command()
-def list():
+@app.command(name="list")
+def list_queries(
+    context: typer.Context,
+):
     """List the queries in the query directory"""
-    queries = get_valid_queries()
+    queries = get_valid_queries(context)
     for query in queries:
         typer.echo(query.name)
 
 
 @app.command()
-def get():
+def get(
+    context: typer.Context,
+):
     """
     Get the prod queries from the API
 

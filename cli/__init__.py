@@ -1,7 +1,16 @@
+import os
 from enum import Enum
 from pathlib import Path
 
 catalogue_api_url = "https://api.wellcomecollection.org/catalogue/v2"
+
+role_arn = (
+    # Don't assume a role when running in CI.
+    # Instead, the role should be assumed by the buildkite instance
+    None
+    if os.environ.get("BUILDKITE") is not None
+    else "arn:aws:iam::760097843905:role/platform-developer"
+)
 
 
 class ContentType(str, Enum):

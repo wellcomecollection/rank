@@ -2,7 +2,6 @@ import pytest
 
 from ..models import RecallTestCase
 
-
 test_cases = [
     RecallTestCase(
         search_terms="arbeiten",

@@ -1,19 +1,18 @@
-import rich
 import json
+from datetime import datetime
+from typing import Optional
+
 import chevron
+import rich
+import typer
+
 from .. import ContentType, term_directory
+from ..services import aws, elasticsearch
 from . import (
     prompt_user_to_choose_a_content_type,
-    session,
-    rank_client,
-    prompt_user_to_choose_a_remote_index,
     prompt_user_to_choose_a_local_query,
+    prompt_user_to_choose_a_remote_index,
 )
-import typer
-from typing import Optional
-from datetime import datetime
-from ..services import elasticsearch
-
 
 app = typer.Typer(
     name="search",
@@ -129,7 +128,7 @@ def build_images_results_table(response: dict) -> rich.table.Table:
 
 @app.callback(invoke_without_command=True)
 def main(
-    ctx: typer.Context,
+    context: typer.Context,
     search_terms: Optional[str] = typer.Option(
         None,
         help="The search terms to use",
@@ -149,7 +148,12 @@ def main(
         max=100,
     ),
 ):
-    if ctx.invoked_subcommand is None:
+    context.meta["session"] = aws.get_session(context.meta["role_arn"])
+    context.meta["rank_client"] = elasticsearch.rank_client(
+        context.meta["session"]
+    )
+
+    if context.invoked_subcommand is None:
         # We shouldn't use callbacks here, because the main() command itself is
         # a callback. If a user tries to run eg `rank search get-terms` with
         # callbacks specified in the parameters of main(), those callbacks
@@ -159,8 +163,12 @@ def main(
         # haven't provided the necessary arguments.
         if search_terms is None:
             search_terms = typer.prompt("What are you looking for?")
-        index = prompt_user_to_choose_a_remote_index(index)
-        query_path = prompt_user_to_choose_a_local_query(query_path)
+        index = prompt_user_to_choose_a_remote_index(
+            context=context, index=index
+        )
+        query_path = prompt_user_to_choose_a_local_query(
+            context=context, query_path=query_path
+        )
 
         content_type = ContentType(index.split("-")[0])
 
@@ -169,7 +177,7 @@ def main(
 
         rendered_query = chevron.render(query, {"query": search_terms})
 
-        response = rank_client.search(
+        response = context.meta["rank_client"].search(
             index=index,
             query=json.loads(rendered_query),
             size=n,
@@ -182,6 +190,7 @@ def main(
 
 @app.command()
 def get_terms(
+    context: typer.Context,
     content_type: Optional[ContentType] = typer.Option(
         None,
         help="The content type to find real search terms for",
@@ -189,8 +198,10 @@ def get_terms(
     ),
 ):
     """Get a list of real search terms for a given content type"""
-    reporting_client = elasticsearch.reporting_client(session)
-    # Page names and content types are currently the same but we don't want to rely on that
+    reporting_client = elasticsearch.reporting_client(context.meta["session"])
+
+    # Page names and content types are currently the same but we don't want to
+    # rely on that
     page_name = {
         "works": "works",
         "images": "images",
@@ -233,6 +244,6 @@ def get_terms(
 
 
 @app.command()
-def compare():
+def compare(context: typer.Context):
     """Compare the speed of two queries against the same index"""
     raise NotImplementedError

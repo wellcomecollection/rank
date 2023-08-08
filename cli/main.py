@@ -1,5 +1,6 @@
 import typer
 
+from . import role_arn
 from .commands import index, query, search, task, test
 
 app = typer.Typer(
@@ -8,6 +9,12 @@ app = typer.Typer(
     no_args_is_help=True,
     add_completion=False,
 )
+
+
+@app.callback()
+def callback(context: typer.Context):
+    context.meta["role_arn"] = role_arn
+
 
 app.add_typer(test.app)
 app.add_typer(index.app)

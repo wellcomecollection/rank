@@ -1,17 +1,14 @@
-from .. import ContentType
-import typer
-import beaupy
 from typing import Optional
-from .. import index_config_directory, query_directory
-from ..services import aws, elasticsearch
 
-session = aws.get_session(
-    role_arn="arn:aws:iam::760097843905:role/platform-developer"
-)
-rank_client = elasticsearch.rank_client(session)
+import beaupy
+import typer
+from elasticsearch import Elasticsearch
+
+from .. import ContentType, index_config_directory, query_directory
 
 
-def get_valid_indices():
+def get_valid_indices(context: typer.Context):
+    rank_client: Elasticsearch = context.meta["rank_client"]
     return [
         index["index"]
         for index in rank_client.cat.indices(
@@ -21,7 +18,7 @@ def get_valid_indices():
     ]
 
 
-def get_valid_configs():
+def get_valid_configs(context: typer.Context):
     """
     Returns a list of the files containing index config (ie mappings/settings)
     in the /data directory
@@ -43,7 +40,7 @@ def get_valid_configs():
     return valid_configs
 
 
-def get_valid_queries():
+def get_valid_queries(context: typer.Context):
     """
     Returns a list of the files containing queries in the /data directory
     """
@@ -61,7 +58,8 @@ def get_valid_queries():
     return valid_queries
 
 
-def get_valid_tasks():
+def get_valid_tasks(context: typer.Context):
+    rank_client: Elasticsearch = context.meta["rank_client"]
     actions = [
         "indices:data/write/reindex",
         "indices:data/write/update/byquery",
@@ -74,12 +72,15 @@ def get_valid_tasks():
     ]
 
 
-def prompt_user_to_choose_a_remote_index(index: Optional[str]) -> str:
+def prompt_user_to_choose_a_remote_index(
+    context: typer.Context, index: Optional[str]
+) -> str:
     if index is None:
         typer.echo("Select an index")
-        valid_indices = get_valid_indices()
+        valid_indices = get_valid_indices(context)
         index = beaupy.select(valid_indices)
     else:
+        rank_client: Elasticsearch = context.meta["rank_client"]
         if not rank_client.indices.exists(index=index):
             raise typer.BadParameter(f"{index} does not exist")
         elif index.startswith(".") or (index == "_all"):
@@ -87,10 +88,12 @@ def prompt_user_to_choose_a_remote_index(index: Optional[str]) -> str:
     return index
 
 
-def prompt_user_to_choose_a_local_config(config_path: Optional[str]) -> str:
+def prompt_user_to_choose_a_local_config(
+    context: typer.Context, config_path: Optional[str]
+) -> str:
     if config_path is None:
         typer.echo("Select a config file")
-        valid_configs = get_valid_configs()
+        valid_configs = get_valid_configs(context)
         config_path = beaupy.select(
             valid_configs,
             preprocessor=lambda x: x.stem,
@@ -98,10 +101,12 @@ def prompt_user_to_choose_a_local_config(config_path: Optional[str]) -> str:
     return config_path
 
 
-def prompt_user_to_choose_a_local_query(query_path: Optional[str]) -> str:
+def prompt_user_to_choose_a_local_query(
+    context: typer.Context, query_path: Optional[str]
+) -> str:
     if query_path is None:
         typer.echo("Select a query file")
-        valid_queries = get_valid_queries()
+        valid_queries = get_valid_queries(context)
         query_path = beaupy.select(
             valid_queries,
             preprocessor=lambda x: x.stem,
@@ -109,7 +114,8 @@ def prompt_user_to_choose_a_local_query(query_path: Optional[str]) -> str:
     return query_path
 
 
-def raise_if_index_already_exists(index: str):
+def raise_if_index_already_exists(context: typer.Context, index: str):
+    rank_client: Elasticsearch = context.meta["rank_client"]
     if rank_client.indices.exists(index=index):
         raise typer.BadParameter(f"{index} already exists")
     return index
@@ -130,8 +136,10 @@ def prompt_user_to_choose_a_content_type(
     return index
 
 
-def prompt_user_to_choose_a_task(task_id: Optional[str]) -> str:
-    valid_tasks = get_valid_tasks()
+def prompt_user_to_choose_a_task(
+    context: typer.Context, task_id: Optional[str]
+) -> str:
+    valid_tasks = get_valid_tasks(context)
     if len(valid_tasks) == 0:
         raise typer.BadParameter("No tasks running")
     if task_id is None:
