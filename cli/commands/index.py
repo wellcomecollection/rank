@@ -266,14 +266,14 @@ def replicate(
                         "password": pipeline_password,
                     },
                     "index": source_index,
+                    "size": 500,
                 },
                 "dest": {"index": dest_index},
             },
             wait_for_completion=False,
-            # minimise the impact on the production cluster by only indexing
-            # 500 documents at a time, and only issuing 5 requests per second
-            size=500,
             requests_per_second=5,
+            # we minimise the impact on the production cluster by only indexing
+            # 500 documents at a time, and only issuing 5 requests per second
         )
 
         task_id = task["task"]
