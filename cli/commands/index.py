@@ -242,7 +242,7 @@ def replicate(
 
     if source_index is None:
         source_index = beaupy.select(get_valid_indices(client=pipeline_client))
-    if not rank_client.indices.exists(index=source_index):
+    if not pipeline_client.indices.exists(index=source_index):
         raise typer.BadParameter(f"{source_index} does not exist")
     elif source_index.startswith(".") or (source_index == "_all"):
         raise typer.BadParameter(f"{source_index} is a system index")
@@ -254,23 +254,38 @@ def replicate(
         )
     raise_if_index_already_exists(context=context, index=dest_index)
 
-    task = rank_client.reindex(
-        body={
-            "source": {
-                "remote": {
-                    "host": pipeline_host,
-                    "username": pipeline_username,
-                    "password": pipeline_password,
+    if typer.confirm(
+        text=(
+            "Warning! Reindexing from the production cluster will put some "
+            "extra pressure on it, and could affect production services like "
+            "the API. The reindex settings have been configured to minimise "
+            "this, but if you're worried, you might want to add capacity to "
+            "the production cluster before proceeding.\n\n"
+            "Are you sure you want to proceed?"
+        ),
+        abort=True,
+    ):
+        task = rank_client.reindex(
+            body={
+                "source": {
+                    "remote": {
+                        "host": pipeline_host,
+                        "username": pipeline_username,
+                        "password": pipeline_password,
+                    },
+                    "index": source_index,
                 },
-                "index": source_index,
+                "dest": {"index": dest_index},
             },
-            "dest": {"index": dest_index},
-        },
-        wait_for_completion=False,
-    )
+            wait_for_completion=False,
+            # minimise the impact on the production cluster by only indexing
+            # 500 documents at a time, and only issuing 5 requests per second
+            size=500,
+            requests_per_second=5,
+        )
 
-    task_id = task["task"]
-    typer.echo(f"Reindex task {task_id} started")
-    typer.echo(
-        f"Run `rank task status --task-id={task_id}` to monitor its progress"
-    )
+        task_id = task["task"]
+        typer.echo(f"Reindex task {task_id} started")
+        typer.echo(
+            f"Run `rank task status --task-id={task_id}` to monitor its progress"
+        )
