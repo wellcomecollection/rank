@@ -1,3 +1,4 @@
+from typing import Union, List, Optional
 import boto3
 
 
@@ -16,7 +17,18 @@ def get_session(role_arn: str) -> boto3.session.Session:
     return session
 
 
-def get_secret(session: boto3.session.Session, secret_id: str) -> str:
+def get_secrets(
+    session: boto3.session.Session,
+    secret_ids: Union[str, List[str]],
+    secret_prefix: str = "",
+) -> dict:
+    if isinstance(secret_ids, str):
+        secret_ids = [secret_ids]
+
+    secrets = {}
     client = session.client("secretsmanager")
-    response = client.get_secret_value(SecretId=secret_id)
-    return response["SecretString"]
+    for secret_id in secret_ids:
+        response = client.get_secret_value(SecretId=secret_prefix + secret_id)
+        secrets[secret_id] = response["SecretString"]
+
+    return secrets

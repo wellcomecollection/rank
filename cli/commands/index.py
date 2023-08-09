@@ -1,7 +1,4 @@
-import functools
 import beaupy
-import re
-import requests
 import json
 from typing import Optional
 
@@ -10,6 +7,7 @@ from elasticsearch import Elasticsearch
 
 from .. import index_config_directory
 from ..services import aws, elasticsearch
+from ..plugin import get_pipeline_search_templates
 from . import (
     get_valid_indices,
     prompt_user_to_choose_a_local_config,
@@ -209,39 +207,18 @@ def replicate(
     ),
 ):
     """Reindex an index from a production cluster to the rank cluster"""
-    rank_client: Elasticsearch = context.meta["rank_client"]
-    search_templates = requests.get(
-        f"{ context.meta['catalogue_api_url']}/search-templates.json"
-    ).json()["templates"]
-
-    works = next(
-        template
-        for template in search_templates
-        if template["index"].startswith("works")
+    pipeline_search_templates = get_pipeline_search_templates(
+        catalogue_api_url=context.meta["catalogue_api_url"]
     )
-
-    pipeline_date = re.search(
-        r"^works-indexed-(?P<date>\d{4}-\d{2}-\d{2}.?)", works["index"]
-    ).group("date")
-
-    secret_prefix = f"elasticsearch/pipeline_storage_{pipeline_date}/"
-
-    get_secret = functools.partial(aws.get_secret, context.meta["session"])
-
-    pipeline_password = get_secret(secret_prefix + "es_password")
-    pipeline_username = get_secret(secret_prefix + "es_username")
-    protocol = get_secret(secret_prefix + "protocol")
-    public_host = get_secret(secret_prefix + "public_host")
-    port = get_secret(secret_prefix + "port")
-    pipeline_host = f"{protocol}://{public_host}:{port}"
-
+    pipeline_date = pipeline_search_templates["works"]["index_date"]
     pipeline_client = elasticsearch.pipeline_client(
         session=context.meta["session"],
         pipeline_date=pipeline_date,
     )
 
     if source_index is None:
-        source_index = beaupy.select(get_valid_indices(client=pipeline_client))
+        valid_indices = get_valid_indices(client=pipeline_client)
+        source_index = beaupy.select(valid_indices)
     if not pipeline_client.indices.exists(index=source_index):
         raise typer.BadParameter(f"{source_index} does not exist")
     elif source_index.startswith(".") or (source_index == "_all"):
@@ -265,6 +242,21 @@ def replicate(
         ),
         abort=True,
     ):
+        secrets = aws.get_secrets(
+            session=context.meta["session"],
+            secret_prefix=f"elasticsearch/pipeline_storage_{pipeline_date}/",
+            secret_ids=[
+                "es_password",
+                "es_username",
+                "protocol",
+                "public_host",
+                "port",
+            ],
+        )
+        pipeline_host = f"{secrets['protocol']}://{secrets['public_host']}:{secrets['port']}"
+        pipeline_username = secrets["es_username"]
+        pipeline_password = secrets["es_password"]
+        rank_client: Elasticsearch = context.meta["rank_client"]
         task = rank_client.reindex(
             body={
                 "source": {
