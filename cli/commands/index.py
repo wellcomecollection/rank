@@ -8,7 +8,7 @@ from typing import Optional
 import typer
 from elasticsearch import Elasticsearch
 
-from .. import index_config_directory, catalogue_api_url
+from .. import index_config_directory
 from ..services import aws, elasticsearch
 from . import (
     get_valid_indices,
@@ -192,6 +192,21 @@ def get(
 @app.command()
 def replicate(
     context: typer.Context,
+    source_index: str = typer.Option(
+        None,
+        help=(
+            "The name of the index to replicate. If an index is not provided, "
+            "you will be prompted to select one from the production cluster"
+        ),
+    ),
+    dest_index: str = typer.Option(
+        None,
+        help=(
+            "The name of the index to create in the rank cluster. If an index "
+            "is not provided, you will be prompted to select one from the rank "
+            "cluster. The default is to use the same name as the source index"
+        ),
+    ),
 ):
     """Reindex an index from a production cluster to the rank cluster"""
     rank_client: Elasticsearch = context.meta["rank_client"]
@@ -225,12 +240,19 @@ def replicate(
         pipeline_date=pipeline_date,
     )
 
-    valid_indices = get_valid_indices(client=pipeline_client)
-    source_index = beaupy.select(valid_indices)
-    dest_index = typer.prompt(
-        "What do you want to call the index in the rank cluster?",
-        default=source_index,
-    )
+    if source_index is None:
+        source_index = beaupy.select(get_valid_indices(client=pipeline_client))
+    if not rank_client.indices.exists(index=source_index):
+        raise typer.BadParameter(f"{source_index} does not exist")
+    elif source_index.startswith(".") or (source_index == "_all"):
+        raise typer.BadParameter(f"{source_index} is a system index")
+
+    if dest_index is None:
+        dest_index = typer.prompt(
+            "What do you want to call the index in the rank cluster?",
+            default=source_index,
+        )
+    raise_if_index_already_exists(context=context, index=dest_index)
 
     task = rank_client.reindex(
         body={
