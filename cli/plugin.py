@@ -5,8 +5,10 @@ import boto3
 import chevron
 import pytest
 import requests
+import typer
 from elasticsearch import Elasticsearch
 
+from . import catalogue_api_url
 from .services import aws, elasticsearch
 
 
@@ -42,13 +44,13 @@ class SearchUnderTest:
 
 
 class RankPlugin:
-    def __init__(self, *, role_arn: str, catalogue_api_url: str):
-        self.role_arn = role_arn
+    def __init__(self, *, context: typer.Context):
+        self.role_arn = context.meta["role_arn"]
         self.sut = SearchUnderTest(catalogue_api_url)
 
     @pytest.fixture(scope="session")
     def aws_session(self) -> boto3.session.Session:
-        return aws.get_session(role_arn=self.role_arn)
+        return aws.get_session(self.role_arn)
 
     @pytest.fixture(scope="session")
     def pipeline_client(self, aws_session) -> Elasticsearch:

@@ -1,6 +1,6 @@
-import pytest
-from typing import List, Optional, ClassVar
+from typing import ClassVar, List, Optional
 
+import pytest
 from pydantic import BaseModel, Field, model_validator
 
 

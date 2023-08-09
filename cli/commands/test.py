@@ -1,9 +1,10 @@
+from pathlib import Path
+
 import pytest
 import typer
 from typing_extensions import Annotated
-from pathlib import Path
-from .. import ContentType, catalogue_api_url
 
+from .. import ContentType
 from ..plugin import RankPlugin
 
 app = typer.Typer(name="test", help="Run relevance tests")
@@ -13,7 +14,7 @@ root_test_directory = Path("cli/relevance_tests/")
 
 @app.callback(invoke_without_command=True)
 def main(
-    ctx: typer.Context,
+    context: typer.Context,
     test_id: Annotated[
         str,
         typer.Option(
@@ -36,12 +37,8 @@ def main(
     ] = None,
 ):
     """Run relevance tests"""
-    if ctx.invoked_subcommand is None:
-        rank_plugin = RankPlugin(
-            role_arn="arn:aws:iam::760097843905:role/platform-developer",
-            catalogue_api_url=catalogue_api_url,
-        )
-
+    if context.invoked_subcommand is None:
+        rank_plugin = RankPlugin(context=context)
         test_directory = root_test_directory
         if content_type:
             test_directory = test_directory / content_type
@@ -55,7 +52,7 @@ def main(
         raise typer.Exit(code=return_code)
 
 
-@app.command()
-def list():
+@app.command(name="list")
+def list_tests():
     """List all tests that can be run"""
     pytest.main(["--collect-only", "--quiet", root_test_directory])
