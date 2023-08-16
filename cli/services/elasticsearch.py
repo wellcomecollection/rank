@@ -1,40 +1,44 @@
-import functools
 from time import sleep
 
 import boto3
 from elasticsearch import Elasticsearch
 
-from .aws import get_secret
+from .aws import get_secrets
 
 
 def pipeline_client(
     session: boto3.session.Session, *, pipeline_date: str
 ) -> Elasticsearch:
-    secret_prefix = f"elasticsearch/pipeline_storage_{pipeline_date}/"
-    session_get_secret = functools.partial(get_secret, session)
-    es_password = session_get_secret(secret_prefix + "es_password")
-    es_username = session_get_secret(secret_prefix + "es_username")
-    protocol = session_get_secret(secret_prefix + "protocol")
-    public_host = session_get_secret(secret_prefix + "public_host")
-    port = session_get_secret(secret_prefix + "port")
+    secrets = get_secrets(
+        session=session,
+        secret_prefix=f"elasticsearch/pipeline_storage_{pipeline_date}/",
+        secret_ids=[
+            "es_password",
+            "es_username",
+            "protocol",
+            "public_host",
+            "port",
+        ],
+    )
 
     client = Elasticsearch(
-        f"{protocol}://{public_host}:{port}",
-        basic_auth=(es_username, es_password),
+        f"{secrets['protocol']}://{secrets['public_host']}:{secrets['port']}",
+        basic_auth=(secrets["es_username"], secrets["es_password"]),
     )
     wait_for_client(client)
     return client
 
 
 def rank_client(session: boto3.session.Session) -> Elasticsearch:
-    secret_prefix = "elasticsearch/rank/"
-    session_get_secret = functools.partial(get_secret, session)
-    es_password = session_get_secret(secret_prefix + "ES_RANK_PASSWORD")
-    es_username = session_get_secret(secret_prefix + "ES_RANK_USER")
-    cloud_id = session_get_secret(secret_prefix + "ES_RANK_CLOUD_ID")
+    secrets = get_secrets(
+        session=session,
+        secret_prefix="elasticsearch/rank/",
+        secret_ids=["ES_RANK_PASSWORD", "ES_RANK_USER", "ES_RANK_CLOUD_ID"],
+    )
+
     client = Elasticsearch(
-        cloud_id=cloud_id,
-        basic_auth=(es_username, es_password),
+        cloud_id=secrets["ES_RANK_CLOUD_ID"],
+        basic_auth=(secrets["ES_RANK_USER"], secrets["ES_RANK_PASSWORD"]),
     )
     wait_for_client(client)
     return client
@@ -43,16 +47,22 @@ def rank_client(session: boto3.session.Session) -> Elasticsearch:
 def reporting_client(
     session: boto3.session.Session,
 ) -> Elasticsearch:
-    session_get_secret = functools.partial(get_secret, session)
-    host = session_get_secret("reporting/es_host")
-    es_password = session_get_secret("reporting/read_only/es_password")
-    es_username = session_get_secret("reporting/read_only/es_username")
+    secrets = get_secrets(
+        session=session,
+        secret_prefix="reporting/",
+        secret_ids=[
+            "es_host",
+            "read_only/es_password",
+            "read_only/es_username",
+        ],
+    )
+
     reporting_es_client = Elasticsearch(
-        hosts=f"https://{host}:443",
-        basic_auth=(es_username, es_password),
-        timeout=30,
-        retry_on_timeout=True,
-        max_retries=10,
+        hosts=f"https://{secrets['es_host']}:443",
+        basic_auth=(
+            secrets["read_only/es_username"],
+            secrets["read_only/es_password"],
+        ),
     )
     wait_for_client(reporting_es_client)
     return reporting_es_client
