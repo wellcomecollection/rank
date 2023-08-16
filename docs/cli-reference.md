@@ -40,7 +40,7 @@ $ rank index [OPTIONS] COMMAND [ARGS]...
 * `delete`: Delete an index
 * `get`: Get the mappings and settings for an index...
 * `list`: List the indices in the rank cluster
-* `replicate`: Replicate an index from a production...
+* `replicate`: Reindex an index from a production cluster...
 * `update`: Update an index in the rank cluster
 
 ### `rank index create`
@@ -106,7 +106,7 @@ $ rank index list [OPTIONS]
 
 ### `rank index replicate`
 
-Replicate an index from a production cluster to the rank cluster
+Reindex an index from a production cluster to the rank cluster
 
 **Usage**:
 
@@ -116,6 +116,8 @@ $ rank index replicate [OPTIONS]
 
 **Options**:
 
+* `--source-index TEXT`: The name of the index to replicate. If an index is not provided, you will be prompted to select one from the production cluster
+* `--dest-index TEXT`: The name of the index to create in the rank cluster. If an index is not provided, you will be prompted to select one from the rank cluster. The default is to use the same name as the source index
 * `--help`: Show this message and exit.
 
 ### `rank index update`
