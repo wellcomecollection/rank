@@ -4,7 +4,14 @@ import beaupy
 import typer
 from elasticsearch import Elasticsearch
 
-from .. import ContentType, Environment, index_config_directory, query_directory
+from .. import (
+    ContentType,
+    Environment,
+    index_config_directory,
+    query_directory,
+    production_api_url,
+    staging_api_url,
+)
 
 
 def get_valid_indices(client: Elasticsearch):
@@ -167,6 +174,7 @@ def prompt_user_to_choose_a_content_type(
 
 
 def prompt_user_to_choose_an_environment(
+    context: typer.Context,
     environment: Optional[Environment],
 ) -> Environment:
     valid_environments = [environment.value for environment in Environment]
@@ -178,6 +186,12 @@ def prompt_user_to_choose_an_environment(
             raise typer.BadParameter(
                 f"{environment} is not a valid environment"
             )
+
+    if environment == Environment.PRODUCTION:
+        context.meta["api_url"] = production_api_url
+    elif environment == Environment.STAGING:
+        context.meta["api_url"] = staging_api_url
+
     return Environment(environment)
 
 

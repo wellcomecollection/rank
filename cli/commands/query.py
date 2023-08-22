@@ -3,9 +3,9 @@ import json
 import beaupy
 import requests
 import typer
-
-from .. import query_directory
-from . import get_valid_queries
+from typing import Optional
+from .. import query_directory, Environment
+from . import get_valid_queries, prompt_user_to_choose_an_environment
 
 app = typer.Typer(
     name="query",
@@ -27,6 +27,12 @@ def list_queries(
 @app.command()
 def get(
     context: typer.Context,
+    environment: Optional[Environment] = typer.Option(
+        default=Environment.PRODUCTION,
+        help="The environment to get queries from",
+        show_choices=True,
+        case_sensitive=False,
+    ),
 ):
     """
     Get the prod queries from the API
@@ -37,8 +43,15 @@ def get(
     N.B. This command will overwrite any existing queries in the query
     directory `data/queries`
     """
+    environment = prompt_user_to_choose_an_environment(environment)
+    if environment == Environment.DEVELOPMENT:
+        raise ValueError(
+            "You can only get queries from the production or staging "
+            "environments"
+        )
+
     search_templates = requests.get(
-        f"{context.meta['catalogue_api_url']}/search-templates.json"
+        f"{context.meta['api_url']}/search-templates.json"
     ).json()["templates"]
 
     selected = beaupy.select_multiple(

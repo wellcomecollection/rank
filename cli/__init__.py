@@ -4,7 +4,8 @@ import os
 from enum import Enum
 from pathlib import Path
 
-catalogue_api_url = "https://api.wellcomecollection.org/catalogue/v2"
+production_api_url = "https://api.wellcomecollection.org/catalogue/v2"
+staging_api_url = "https://api-stage.wellcomecollection.org/catalogue/v2"
 
 role_arn = (
     # Don't assume a role when running in CI.
@@ -32,9 +33,9 @@ query_directory = data_directory / "queries"
 term_directory = data_directory / "terms"
 
 
-def get_pipeline_search_templates(catalogue_api_url: str) -> dict:
+def get_pipeline_search_templates(api_url: str) -> dict:
     search_templates = requests.get(
-        f"{catalogue_api_url}/search-templates.json",
+        f"{api_url}/search-templates.json",
         timeout=10,
     ).json()["templates"]
 

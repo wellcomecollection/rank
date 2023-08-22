@@ -9,9 +9,7 @@ from .aws import get_secrets
 
 
 def pipeline_client(context: typer.Context) -> Elasticsearch:
-    search_templates = get_pipeline_search_templates(
-        context.meta["catalogue_api_url"]
-    )
+    search_templates = get_pipeline_search_templates(context.meta["api_url"])
     content_type = context.meta.get("content_type", "works")
     pipeline_date = search_templates[content_type]["index_date"]
     secrets = get_secrets(

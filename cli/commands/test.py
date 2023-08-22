@@ -50,7 +50,7 @@ def main(
     if context.invoked_subcommand is None:
         context.meta["session"] = aws.get_session(context.meta["role_arn"])
         context.meta["environment"] = prompt_user_to_choose_an_environment(
-            environment
+            context, environment
         )
         context.meta["content_type"] = prompt_user_to_choose_a_content_type(
             content_type
@@ -71,7 +71,7 @@ def main(
         else:
             context.meta["client"] = elasticsearch.pipeline_client(context)
             search_templates = get_pipeline_search_templates(
-                context.meta["catalogue_api_url"]
+                context.meta["api_url"]
             )
             context.meta["query_template"] = json.loads(
                 search_templates[context.meta["content_type"]]["query"]
