@@ -1,8 +1,9 @@
-import re
-import requests
 import os
+import re
 from enum import Enum
 from pathlib import Path
+
+import requests
 
 production_api_url = "https://api.wellcomecollection.org/catalogue/v2"
 staging_api_url = "https://api-stage.wellcomecollection.org/catalogue/v2"
