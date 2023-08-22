@@ -4,7 +4,7 @@ import beaupy
 import typer
 from elasticsearch import Elasticsearch
 
-from .. import ContentType, index_config_directory, query_directory
+from .. import ContentType, Environment, index_config_directory, query_directory
 
 
 def get_valid_indices(client: Elasticsearch):
@@ -69,19 +69,35 @@ def get_valid_tasks(context: typer.Context):
     ]
 
 
-def prompt_user_to_choose_a_remote_index(
-    context: typer.Context, index: Optional[str]
+def prompt_user_to_choose_an_index(
+    context: typer.Context,
+    index: Optional[str],
+    content_type: Optional[ContentType] = None,
 ) -> str:
+    client: Elasticsearch = context.meta["client"]
     if index is None:
-        typer.echo("Select an index")
-        valid_indices = get_valid_indices(client=context.meta["rank_client"])
-        index = beaupy.select(valid_indices)
+        valid_indices = get_valid_indices(client)
+        if content_type is not None:
+            valid_indices = [
+                index
+                for index in valid_indices
+                if index.startswith(content_type.value)
+            ]
+        if len(valid_indices) == 0:
+            raise ValueError(
+                f"No valid indices found in for content type: {content_type}"
+            )
+        elif len(valid_indices) == 1:
+            index = valid_indices[0]
+        else:
+            typer.echo("Select an index")
+            index = beaupy.select(valid_indices)
     else:
-        rank_client: Elasticsearch = context.meta["rank_client"]
-        if not rank_client.indices.exists(index=index):
+        if not client.indices.exists(index=index):
             raise typer.BadParameter(f"{index} does not exist")
         elif index.startswith(".") or (index == "_all"):
             raise typer.BadParameter(f"{index} is a system index")
+    typer.echo(f"Using index: {index}")
     return index
 
 
@@ -99,15 +115,32 @@ def prompt_user_to_choose_a_local_config(
 
 
 def prompt_user_to_choose_a_local_query(
-    context: typer.Context, query_path: Optional[str]
+    context: typer.Context,
+    query_path: Optional[str] = None,
+    content_type: Optional[ContentType] = None,
 ) -> str:
     if query_path is None:
-        typer.echo("Select a query file")
         valid_queries = get_valid_queries(context)
-        query_path = beaupy.select(
-            valid_queries,
-            preprocessor=lambda x: x.stem,
-        )
+        if content_type is not None:
+            valid_queries = [
+                query_path
+                for query_path in valid_queries
+                if query_path.stem.startswith(content_type.value)
+            ]
+        if len(valid_queries) == 0:
+            raise FileNotFoundError(
+                f"No valid queries found in {query_directory} "
+                f"for content type: {content_type}"
+            )
+        elif len(valid_queries) == 1:
+            query_path = valid_queries[0]
+        else:
+            typer.echo("Select a query file")
+            query_path = beaupy.select(
+                valid_queries,
+                preprocessor=lambda x: x.stem,
+            )
+    typer.echo(f"Using query: {query_path}")
     return query_path
 
 
@@ -124,13 +157,28 @@ def prompt_user_to_choose_a_content_type(
     valid_content_types = [content_type.value for content_type in ContentType]
     if content_type is None:
         typer.echo("Select a content type")
-        index = beaupy.select(valid_content_types)
+        content_type = beaupy.select(valid_content_types)
     else:
         if content_type not in valid_content_types:
             raise typer.BadParameter(
                 f"{content_type} is not a valid content type"
             )
-    return index
+    return ContentType(content_type)
+
+
+def prompt_user_to_choose_an_environment(
+    environment: Optional[Environment],
+) -> Environment:
+    valid_environments = [environment.value for environment in Environment]
+    if environment is None:
+        typer.echo("Select an environment")
+        environment = beaupy.select(valid_environments)
+    else:
+        if environment not in valid_environments:
+            raise typer.BadParameter(
+                f"{environment} is not a valid environment"
+            )
+    return Environment(environment)
 
 
 def prompt_user_to_choose_a_task(

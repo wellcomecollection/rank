@@ -5,13 +5,12 @@ from typing import Optional
 import typer
 from elasticsearch import Elasticsearch
 
-from .. import index_config_directory
+from .. import index_config_directory, get_pipeline_search_templates
 from ..services import aws, elasticsearch
-from ..plugin import get_pipeline_search_templates
 from . import (
     get_valid_indices,
     prompt_user_to_choose_a_local_config,
-    prompt_user_to_choose_a_remote_index,
+    prompt_user_to_choose_an_index,
     raise_if_index_already_exists,
 )
 
@@ -26,15 +25,13 @@ app = typer.Typer(
 @app.callback()
 def callback(context: typer.Context):
     context.meta["session"] = aws.get_session(context.meta["role_arn"])
-    context.meta["rank_client"] = elasticsearch.rank_client(
-        context.meta["session"]
-    )
+    context.meta["client"] = elasticsearch.rank_client(context)
 
 
 @app.command(name="list")
 def list_indices(context: typer.Context):
     """List the indices in the rank cluster"""
-    valid_indices = get_valid_indices(client=context.meta["rank_client"])
+    valid_indices = get_valid_indices(client=context.meta["client"])
     typer.echo("\n".join(valid_indices))
 
 
@@ -42,13 +39,13 @@ def list_indices(context: typer.Context):
 def create(
     context: typer.Context,
     index: str = typer.Option(
-        None,
+        default=None,
         help="The name of the index to create",
         prompt="The name of the index to create",
         callback=raise_if_index_already_exists,
     ),
     config_path: Optional[str] = typer.Option(
-        None,
+        default=None,
         help=(
             "Path to a json file containing the index settings and mappings. "
             "If a config file is not provided, you will be prompted to select "
@@ -56,7 +53,7 @@ def create(
         ),
     ),
     source_index: Optional[str] = typer.Option(
-        None,
+        default=None,
         help=(
             "The name of an existing index to reindex from. If a source index "
             "is not provided, you will be prompted to select one from the "
@@ -65,14 +62,15 @@ def create(
     ),
 ):
     """Create an index in the rank cluster"""
-    source_index = prompt_user_to_choose_a_remote_index(context, source_index)
+    source_index = prompt_user_to_choose_an_index(context, source_index)
     config_path = prompt_user_to_choose_a_local_config(context, config_path)
 
     with open(config_path, "r", encoding="utf-8") as f:
         config = json.load(f)
 
-    rank_client: Elasticsearch = context.meta["rank_client"]
-    rank_client.indices.create(
+    client: Elasticsearch = context.meta["client"]
+
+    client.indices.create(
         index=index, mappings=config["mappings"], settings=config["settings"]
     )
 
@@ -82,7 +80,7 @@ def create(
         f"Do you want to reindex {source_index} into {index}?",
         abort=True,
     ):
-        task = rank_client.reindex(
+        task = client.reindex(
             body={
                 "source": {"index": source_index, "size": 100},
                 "dest": {"index": index},
@@ -100,14 +98,14 @@ def create(
 def update(
     context: typer.Context,
     index: str = typer.Option(
-        None,
+        default=None,
         help=(
             "The name of the index to update. If an index is not provided, you "
             "will be prompted to select one from the rank cluster"
         ),
     ),
     config_path: Optional[str] = typer.Option(
-        None,
+        default=None,
         help=(
             "Path to a json file containing the index settings and mappings. "
             "If a config file is not provided, you will be prompted to select "
@@ -116,23 +114,21 @@ def update(
     ),
 ):
     """Update an index in the rank cluster"""
-    index = prompt_user_to_choose_a_remote_index(context, index)
+    index = prompt_user_to_choose_an_index(context, index)
     config_path = prompt_user_to_choose_a_local_config(context, config_path)
 
     with open(config_path, "r", encoding="utf-8") as f:
         config = json.load(f)
 
-    rank_client: Elasticsearch = context.meta["rank_client"]
-    rank_client.indices.put_settings(index=index, body=config["settings"])
-    rank_client.indices.put_mapping(index=index, body=config["mappings"])
+    client: Elasticsearch = context.meta["client"]
+    client.indices.put_settings(index=index, body=config["settings"])
+    client.indices.put_mapping(index=index, body=config["mappings"])
     typer.echo(f"{index} updated")
 
     if typer.confirm(
         f"Do you want to update documents in {index} to use the new mapping?"
     ):
-        task = rank_client.update_by_query(
-            index=index, wait_for_completion=False
-        )
+        task = client.update_by_query(index=index, wait_for_completion=False)
         task_id = task["task"]
         typer.echo(f"Update task {task_id} started")
         typer.echo(
@@ -144,7 +140,7 @@ def update(
 def delete(
     context: typer.Context,
     index: str = typer.Option(
-        None,
+        default=None,
         help=(
             "The name of the index to delete. If an index is not provided, you "
             "will be prompted to select one from the rank cluster"
@@ -152,10 +148,10 @@ def delete(
     ),
 ):
     """Delete an index from the rank cluster"""
-    index = prompt_user_to_choose_a_remote_index(context, index)
+    index = prompt_user_to_choose_an_index(context, index)
     if typer.confirm(f"Are you sure you want to delete {index}?", abort=True):
-        rank_client: Elasticsearch = context.meta["rank_client"]
-        rank_client.indices.delete(index=index)
+        client: Elasticsearch = context.meta["client"]
+        client.indices.delete(index=index)
         typer.echo(f"{index} deleted")
 
 
@@ -163,7 +159,7 @@ def delete(
 def get(
     context: typer.Context,
     index: str = typer.Option(
-        None,
+        default=None,
         help=(
             "The index to get the mappings and settings for. If an index is "
             "not provided, you will be prompted to select one from the rank "
@@ -172,9 +168,9 @@ def get(
     ),
 ):
     """Get the mappings and settings for an index in the rank cluster"""
-    index = prompt_user_to_choose_a_remote_index(context, index)
-    rank_client: Elasticsearch = context.meta["rank_client"]
-    config = dict(rank_client.indices.get(index=index))[index]
+    index = prompt_user_to_choose_an_index(context, index)
+    client: Elasticsearch = context.meta["client"]
+    config = dict(client.indices.get(index=index))[index]
     # only keep the analysis section of the settings
     config["settings"] = {
         "index": {"analysis": config["settings"]["index"]["analysis"]}
@@ -191,14 +187,14 @@ def get(
 def replicate(
     context: typer.Context,
     source_index: str = typer.Option(
-        None,
+        default=None,
         help=(
             "The name of the index to replicate. If an index is not provided, "
             "you will be prompted to select one from the production cluster"
         ),
     ),
     dest_index: str = typer.Option(
-        None,
+        default=None,
         help=(
             "The name of the index to create in the rank cluster. If an index "
             "is not provided, you will be prompted to select one from the rank "
@@ -207,13 +203,8 @@ def replicate(
     ),
 ):
     """Reindex an index from a production cluster to the rank cluster"""
-    pipeline_search_templates = get_pipeline_search_templates(
-        catalogue_api_url=context.meta["catalogue_api_url"]
-    )
-    pipeline_date = pipeline_search_templates["works"]["index_date"]
     pipeline_client = elasticsearch.pipeline_client(
-        session=context.meta["session"],
-        pipeline_date=pipeline_date,
+        context=context,
     )
 
     if source_index is None:
@@ -242,6 +233,12 @@ def replicate(
         ),
         abort=True,
     ):
+        search_templates = get_pipeline_search_templates(
+            context.meta["catalogue_api_url"]
+        )
+        content_type = context.meta.get("content_type", "works")
+        pipeline_date = search_templates[content_type]["index_date"]
+
         secrets = aws.get_secrets(
             session=context.meta["session"],
             secret_prefix=f"elasticsearch/pipeline_storage_{pipeline_date}/",
@@ -256,7 +253,7 @@ def replicate(
         pipeline_host = f"{secrets['protocol']}://{secrets['public_host']}:{secrets['port']}"
         pipeline_username = secrets["es_username"]
         pipeline_password = secrets["es_password"]
-        rank_client: Elasticsearch = context.meta["rank_client"]
+        rank_client: Elasticsearch = context.meta["client"]
         task = rank_client.reindex(
             body={
                 "source": {

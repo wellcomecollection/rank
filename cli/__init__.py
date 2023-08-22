@@ -1,3 +1,5 @@
+import re
+import requests
 import os
 from enum import Enum
 from pathlib import Path
@@ -18,7 +20,50 @@ class ContentType(str, Enum):
     IMAGES = "images"
 
 
+class Environment(str, Enum):
+    PRODUCTION = "production"
+    STAGING = "staging"
+    DEVELOPMENT = "development"
+
+
 data_directory = Path("data/")
 index_config_directory = data_directory / "index_config"
 query_directory = data_directory / "queries"
 term_directory = data_directory / "terms"
+
+
+def get_pipeline_search_templates(catalogue_api_url: str) -> dict:
+    search_templates = requests.get(
+        f"{catalogue_api_url}/search-templates.json",
+        timeout=10,
+    ).json()["templates"]
+
+    works = next(
+        template
+        for template in search_templates
+        if template["index"].startswith("works")
+    )
+    images = next(
+        template
+        for template in search_templates
+        if template["index"].startswith("images")
+    )
+
+    return {
+        "works": {
+            "index": works["index"],
+            "index_date": re.search(
+                r"^works-indexed-(?P<date>\d{4}-\d{2}-\d{2}.?)",
+                works["index"],
+            ).group("date"),
+            "query": works["query"],
+        },
+        "images": {
+            "index": images["index"],
+            "index_date": re.search(
+                r"^images-indexed-(?P<date>\d{4}-\d{2}-\d{2}.?)",
+                images["index"],
+            ).group("date"),
+            "query": images["query"],
+        },
+    }
