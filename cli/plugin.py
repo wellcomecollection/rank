@@ -1,10 +1,9 @@
 import json
 
 import chevron
-from pytest import fixture
-
 import typer
 from elasticsearch import Elasticsearch
+from pytest import fixture
 
 
 class RankPlugin:

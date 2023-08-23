@@ -1,6 +1,6 @@
 import typer
 
-from . import role_arn
+from . import __version__, role_arn
 from .commands import index, query, search, task, test
 
 app = typer.Typer(
@@ -21,3 +21,8 @@ app.add_typer(index.app)
 app.add_typer(search.app)
 app.add_typer(task.app)
 app.add_typer(query.app)
+
+
+@app.command()
+def version():
+    typer.echo(f"Rank CLI version {__version__}")
