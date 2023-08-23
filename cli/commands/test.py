@@ -2,13 +2,17 @@ import pytest
 import typer
 from typing_extensions import Annotated
 from pathlib import Path
+import importlib.util
+
 from .. import ContentType, catalogue_api_url
 
 from ..plugin import RankPlugin
 
 app = typer.Typer(name="test", help="Run relevance tests")
 
-root_test_directory = Path("cli/relevance_tests/")
+root_test_directory = Path(
+    importlib.util.find_spec("cli.relevance_tests").submodule_search_locations[0]
+)
 
 
 @app.callback(invoke_without_command=True)

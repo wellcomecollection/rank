@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/python:3.10
+FROM public.ecr.aws/docker/library/python:3.10 AS tooling
 
 ARG POETRY_VERSION=1.5.1
 RUN curl -sSL https://install.python-poetry.org | \
@@ -14,5 +14,12 @@ RUN poetry config virtualenvs.create false && \
 COPY . ./
 
 RUN poetry install --no-cache --no-interaction --only-root
+RUN poetry build --format=wheel
 
-CMD ["true"]
+FROM public.ecr.aws/docker/library/python:3.10-slim as rank
+
+COPY --from=tooling /project/dist/ ./dist
+
+RUN pip install ./dist/*.whl
+
+ENTRYPOINT ["rank"]

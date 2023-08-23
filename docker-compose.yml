@@ -1,6 +1,11 @@
-version: "3"
+version: "3.3"
 services:
   tooling:
     build:
-      dockerfile: tooling.Dockerfile
+      target: tooling
+      context: .
+
+  rank:
+    build:
+      target: rank
       context: .
