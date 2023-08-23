@@ -9,6 +9,16 @@ steps:
           propagate-environment: true
     agents:
       queue: "nano"
+  - label: "test-cli"
+    command: ".buildkite/scripts/test-cli.sh"
+    plugins:
+      - docker-compose#v4.11.0:
+          run: tooling
+          mount-ssh-agent: true
+          mount-buildkite-agent: true
+          propagate-environment: true
+    agents:
+      queue: "nano"
   - label: "generate-cli-docs"
     if: build.branch == "main"
     command: ".buildkite/scripts/generate-cli-docs.sh"
