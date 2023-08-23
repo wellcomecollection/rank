@@ -2,6 +2,43 @@
 
 This document gives a few illustrative examples of how one might use the rank CLI to develop and test search relevance.
 
+Roughly, the workflow looks like this:
+
+```mermaid
+flowchart TD
+    subgraph AA[User Feedback]
+        A[User describes relevance requirement]
+        A --> B["Translate into new rank test(s)"]
+        B --> C[Merge changes to rank repo]
+    end
+
+    subgraph BB[Developing a solution]
+        D[Copy production \n index config & queries]
+        E[Debug problem]
+        F[Develop a new index mapping]
+        G[Develop a new query]
+        H[Run the rank test suite locally \n against the rank cluster]
+        I[Merge index config & query \n with pipeline/API repo]
+        D-->E
+        E-->F
+        E-->G
+        G-->H
+        F-->H
+        H-->E
+        H-->I
+    end
+
+
+    subgraph CC[CI]
+        J[Rank test suite runs against \n production API on a schedule]
+        K[Rank test suite runs \n against staging API on PRs]
+    end
+
+    B --> D
+    I --> CC
+    C --> CC
+```
+
 ## 1. User describes a new relevance requirement
 
 A user approaches the platform team with a problem: Maybe they expect to see a particular result at the top of the results list for a given set of search terms, but it's not there. Maybe they're seeing a result that they don't expect to see at all. Maybe the results are relevant, but they're not in the order that the user expects.
