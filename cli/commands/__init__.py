@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 
 from .. import (
     ContentType,
-    Environment,
+    Target,
     index_config_directory,
     query_directory,
     production_api_url,
@@ -173,26 +173,26 @@ def prompt_user_to_choose_a_content_type(
     return ContentType(content_type)
 
 
-def prompt_user_to_choose_an_environment(
+def prompt_user_to_choose_a_target(
     context: typer.Context,
-    environment: Optional[Environment],
-) -> Environment:
-    valid_environments = [environment.value for environment in Environment]
-    if environment is None:
-        typer.echo("Select an environment")
-        environment = beaupy.select(valid_environments)
+    target: Optional[Target],
+) -> Target:
+    valid_targets = [target.value for target in Target]
+    if target is None:
+        typer.echo("Select an target")
+        target = beaupy.select(valid_targets)
     else:
-        if environment not in valid_environments:
+        if target not in valid_targets:
             raise typer.BadParameter(
-                f"{environment} is not a valid environment"
+                f"{target} is not a valid target"
             )
 
-    if environment == Environment.PRODUCTION:
+    if target == Target.PRODUCTION:
         context.meta["api_url"] = production_api_url
-    elif environment == Environment.STAGING:
+    elif target == Target.STAGING:
         context.meta["api_url"] = staging_api_url
 
-    return Environment(environment)
+    return Target(target)
 
 
 def prompt_user_to_choose_a_task(

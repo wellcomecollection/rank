@@ -9,14 +9,14 @@ import typer
 from .. import (
     ContentType,
     term_directory,
-    Environment,
+    Target,
     get_pipeline_search_templates,
 )
 from ..services import aws, elasticsearch
 from . import (
     prompt_user_to_choose_a_content_type,
     prompt_user_to_choose_a_local_query,
-    prompt_user_to_choose_an_environment,
+    prompt_user_to_choose_a_target,
     prompt_user_to_choose_an_index,
 )
 
@@ -34,8 +34,8 @@ app = typer.Typer(
         Score, ID, Title, Dates, Reference number
 
         If you want to run the search against the production/staging index,
-        you should specify eg --environment=production. In this case, index 
-        and query selection will be handled automatically.
+        you should specify eg --target=production. In this case, index and
+        query selection will be handled automatically.
         """
     ),
 )
@@ -143,9 +143,9 @@ def main(
         default=None,
         help="The search terms to use",
     ),
-    environment: Optional[Environment] = typer.Option(
+    target: Optional[Target] = typer.Option(
         default="development",
-        help="The environment to run the search against",
+        help="The target context/environment to run the search against",
         case_sensitive=False,
         show_choices=True,
     ),
@@ -172,14 +172,11 @@ def main(
 ):
     if context.invoked_subcommand is None:
         context.meta["session"] = aws.get_session(context.meta["role_arn"])
-        context.meta["environment"] = prompt_user_to_choose_an_environment(
-            environment
-        )
-
+        context.meta["target"] = prompt_user_to_choose_a_target(context, target)
         context.meta["content_type"] = prompt_user_to_choose_a_content_type(
             content_type
         )
-        if context.meta["environment"] == Environment.DEVELOPMENT:
+        if context.meta["target"] == Target.DEVELOPMENT:
             context.meta["client"] = elasticsearch.rank_client(context)
             query_path = prompt_user_to_choose_a_local_query(
                 context=context,

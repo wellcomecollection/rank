@@ -22,7 +22,19 @@ class ContentType(str, Enum):
     IMAGES = "images"
 
 
-class Environment(str, Enum):
+class Target(str, Enum):
+    """
+    The target context/environment to run tests against.
+
+    Using production will use the production API to find the and the production
+    Elasticsearch cluster, the appropriate index, and the query template to
+    search with.
+
+    Staging will do the same using the staging API.
+
+    Development will use the rank cluster, allowing users to specify the remote
+    index (in the rank cluster) and a locally defined query template.
+    """
     PRODUCTION = "production"
     STAGING = "staging"
     DEVELOPMENT = "development"

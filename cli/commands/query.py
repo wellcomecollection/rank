@@ -4,8 +4,8 @@ import beaupy
 import requests
 import typer
 from typing import Optional
-from .. import query_directory, Environment
-from . import get_valid_queries, prompt_user_to_choose_an_environment
+from .. import query_directory, Target
+from . import get_valid_queries, prompt_user_to_choose_a_target
 
 app = typer.Typer(
     name="query",
@@ -27,9 +27,9 @@ def list_queries(
 @app.command()
 def get(
     context: typer.Context,
-    environment: Optional[Environment] = typer.Option(
-        default=Environment.PRODUCTION,
-        help="The environment to get queries from",
+    target: Optional[Target] = typer.Option(
+        default=Target.PRODUCTION,
+        help="The target to get queries from",
         show_choices=True,
         case_sensitive=False,
     ),
@@ -43,11 +43,11 @@ def get(
     N.B. This command will overwrite any existing queries in the query
     directory `data/queries`
     """
-    environment = prompt_user_to_choose_an_environment(environment)
-    if environment == Environment.DEVELOPMENT:
+    target = prompt_user_to_choose_a_target(target)
+    if target == Target.DEVELOPMENT:
         raise ValueError(
             "You can only get queries from the production or staging "
-            "environments"
+            "targets"
         )
 
     search_templates = requests.get(

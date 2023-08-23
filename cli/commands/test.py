@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 import typer
 
-from .. import ContentType, Environment, get_pipeline_search_templates
+from .. import ContentType, Target, get_pipeline_search_templates
 from . import (
-    prompt_user_to_choose_an_environment,
+    prompt_user_to_choose_a_target,
     prompt_user_to_choose_a_local_query,
     prompt_user_to_choose_an_index,
     prompt_user_to_choose_a_content_type,
@@ -34,8 +34,8 @@ def main(
         show_choices=True,
         default=None,
     ),
-    environment: Optional[Environment] = typer.Option(
-        help="The environment to run tests against",
+    target: Optional[Target] = typer.Option(
+        help="The target to run tests against",
         case_sensitive=False,
         show_choices=True,
         default="development",
@@ -49,14 +49,12 @@ def main(
     """Run relevance tests"""
     if context.invoked_subcommand is None:
         context.meta["session"] = aws.get_session(context.meta["role_arn"])
-        context.meta["environment"] = prompt_user_to_choose_an_environment(
-            context, environment
-        )
+        context.meta["target"] = prompt_user_to_choose_a_target(context, target)
         context.meta["content_type"] = prompt_user_to_choose_a_content_type(
             content_type
         )
 
-        if context.meta["environment"] == Environment.DEVELOPMENT:
+        if context.meta["target"] == Target.DEVELOPMENT:
             context.meta["client"] = elasticsearch.rank_client(context)
             query_template_path = prompt_user_to_choose_a_local_query(
                 context=context,
