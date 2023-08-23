@@ -35,6 +35,7 @@ class Target(str, Enum):
     Development will use the rank cluster, allowing users to specify the remote
     index (in the rank cluster) and a locally defined query template.
     """
+
     PRODUCTION = "production"
     STAGING = "staging"
     DEVELOPMENT = "development"

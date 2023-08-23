@@ -46,8 +46,7 @@ def get(
     target = prompt_user_to_choose_a_target(target)
     if target == Target.DEVELOPMENT:
         raise ValueError(
-            "You can only get queries from the production or staging "
-            "targets"
+            "You can only get queries from the production or staging " "targets"
         )
 
     search_templates = requests.get(

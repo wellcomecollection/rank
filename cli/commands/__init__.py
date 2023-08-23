@@ -183,9 +183,7 @@ def prompt_user_to_choose_a_target(
         target = beaupy.select(valid_targets)
     else:
         if target not in valid_targets:
-            raise typer.BadParameter(
-                f"{target} is not a valid target"
-            )
+            raise typer.BadParameter(f"{target} is not a valid target")
 
     if target == Target.PRODUCTION:
         context.meta["api_url"] = production_api_url
