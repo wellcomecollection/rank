@@ -173,6 +173,8 @@ $ rank query get [OPTIONS]
 
 **Options**:
 
+* `--target [production|staging|development]`: The target to get queries from  [default: Target.PRODUCTION]
+* `--all / --no-all`: Get all queries from the target  [default: no-all]
 * `--help`: Show this message and exit.
 
 ### `rank query list`
@@ -203,6 +205,10 @@ The command will output a table of results with the following columns:
 
 Score, ID, Title, Dates, Reference number
 
+If you want to run the search against the production/staging index,
+you should specify eg --target=production. In this case, index and
+query selection will be handled automatically.
+
 **Usage**:
 
 ```console
@@ -212,6 +218,8 @@ $ rank search [OPTIONS] COMMAND [ARGS]...
 **Options**:
 
 * `--search-terms TEXT`: The search terms to use
+* `--target [production|staging|development]`: The target context/environment to run the search against  [default: development]
+* `--content-type [works|images]`: The content type to search in
 * `--index TEXT`: The index to search in
 * `--query-path TEXT`: The query to run
 * `--n INTEGER RANGE`: The number of results to return  [default: 10; 1<=x<=100]
@@ -283,7 +291,7 @@ $ rank task cancel [OPTIONS]
 
 **Options**:
 
-* `--task TEXT`: Task ID. If not provided, you will be prompted to select an ID from a list of running tasks
+* `--task-id TEXT`: Task ID. If not provided, you will be prompted to select an ID from a list of running tasks
 * `--help`: Show this message and exit.
 
 ### `rank task list`
@@ -327,8 +335,10 @@ $ rank test [OPTIONS] COMMAND [ARGS]...
 
 **Options**:
 
-* `--test-id TEXT`
-* `--content-type [works|images]`
+* `--test-id TEXT`: The ID of an individual test (or group of tests) to run.
+* `--content-type [works|images]`: The content type to run tests for
+* `--target [production|staging|development]`: The target to run tests against  [default: development]
+* `--index TEXT`: The index to run tests against
 * `--help`: Show this message and exit.
 
 **Commands**:
