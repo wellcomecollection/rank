@@ -5,9 +5,10 @@ set -o pipefail
 
 ROOT=$(git rev-parse --show-toplevel)
 
-# Run the formatter
+# Run the formatters
 black $ROOT
 isort $ROOT/**/*.py
+terraform fmt -recursive $ROOT
 
 # Only run this bit if we're in buildkite
 if [[ "${BUILDKITE:-}" ]]; then
