@@ -21,8 +21,7 @@ steps:
       queue: "nano"
 
   - label: "Publish docker image"
-#    branches: "main"
-    branches: "publish-docker"
+    branches: "main"
     plugins:
       - ecr#v2.7.0:
           login: true
