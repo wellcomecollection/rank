@@ -30,11 +30,10 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", [test_case.param for test_case in test_cases]
 )
-def test_precision(
-    test_case: PrecisionTestCase, pipeline_client, images_search
-):
-    response = pipeline_client.search(
-        **images_search(test_case.search_terms),
+def test_precision(test_case: PrecisionTestCase, client, index, render_query):
+    response = client.search(
+        index=index,
+        query=render_query(test_case.search_terms),
         size=test_case.threshold_position,
         _source=False,
     )

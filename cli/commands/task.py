@@ -18,17 +18,13 @@ app = typer.Typer(
 @app.callback()
 def callback(context: typer.Context):
     context.meta["session"] = aws.get_session(context.meta["role_arn"])
-    context.meta["rank_client"] = elasticsearch.rank_client(
-        context.meta["session"]
-    )
+    context.meta["client"] = elasticsearch.rank_client(context)
 
 
 @app.command(name="list")
-def list_tasks(
-    context: typer.Context,
-):
+def list_tasks(context: typer.Context):
     """List all tasks"""
-    tasks = get_valid_tasks(context)
+    tasks = get_valid_tasks(client=context.meta["client"])
     for task in tasks:
         typer.echo(f'{task["task_id"]} | {task["action"]}')
 
@@ -37,17 +33,17 @@ def list_tasks(
 def status(
     context: typer.Context,
     task_id: Optional[str] = typer.Option(
-        None,
+        default=None,
         help=(
             "Task ID. If not provided, you will be prompted to select an ID "
             "from a list of running tasks"
         ),
-        callback=prompt_user_to_choose_a_task,
     ),
 ):
     """Get the status of a task"""
-    rank_client: Elasticsearch = context.meta["rank_client"]
-    task = rank_client.tasks.get(task_id=task_id)
+    client: Elasticsearch = context.meta["client"]
+    task_id = prompt_user_to_choose_a_task(client=client, task_id=task_id)
+    task = client.tasks.get(task_id=task_id)
     with Progress() as progress:
         task_progress = progress.add_task(
             task_id,
@@ -61,7 +57,7 @@ def status(
             )
             progress.update(task_progress, completed=created_or_updated)
             time.sleep(1)
-            task = rank_client.tasks.get(task_id=task_id)
+            task = client.tasks.get(task_id=task_id)
             if task["completed"]:
                 progress.stop()
                 break
@@ -70,16 +66,18 @@ def status(
 @app.command()
 def cancel(
     context: typer.Context,
-    task: Optional[str] = typer.Option(
-        None,
+    task_id: Optional[str] = typer.Option(
+        default=None,
         help=(
             "Task ID. If not provided, you will be prompted to select an ID "
             "from a list of running tasks"
         ),
-        callback=prompt_user_to_choose_a_task,
     ),
 ):
     """Cancel a task"""
-    if typer.confirm(f"Are you sure you want to cancel {task}?", abort=True):
-        rank_client: Elasticsearch = context.meta["rank_client"]
-        rank_client.tasks.cancel(task_id=task)
+    task_id = prompt_user_to_choose_a_task(
+        client=context.meta["client"], task_id=task_id
+    )
+    if typer.confirm(f"Are you sure you want to cancel {task_id}?", abort=True):
+        client: Elasticsearch = context.meta["client"]
+        client.tasks.cancel(task_id=task_id)

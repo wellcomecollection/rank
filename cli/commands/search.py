@@ -6,12 +6,18 @@ import chevron
 import rich
 import typer
 
-from .. import ContentType, term_directory
+from .. import (
+    ContentType,
+    term_directory,
+    Target,
+    get_pipeline_search_templates,
+)
 from ..services import aws, elasticsearch
 from . import (
     prompt_user_to_choose_a_content_type,
     prompt_user_to_choose_a_local_query,
-    prompt_user_to_choose_a_remote_index,
+    prompt_user_to_choose_a_target,
+    prompt_user_to_choose_an_index,
 )
 
 app = typer.Typer(
@@ -26,6 +32,10 @@ app = typer.Typer(
 
         The command will output a table of results with the following columns:\n
         Score, ID, Title, Dates, Reference number
+
+        If you want to run the search against the production/staging index,
+        you should specify eg --target=production. In this case, index and
+        query selection will be handled automatically.
         """
     ),
 )
@@ -130,75 +140,96 @@ def build_images_results_table(response: dict) -> rich.table.Table:
 def main(
     context: typer.Context,
     search_terms: Optional[str] = typer.Option(
-        None,
+        default=None,
         help="The search terms to use",
     ),
+    target: Optional[Target] = typer.Option(
+        default="development",
+        help="The target context/environment to run the search against",
+        case_sensitive=False,
+        show_choices=True,
+    ),
+    content_type: Optional[ContentType] = typer.Option(
+        default=None,
+        help="The content type to search in",
+        case_sensitive=False,
+        show_choices=True,
+    ),
     index: Optional[str] = typer.Option(
-        None,
+        default=None,
         help="The index to search in",
     ),
     query_path: Optional[str] = typer.Option(
-        None,
+        default=None,
         help="The query to run",
     ),
     n: Optional[int] = typer.Option(
-        10,
+        default=10,
         help="The number of results to return",
         min=1,
         max=100,
     ),
 ):
-    context.meta["session"] = aws.get_session(context.meta["role_arn"])
-    context.meta["rank_client"] = elasticsearch.rank_client(
-        context.meta["session"]
-    )
-
     if context.invoked_subcommand is None:
-        # We shouldn't use callbacks here, because the main() command itself is
-        # a callback. If a user tries to run eg `rank search get-terms` with
-        # callbacks specified in the parameters of main(), those callbacks
-        # will be run before the subcommand is invoked. This means that the user
-        # will be prompted to choose an index and query for subcommands that
-        # don't need them. Instead, we'll just prompt the user here if they
-        # haven't provided the necessary arguments.
+        context.meta["session"] = aws.get_session(context.meta["role_arn"])
+        context.meta["target"] = prompt_user_to_choose_a_target(context, target)
+        context.meta["content_type"] = prompt_user_to_choose_a_content_type(
+            content_type
+        )
+        if context.meta["target"] == Target.DEVELOPMENT:
+            context.meta["client"] = elasticsearch.rank_client(context)
+            query_path = prompt_user_to_choose_a_local_query(
+                content_type=context.meta["content_type"]
+            )
+            with open(query_path, "r", encoding="utf-8") as f:
+                query_template = json.dumps(json.load(f))
+            context.meta["index"] = prompt_user_to_choose_an_index(
+                client=context.meta["client"],
+                index=index,
+                content_type=context.meta["content_type"],
+            )
+        else:
+            context.meta["client"] = elasticsearch.pipeline_client(context)
+            search_templates = get_pipeline_search_templates(
+                context.meta["api_url"]
+            )
+            context.meta["query_template"] = search_templates[
+                context.meta["content_type"]
+            ]["query"]
+            context.meta["index"] = search_templates[
+                context.meta["content_type"]
+            ]["index"]
+
         if search_terms is None:
             search_terms = typer.prompt("What are you looking for?")
-        index = prompt_user_to_choose_a_remote_index(
-            context=context, index=index
-        )
-        query_path = prompt_user_to_choose_a_local_query(
-            context=context, query_path=query_path
-        )
 
-        content_type = ContentType(index.split("-")[0])
+        rendered_query = chevron.render(query_template, {"query": search_terms})
 
-        with open(query_path, "r", encoding="utf-8") as f:
-            query = json.dumps(json.load(f))
-
-        rendered_query = chevron.render(query, {"query": search_terms})
-
-        response = context.meta["rank_client"].search(
-            index=index,
+        response = context.meta["client"].search(
+            index=context.meta["index"],
             query=json.loads(rendered_query),
             size=n,
             source=["display"],
         )
 
-        table = build_results_table(response, content_type)
+        table = build_results_table(response, context.meta["content_type"])
         rich.print(table)
 
 
 @app.command()
 def get_terms(
     context: typer.Context,
-    content_type: Optional[ContentType] = typer.Option(
+    content_type: ContentType = typer.Option(
         None,
         help="The content type to find real search terms for",
-        callback=prompt_user_to_choose_a_content_type,
     ),
 ):
     """Get a list of real search terms for a given content type"""
-    reporting_client = elasticsearch.reporting_client(context.meta["session"])
+    context.meta["session"] = aws.get_session(context.meta["role_arn"])
+    reporting_client = elasticsearch.reporting_client(context=context)
+
+    if content_type is None:
+        content_type = prompt_user_to_choose_a_content_type(content_type)
 
     # Page names and content types are currently the same but we don't want to
     # rely on that
@@ -244,6 +275,6 @@ def get_terms(
 
 
 @app.command()
-def compare(context: typer.Context):
+def compare():
     """Compare the speed of two queries against the same index"""
     raise NotImplementedError

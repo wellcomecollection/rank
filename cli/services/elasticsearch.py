@@ -1,16 +1,19 @@
+import typer
 from time import sleep
 
-import boto3
+
+from .. import get_pipeline_search_templates
 from elasticsearch import Elasticsearch
 
 from .aws import get_secrets
 
 
-def pipeline_client(
-    session: boto3.session.Session, *, pipeline_date: str
-) -> Elasticsearch:
+def pipeline_client(context: typer.Context) -> Elasticsearch:
+    search_templates = get_pipeline_search_templates(context.meta["api_url"])
+    content_type = context.meta.get("content_type", "works")
+    pipeline_date = search_templates[content_type]["index_date"]
     secrets = get_secrets(
-        session=session,
+        session=context.meta["session"],
         secret_prefix=f"elasticsearch/pipeline_storage_{pipeline_date}/",
         secret_ids=[
             "es_password",
@@ -29,9 +32,9 @@ def pipeline_client(
     return client
 
 
-def rank_client(session: boto3.session.Session) -> Elasticsearch:
+def rank_client(context: typer.Context) -> Elasticsearch:
     secrets = get_secrets(
-        session=session,
+        session=context.meta["session"],
         secret_prefix="elasticsearch/rank/",
         secret_ids=["ES_RANK_PASSWORD", "ES_RANK_USER", "ES_RANK_CLOUD_ID"],
     )
@@ -44,11 +47,9 @@ def rank_client(session: boto3.session.Session) -> Elasticsearch:
     return client
 
 
-def reporting_client(
-    session: boto3.session.Session,
-) -> Elasticsearch:
+def reporting_client(context: typer.Context) -> Elasticsearch:
     secrets = get_secrets(
-        session=session,
+        session=context.meta["session"],
         secret_prefix="reporting/",
         secret_ids=[
             "es_host",

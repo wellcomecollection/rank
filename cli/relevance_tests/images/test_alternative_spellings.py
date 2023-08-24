@@ -27,10 +27,11 @@ test_cases = [
     "test_case", [test_case.param for test_case in test_cases]
 )
 def test_alternative_spellings(
-    test_case: RecallTestCase, pipeline_client, images_search
+    test_case: RecallTestCase, client, index, render_query
 ):
-    response = pipeline_client.search(
-        **images_search(test_case.search_terms),
+    response = client.search(
+        query=render_query(test_case.search_terms),
+        index=index,
         size=test_case.threshold_position,
         _source=False,
     )
