@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 import typer
+import importlib.util
 from typing_extensions import Annotated
 
 from .. import ContentType
@@ -9,7 +10,10 @@ from ..plugin import RankPlugin
 
 app = typer.Typer(name="test", help="Run relevance tests")
 
-root_test_directory = Path("cli/relevance_tests/")
+# This ensures that we get the right path for the relevance tests directory
+# regardless of where we are running the tool
+relevance_tests_spec = importlib.util.find_spec("cli.relevance_tests")
+root_test_directory = Path(relevance_tests_spec.submodule_search_locations[0])
 
 
 @app.callback(invoke_without_command=True)
