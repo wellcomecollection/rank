@@ -28,5 +28,3 @@ steps:
           push:
             - rank:756629837203.dkr.ecr.eu-west-1.amazonaws.com/weco/rank:ref.${BUILDKITE_COMMIT}
             - rank:756629837203.dkr.ecr.eu-west-1.amazonaws.com/weco/rank:latest
-    agents:
-      queue: "nano"
