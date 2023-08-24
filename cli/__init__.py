@@ -1,6 +1,7 @@
 import os
 from enum import Enum
 from pathlib import Path
+
 import typer
 
 catalogue_api_url = "https://api.wellcomecollection.org/catalogue/v2"

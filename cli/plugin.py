@@ -65,8 +65,6 @@ class SearchUnderTest:
         self.images_index = search_templates["images"]["index"]
 
 
-
-
 class RankPlugin:
     def __init__(self, *, context: typer.Context):
         self.role_arn = context.meta["role_arn"]
@@ -81,15 +79,20 @@ class RankPlugin:
 
     @pytest.hookimpl()
     def pytest_configure(self, config):
-        terminal = config.pluginmanager.getplugin('terminal')
+        terminal = config.pluginmanager.getplugin("terminal")
 
         class ShortPathReporter(terminal.TerminalReporter):
             # This modifies the implementation at
             # https://github.com/pytest-dev/pytest/blob/7.4.0/src/_pytest/terminal.py#L426
-            def write_fspath_result(self, nodeid: str, res, **markup: bool) -> None:
+            def write_fspath_result(
+                self, nodeid: str, res, **markup: bool
+            ) -> None:
                 fspath = self.config.rootpath / nodeid.split("::")[0]
                 if self.currentfspath is None or fspath != self.currentfspath:
-                    if self.currentfspath is not None and self._show_progress_info:
+                    if (
+                        self.currentfspath is not None
+                        and self._show_progress_info
+                    ):
                         self._write_progress_information_filling_space()
                     self.currentfspath = fspath
                     commonpath = self.config.stash[RankPlugin.common_path_key]

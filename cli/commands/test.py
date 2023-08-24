@@ -11,7 +11,9 @@ from ..plugin import RankPlugin
 app = typer.Typer(name="test", help="Run relevance tests")
 
 root_test_directory = Path(
-    importlib.util.find_spec("cli.relevance_tests").submodule_search_locations[0]
+    importlib.util.find_spec("cli.relevance_tests").submodule_search_locations[
+        0
+    ]
 )
 
 
