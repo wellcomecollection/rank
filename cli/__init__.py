@@ -3,8 +3,8 @@ import re
 from enum import Enum
 from pathlib import Path
 
-import typer
 import requests
+import typer
 
 production_api_url = "https://api.wellcomecollection.org/catalogue/v2"
 staging_api_url = "https://api-stage.wellcomecollection.org/catalogue/v2"
@@ -24,7 +24,6 @@ class ContentType(str, Enum):
     IMAGES = "images"
 
 
-
 class Target(str, Enum):
     """
     The target context/environment to run tests against.
@@ -42,7 +41,6 @@ class Target(str, Enum):
     PRODUCTION = "production"
     STAGING = "staging"
     DEVELOPMENT = "development"
-
 
 
 data_directory = Path(typer.get_app_dir("weco/rank"))
