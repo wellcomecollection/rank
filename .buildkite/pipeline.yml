@@ -24,6 +24,10 @@ steps:
 #    branches: "main"
     branches: "publish-docker"
     plugins:
+      - ecr#v2.7.0:
+          login: true
+          assume_role:
+            role_arn: "arn:aws:iam::756629837203:role/catalogue-ci"
       - docker-compose#v4.14.0:
           push:
             - rank:756629837203.dkr.ecr.eu-west-1.amazonaws.com/weco/rank:ref.${BUILDKITE_COMMIT}
