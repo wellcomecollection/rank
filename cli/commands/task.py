@@ -22,11 +22,9 @@ def callback(context: typer.Context):
 
 
 @app.command(name="list")
-def list_tasks(
-    context: typer.Context,
-):
+def list_tasks(context: typer.Context):
     """List all tasks"""
-    tasks = get_valid_tasks(context)
+    tasks = get_valid_tasks(client=context.meta["client"])
     for task in tasks:
         typer.echo(f'{task["task_id"]} | {task["action"]}')
 
@@ -40,11 +38,11 @@ def status(
             "Task ID. If not provided, you will be prompted to select an ID "
             "from a list of running tasks"
         ),
-        callback=prompt_user_to_choose_a_task,
     ),
 ):
     """Get the status of a task"""
     client: Elasticsearch = context.meta["client"]
+    task_id = prompt_user_to_choose_a_task(client=client, task_id=task_id)
     task = client.tasks.get(task_id=task_id)
     with Progress() as progress:
         task_progress = progress.add_task(
@@ -68,16 +66,18 @@ def status(
 @app.command()
 def cancel(
     context: typer.Context,
-    task: Optional[str] = typer.Option(
+    task_id: Optional[str] = typer.Option(
         default=None,
         help=(
             "Task ID. If not provided, you will be prompted to select an ID "
             "from a list of running tasks"
         ),
-        callback=prompt_user_to_choose_a_task,
     ),
 ):
     """Cancel a task"""
-    if typer.confirm(f"Are you sure you want to cancel {task}?", abort=True):
+    task_id = prompt_user_to_choose_a_task(
+        client=context.meta["client"], task_id=task_id
+    )
+    if typer.confirm(f"Are you sure you want to cancel {task_id}?", abort=True):
         client: Elasticsearch = context.meta["client"]
-        client.tasks.cancel(task_id=task)
+        client.tasks.cancel(task_id=task_id)

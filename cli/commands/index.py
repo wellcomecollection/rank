@@ -46,7 +46,6 @@ def create(
         default=None,
         help="The name of the index to create",
         prompt="The name of the index to create",
-        callback=raise_if_index_already_exists,
     ),
     config_path: Optional[str] = typer.Option(
         default=None,
@@ -66,13 +65,16 @@ def create(
     ),
 ):
     """Create an index in the rank cluster"""
-    source_index = prompt_user_to_choose_an_index(context, source_index)
-    config_path = prompt_user_to_choose_a_local_config(context, config_path)
+    client: Elasticsearch = context.meta["client"]
+    source_index = prompt_user_to_choose_an_index(
+        client=client, index=source_index
+    )
+    config_path = prompt_user_to_choose_a_local_config(config_path)
 
     with open(config_path, "r", encoding="utf-8") as f:
         config = json.load(f)
 
-    client: Elasticsearch = context.meta["client"]
+    raise_if_index_already_exists(client=client, index=index)
 
     client.indices.create(
         index=index, mappings=config["mappings"], settings=config["settings"]
@@ -118,13 +120,13 @@ def update(
     ),
 ):
     """Update an index in the rank cluster"""
-    index = prompt_user_to_choose_an_index(context, index)
-    config_path = prompt_user_to_choose_a_local_config(context, config_path)
+    client: Elasticsearch = context.meta["client"]
+    index = prompt_user_to_choose_an_index(client=client, index=index)
+    config_path = prompt_user_to_choose_a_local_config(config_path)
 
     with open(config_path, "r", encoding="utf-8") as f:
         config = json.load(f)
 
-    client: Elasticsearch = context.meta["client"]
     client.indices.put_settings(index=index, body=config["settings"])
     client.indices.put_mapping(index=index, body=config["mappings"])
     typer.echo(f"{index} updated")
@@ -152,9 +154,9 @@ def delete(
     ),
 ):
     """Delete an index from the rank cluster"""
-    index = prompt_user_to_choose_an_index(context, index)
+    client: Elasticsearch = context.meta["client"]
+    index = prompt_user_to_choose_an_index(client=client, index=index)
     if typer.confirm(f"Are you sure you want to delete {index}?", abort=True):
-        client: Elasticsearch = context.meta["client"]
         client.indices.delete(index=index)
         typer.echo(f"{index} deleted")
 
@@ -172,8 +174,8 @@ def get(
     ),
 ):
     """Get the mappings and settings for an index in the rank cluster"""
-    index = prompt_user_to_choose_an_index(context, index)
     client: Elasticsearch = context.meta["client"]
+    index = prompt_user_to_choose_an_index(client=client, index=index)
     config = dict(client.indices.get(index=index))[index]
 
     # only keep the analysis section of the settings
@@ -183,7 +185,7 @@ def get(
 
     config_path = index_config_directory / f"{index}.json"
     config_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(config_path, "w") as f:
+    with open(config_path, "w", encoding="utf-8") as f:
         f.write(json.dumps(config, indent=2))
     typer.echo(f"Index config written to {config_path}")
 
@@ -208,9 +210,12 @@ def replicate(
     ),
 ):
     """Reindex an index from a production cluster to the rank cluster"""
+    context.meta["session"] = aws.get_session(context.meta["role_arn"])
+    context.meta["api_url"] = production_api_url
     pipeline_client = elasticsearch.pipeline_client(
         context=context,
     )
+    rank_client = context.meta["client"]
 
     if source_index is None:
         valid_indices = get_valid_indices(client=pipeline_client)
@@ -225,7 +230,8 @@ def replicate(
             "What do you want to call the index in the rank cluster?",
             default=source_index,
         )
-    raise_if_index_already_exists(context=context, index=dest_index)
+
+    raise_if_index_already_exists(client=rank_client, index=dest_index)
 
     if typer.confirm(
         text=(
@@ -256,7 +262,7 @@ def replicate(
         pipeline_host = f"{secrets['protocol']}://{secrets['public_host']}:{secrets['port']}"
         pipeline_username = secrets["es_username"]
         pipeline_password = secrets["es_password"]
-        rank_client: Elasticsearch = context.meta["client"]
+
         task = rank_client.reindex(
             body={
                 "source": {

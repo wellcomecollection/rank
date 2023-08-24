@@ -15,11 +15,9 @@ app = typer.Typer(
 
 
 @app.command(name="list")
-def list_queries(
-    context: typer.Context,
-):
+def list_queries():
     """List the queries in the query directory"""
-    queries = get_valid_queries(context)
+    queries = get_valid_queries()
     for query in queries:
         typer.echo(query.name)
 

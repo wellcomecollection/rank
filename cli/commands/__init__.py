@@ -22,7 +22,7 @@ def get_valid_indices(client: Elasticsearch):
     ]
 
 
-def get_valid_configs(context: typer.Context):
+def get_valid_configs():
     """
     Returns a list of the files containing index config (ie mappings/settings)
     in the /data directory
@@ -44,7 +44,7 @@ def get_valid_configs(context: typer.Context):
     return valid_configs
 
 
-def get_valid_queries(context: typer.Context):
+def get_valid_queries():
     """
     Returns a list of the files containing queries in the /data directory
     """
@@ -62,13 +62,12 @@ def get_valid_queries(context: typer.Context):
     return valid_queries
 
 
-def get_valid_tasks(context: typer.Context):
-    rank_client: Elasticsearch = context.meta["rank_client"]
+def get_valid_tasks(client: Elasticsearch):
     actions = [
         "indices:data/write/reindex",
         "indices:data/write/update/byquery",
     ]
-    nodes = rank_client.tasks.list(detailed=True, actions=actions)["nodes"]
+    nodes = client.tasks.list(detailed=True, actions=actions)["nodes"]
     return [
         {"task_id": task_id, **task}
         for node_id, node in nodes.items()
@@ -77,11 +76,10 @@ def get_valid_tasks(context: typer.Context):
 
 
 def prompt_user_to_choose_an_index(
-    context: typer.Context,
+    client: Elasticsearch,
     index: Optional[str],
     content_type: Optional[ContentType] = None,
 ) -> str:
-    client: Elasticsearch = context.meta["client"]
     if index is None:
         valid_indices = get_valid_indices(client)
         if content_type is not None:
@@ -108,12 +106,10 @@ def prompt_user_to_choose_an_index(
     return index
 
 
-def prompt_user_to_choose_a_local_config(
-    context: typer.Context, config_path: Optional[str]
-) -> str:
+def prompt_user_to_choose_a_local_config(config_path: Optional[str]) -> str:
     if config_path is None:
         typer.echo("Select a config file")
-        valid_configs = get_valid_configs(context)
+        valid_configs = get_valid_configs()
         config_path = beaupy.select(
             valid_configs,
             preprocessor=lambda x: x.stem,
@@ -122,12 +118,11 @@ def prompt_user_to_choose_a_local_config(
 
 
 def prompt_user_to_choose_a_local_query(
-    context: typer.Context,
     query_path: Optional[str] = None,
     content_type: Optional[ContentType] = None,
 ) -> str:
     if query_path is None:
-        valid_queries = get_valid_queries(context)
+        valid_queries = get_valid_queries()
         if content_type is not None:
             valid_queries = [
                 query_path
@@ -151,9 +146,8 @@ def prompt_user_to_choose_a_local_query(
     return query_path
 
 
-def raise_if_index_already_exists(context: typer.Context, index: str):
-    rank_client: Elasticsearch = context.meta["rank_client"]
-    if rank_client.indices.exists(index=index):
+def raise_if_index_already_exists(client: Elasticsearch, index: str):
+    if client.indices.exists(index=index):
         raise typer.BadParameter(f"{index} already exists")
     return index
 
@@ -194,9 +188,9 @@ def prompt_user_to_choose_a_target(
 
 
 def prompt_user_to_choose_a_task(
-    context: typer.Context, task_id: Optional[str]
+    client: Elasticsearch, task_id: Optional[str]
 ) -> str:
-    valid_tasks = get_valid_tasks(context)
+    valid_tasks = get_valid_tasks(client)
     if len(valid_tasks) == 0:
         raise typer.BadParameter("No tasks running")
     if task_id is None:

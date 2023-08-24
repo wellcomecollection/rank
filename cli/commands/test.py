@@ -64,14 +64,15 @@ def main(
         if context.meta["target"] == Target.DEVELOPMENT:
             context.meta["client"] = elasticsearch.rank_client(context)
             query_template_path = prompt_user_to_choose_a_local_query(
-                context=context,
-                content_type=context.meta["content_type"],
+                content_type=context.meta["content_type"]
             )
             with open(query_template_path) as f:
                 context.meta["query_template"] = json.load(f)
 
             context.meta["index"] = prompt_user_to_choose_an_index(
-                context, index, content_type=context.meta["content_type"]
+                client=context.meta["client"],
+                index=index,
+                content_type=context.meta["content_type"],
             )
         else:
             context.meta["client"] = elasticsearch.pipeline_client(context)
