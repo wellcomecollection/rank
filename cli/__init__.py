@@ -3,8 +3,8 @@ import re
 from enum import Enum
 from pathlib import Path
 
-import typer
 import requests
+import typer
 
 production_api_url = "https://api.wellcomecollection.org/catalogue/v2"
 staging_api_url = "https://api-stage.wellcomecollection.org/catalogue/v2"
@@ -22,7 +22,6 @@ role_arn = (
 class ContentType(str, Enum):
     WORKS = "works"
     IMAGES = "images"
-
 
 
 class Target(str, Enum):
@@ -44,11 +43,19 @@ class Target(str, Enum):
     DEVELOPMENT = "development"
 
 
-
 data_directory = Path(typer.get_app_dir("weco/rank"))
 index_config_directory = data_directory / "index_config"
 query_directory = data_directory / "queries"
 term_directory = data_directory / "terms"
+
+# make sure that the directories exist
+for directory in [
+    data_directory,
+    index_config_directory,
+    query_directory,
+    term_directory,
+]:
+    directory.mkdir(parents=True, exist_ok=True)
 
 
 def get_pipeline_search_templates(api_url: str) -> dict:

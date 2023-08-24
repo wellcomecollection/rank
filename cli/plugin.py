@@ -1,12 +1,10 @@
 import json
-
 import os
-import re
 
 import chevron
 import typer
 from elasticsearch import Elasticsearch
-from pytest import fixture, hookimpl
+from pytest import StashKey, fixture, hookimpl
 
 
 class RankPlugin:
@@ -19,7 +17,7 @@ class RankPlugin:
     # common prefix. This is useful in particular for when rank is installed
     # as a package (ie in the Docker images), where without this hack every
     # test name is prefixed with the `site-packages` location
-    common_path_key = pytest.StashKey[str]()
+    common_path_key = StashKey[str]()
 
     @hookimpl()
     def pytest_configure(self, config):

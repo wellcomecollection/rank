@@ -175,6 +175,7 @@ def get(
     index = prompt_user_to_choose_an_index(context, index)
     client: Elasticsearch = context.meta["client"]
     config = dict(client.indices.get(index=index))[index]
+
     # only keep the analysis section of the settings
     config["settings"] = {
         "index": {"analysis": config["settings"]["index"]["analysis"]}

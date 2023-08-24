@@ -33,6 +33,10 @@ def get(
         show_choices=True,
         case_sensitive=False,
     ),
+    all: bool = typer.Option(
+        default=False,
+        help="Get all queries from the target",
+    ),
 ):
     """
     Get the prod queries from the API
@@ -43,7 +47,7 @@ def get(
     N.B. This command will overwrite any existing queries in the query
     directory `data/queries`
     """
-    target = prompt_user_to_choose_a_target(target)
+    target = prompt_user_to_choose_a_target(context, target)
     if target == Target.DEVELOPMENT:
         raise ValueError(
             "You can only get queries from the production or staging " "targets"
@@ -53,9 +57,12 @@ def get(
         f"{context.meta['api_url']}/search-templates.json"
     ).json()["templates"]
 
-    selected = beaupy.select_multiple(
-        search_templates, preprocessor=lambda template: template["index"]
-    )
+    if all:
+        selected = search_templates
+    else:
+        selected = beaupy.select_multiple(
+            search_templates, preprocessor=lambda template: template["index"]
+        )
 
     query_directory.mkdir(exist_ok=True)
     for template in selected:

@@ -226,6 +226,7 @@ def get_terms(
     ),
 ):
     """Get a list of real search terms for a given content type"""
+    context.meta["session"] = aws.get_session(context.meta["role_arn"])
     reporting_client = elasticsearch.reporting_client(context=context)
 
     if content_type is None:
