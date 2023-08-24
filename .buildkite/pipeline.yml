@@ -1,22 +1,35 @@
 steps:
-  - label: "format-python"
-    command: ".buildkite/scripts/format-python.sh"
+  - label: "Autoformat"
+    command: ".buildkite/scripts/autoformat.sh"
     plugins:
-      - docker-compose#v4.11.0:
+      - docker-compose#v4.14.0:
           run: tooling
           mount-ssh-agent: true
           mount-buildkite-agent: true
           propagate-environment: true
     agents:
       queue: "nano"
-  - label: "generate-cli-docs"
-    if: build.branch == "main"
+
+  - label: "Generate CLI docs"
+    branches: "main"
     command: ".buildkite/scripts/generate-cli-docs.sh"
     plugins:
-      - docker-compose#v4.11.0:
+      - docker-compose#v4.14.0:
           run: tooling
           mount-ssh-agent: true
           mount-buildkite-agent: true
           propagate-environment: true
     agents:
       queue: "nano"
+
+  - label: "Publish docker image"
+    branches: "main"
+    plugins:
+      - ecr#v2.7.0:
+          login: true
+          assume_role:
+            role_arn: "arn:aws:iam::756629837203:role/catalogue-ci"
+      - docker-compose#v4.14.0:
+          push:
+            - rank:756629837203.dkr.ecr.eu-west-1.amazonaws.com/weco/rank:ref.${BUILDKITE_COMMIT}
+            - rank:756629837203.dkr.ecr.eu-west-1.amazonaws.com/weco/rank:latest

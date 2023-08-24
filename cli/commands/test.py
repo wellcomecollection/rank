@@ -4,6 +4,9 @@ from pathlib import Path
 
 import pytest
 import typer
+import importlib.util
+from typing_extensions import Annotated
+
 
 from .. import ContentType, Target, get_pipeline_search_templates
 from . import (
@@ -17,7 +20,11 @@ from ..plugin import RankPlugin
 
 app = typer.Typer(name="test", help="Run relevance tests")
 
-root_test_dir = Path("cli/relevance_tests/")
+
+# This ensures that we get the right path for the relevance tests directory
+# regardless of where we are running the tool
+relevance_tests_spec = importlib.util.find_spec("cli.relevance_tests")
+root_test_directory = Path(relevance_tests_spec.submodule_search_locations[0])
 
 
 @app.callback(invoke_without_command=True)
@@ -80,7 +87,7 @@ def main(
 
         rank_plugin = RankPlugin(context=context)
 
-        test_dir = root_test_dir / context.meta["content_type"].value
+        test_dir = root_test_directory / context.meta["content_type"].value
 
         if test_id:
             return_code = pytest.main(
@@ -96,4 +103,4 @@ def main(
 @app.command(name="list")
 def list_tests():
     """List all tests that can be run"""
-    pytest.main(["--collect-only", "--quiet", root_test_dir])
+    pytest.main(["--collect-only", "--quiet", root_test_directory])

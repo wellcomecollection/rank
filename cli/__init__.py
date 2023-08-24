@@ -3,10 +3,12 @@ import re
 from enum import Enum
 from pathlib import Path
 
+import typer
 import requests
 
 production_api_url = "https://api.wellcomecollection.org/catalogue/v2"
 staging_api_url = "https://api-stage.wellcomecollection.org/catalogue/v2"
+
 
 role_arn = (
     # Don't assume a role when running in CI.
@@ -20,6 +22,7 @@ role_arn = (
 class ContentType(str, Enum):
     WORKS = "works"
     IMAGES = "images"
+
 
 
 class Target(str, Enum):
@@ -41,7 +44,8 @@ class Target(str, Enum):
     DEVELOPMENT = "development"
 
 
-data_directory = Path("data/")
+
+data_directory = Path(typer.get_app_dir("weco/rank"))
 index_config_directory = data_directory / "index_config"
 query_directory = data_directory / "queries"
 term_directory = data_directory / "terms"
