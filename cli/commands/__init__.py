@@ -120,7 +120,8 @@ def prompt_user_to_choose_a_local_query(
 ) -> str:
     if query_path is None:
         query_files = [
-            path for path in get_local_query_files()
+            path
+            for path in get_local_query_files()
             if content_type is None or path.stem.startswith(content_type.value)
         ]
         if len(query_files) == 0:
@@ -147,7 +148,7 @@ def raise_if_index_already_exists(client: Elasticsearch, index: str):
 
 
 def prompt_user_to_choose_a_task(
-        client: Elasticsearch, task_id: Optional[str]
+    client: Elasticsearch, task_id: Optional[str]
 ) -> str:
     valid_tasks = get_valid_tasks(client)
     if len(valid_tasks) == 0:

@@ -8,7 +8,13 @@ import pytest
 import typer
 import importlib.util
 
-from .. import ContentType, Cluster, get_pipeline_search_template, production_api_url, stage_api_url
+from .. import (
+    ContentType,
+    Cluster,
+    get_pipeline_search_template,
+    production_api_url,
+    stage_api_url,
+)
 from . import (
     prompt_user_to_choose_a_local_query,
     prompt_user_to_choose_an_index,
@@ -26,34 +32,34 @@ root_test_directory = Path(relevance_tests_spec.submodule_search_locations[0])
 
 @app.callback(invoke_without_command=True)
 def main(
-        context: typer.Context,
-        test_id: Optional[str] = typer.Option(
-            help="The ID of an individual test (or group of tests) to run.",
-            case_sensitive=False,
-            default=None,
-        ),
-        content_type: ContentType = typer.Option(
-            help="The content type to run tests for",
-            show_choices=True,
-            case_sensitive=False,
-            prompt=True,
-            default=None,
-        ),
-        query: Optional[str] = typer.Option(
-            help="The query to test: a string of JSON, a local file path, or a URL of catalogue API search templates",
-            default=None
-        ),
-        index: Optional[str] = typer.Option(
-            help="The index to run tests against",
-            case_sensitive=False,
-            default=None,
-        ),
-        cluster: Optional[Cluster] = typer.Option(
-            help="The ElasticSearch cluster on which to run test queries",
-            show_choices=True,
-            case_sensitive=False,
-            default=None
-        ),
+    context: typer.Context,
+    test_id: Optional[str] = typer.Option(
+        help="The ID of an individual test (or group of tests) to run.",
+        case_sensitive=False,
+        default=None,
+    ),
+    content_type: ContentType = typer.Option(
+        help="The content type to run tests for",
+        show_choices=True,
+        case_sensitive=False,
+        prompt=True,
+        default=None,
+    ),
+    query: Optional[str] = typer.Option(
+        help="The query to test: a string of JSON, a local file path, or a URL of catalogue API search templates",
+        default=None,
+    ),
+    index: Optional[str] = typer.Option(
+        help="The index to run tests against",
+        case_sensitive=False,
+        default=None,
+    ),
+    cluster: Optional[Cluster] = typer.Option(
+        help="The ElasticSearch cluster on which to run test queries",
+        show_choices=True,
+        case_sensitive=False,
+        default=None,
+    ),
 ):
     """Run relevance tests"""
     if context.invoked_subcommand is None:
@@ -61,8 +67,7 @@ def main(
         context.meta["content_type"] = content_type
         if str(urlparse(query).scheme).startswith("http"):
             search_template = get_pipeline_search_template(
-                api_url=query,
-                content_type=context.meta["content_type"]
+                api_url=query, content_type=context.meta["content_type"]
             )
             index = search_template["index"]
             query = search_template["query"]
@@ -70,14 +75,20 @@ def main(
             with open(query) as file_contents:
                 query = file_contents
         else:
-            query_path = prompt_user_to_choose_a_local_query(query, content_type=context.meta["content_type"])
+            query_path = prompt_user_to_choose_a_local_query(
+                query, content_type=context.meta["content_type"]
+            )
             with open(query_path, "r", encoding="utf-8") as f:
                 query = f
 
         if cluster == Cluster.pipeline_prod:
-            context.meta["client"] = elasticsearch.pipeline_client(context, production_api_url)
+            context.meta["client"] = elasticsearch.pipeline_client(
+                context, production_api_url
+            )
         elif cluster == Cluster.pipeline_stage:
-            context.meta["client"] = elasticsearch.pipeline_client(context, stage_api_url)
+            context.meta["client"] = elasticsearch.pipeline_client(
+                context, stage_api_url
+            )
         elif cluster == Cluster.rank:
             context.meta["client"] = elasticsearch.rank_client(context)
 

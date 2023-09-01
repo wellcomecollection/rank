@@ -12,7 +12,9 @@ from .. import (
     ContentType,
     Cluster,
     term_directory,
-    get_pipeline_search_template, production_api_url, stage_api_url,
+    get_pipeline_search_template,
+    production_api_url,
+    stage_api_url,
 )
 from ..services import aws, elasticsearch
 from . import (
@@ -152,7 +154,7 @@ def main(
     ),
     query: Optional[str] = typer.Option(
         help="The query to test: a string of JSON, a local file path, or a URL of catalogue API search templates",
-        default=None
+        default=None,
     ),
     index: Optional[str] = typer.Option(
         help="The index to run tests against",
@@ -179,8 +181,7 @@ def main(
 
         if str(urlparse(query).scheme).startswith("http"):
             search_template = get_pipeline_search_template(
-                api_url=query,
-                content_type=context.meta["content_type"]
+                api_url=query, content_type=context.meta["content_type"]
             )
             index = search_template["index"]
             query = search_template["query"]
@@ -188,14 +189,20 @@ def main(
             with open(query) as file_contents:
                 query = file_contents
         else:
-            query_path = prompt_user_to_choose_a_local_query(query, content_type=context.meta["content_type"])
+            query_path = prompt_user_to_choose_a_local_query(
+                query, content_type=context.meta["content_type"]
+            )
             with open(query_path, "r", encoding="utf-8") as f:
                 query = json.dumps(json.load(f))
 
         if cluster == Cluster.pipeline_prod:
-            context.meta["client"] = elasticsearch.pipeline_client(context, production_api_url)
+            context.meta["client"] = elasticsearch.pipeline_client(
+                context, production_api_url
+            )
         elif cluster == Cluster.pipeline_stage:
-            context.meta["client"] = elasticsearch.pipeline_client(context, stage_api_url)
+            context.meta["client"] = elasticsearch.pipeline_client(
+                context, stage_api_url
+            )
         elif cluster == Cluster.rank:
             context.meta["client"] = elasticsearch.rank_client(context)
 

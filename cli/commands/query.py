@@ -45,9 +45,9 @@ def get(
     N.B. This command will overwrite any existing queries in the query
     directory `data/queries`
     """
-    search_templates = requests.get(
-        f"{api_url}/search-templates.json"
-    ).json()["templates"]
+    search_templates = requests.get(f"{api_url}/search-templates.json").json()[
+        "templates"
+    ]
 
     if all:
         selected = search_templates
