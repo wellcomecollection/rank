@@ -6,11 +6,8 @@ from elasticsearch import Elasticsearch
 
 from .. import (
     ContentType,
-    Target,
     index_config_directory,
     query_directory,
-    production_api_url,
-    staging_api_url,
 )
 
 
@@ -44,7 +41,7 @@ def get_valid_configs():
     return valid_configs
 
 
-def get_valid_queries():
+def get_local_query_files():
     """
     Returns a list of the files containing queries in the /data directory
     """
@@ -122,24 +119,21 @@ def prompt_user_to_choose_a_local_query(
     content_type: Optional[ContentType] = None,
 ) -> str:
     if query_path is None:
-        valid_queries = get_valid_queries()
-        if content_type is not None:
-            valid_queries = [
-                query_path
-                for query_path in valid_queries
-                if query_path.stem.startswith(content_type.value)
-            ]
-        if len(valid_queries) == 0:
+        query_files = [
+            path for path in get_local_query_files()
+            if content_type is None or path.stem.startswith(content_type.value)
+        ]
+        if len(query_files) == 0:
             raise FileNotFoundError(
                 f"No valid queries found in {query_directory} "
                 f"for content type: {content_type}"
             )
-        elif len(valid_queries) == 1:
-            query_path = valid_queries[0]
+        elif len(query_files) == 1:
+            query_path = query_files[0]
         else:
             typer.echo("Select a query file")
             query_path = beaupy.select(
-                valid_queries,
+                query_files,
                 preprocessor=lambda x: x.stem,
             )
     typer.echo(f"Using query: {query_path}")
@@ -152,43 +146,8 @@ def raise_if_index_already_exists(client: Elasticsearch, index: str):
     return index
 
 
-def prompt_user_to_choose_a_content_type(
-    content_type: Optional[ContentType],
-) -> ContentType:
-    valid_content_types = [content_type.value for content_type in ContentType]
-    if content_type is None:
-        typer.echo("Select a content type")
-        content_type = beaupy.select(valid_content_types)
-    else:
-        if content_type not in valid_content_types:
-            raise typer.BadParameter(
-                f"{content_type} is not a valid content type"
-            )
-    return ContentType(content_type)
-
-
-def prompt_user_to_choose_a_target(
-    context: typer.Context,
-    target: Optional[Target],
-) -> Target:
-    valid_targets = [target.value for target in Target]
-    if target is None:
-        typer.echo("Select an target")
-        target = beaupy.select(valid_targets)
-    else:
-        if target not in valid_targets:
-            raise typer.BadParameter(f"{target} is not a valid target")
-
-    if target == Target.PRODUCTION:
-        context.meta["api_url"] = production_api_url
-    elif target == Target.STAGING:
-        context.meta["api_url"] = staging_api_url
-
-    return Target(target)
-
-
 def prompt_user_to_choose_a_task(
-    client: Elasticsearch, task_id: Optional[str]
+        client: Elasticsearch, task_id: Optional[str]
 ) -> str:
     valid_tasks = get_valid_tasks(client)
     if len(valid_tasks) == 0:
