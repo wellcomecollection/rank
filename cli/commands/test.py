@@ -46,7 +46,7 @@ def main(
         default=None,
     ),
     query: Optional[str] = typer.Option(
-        help="The query to test: a string of JSON, a local file path, or a URL of catalogue API search templates",
+        help="The query to test: a local file path or a URL of catalogue API search templates",
         default=None,
     ),
     index: Optional[str] = typer.Option(
