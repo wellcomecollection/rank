@@ -66,6 +66,7 @@ def build_works_results_table(response: dict) -> rich.table.Table:
     table.add_column("Score", justify="right", no_wrap=True)
     table.add_column("ID", justify="left", no_wrap=True)
     table.add_column("Title", justify="left", no_wrap=False)
+    table.add_column("Contributors", justify="left", no_wrap=False)
     table.add_column("Dates", justify="left", no_wrap=True)
     table.add_column("Reference number", justify="left", no_wrap=True)
 
@@ -74,7 +75,12 @@ def build_works_results_table(response: dict) -> rich.table.Table:
 
         score = str(hit["_score"])
         title = hit["_source"]["display"]["title"]
-
+        contributors = ", ".join(
+            [
+                contributor["agent"]["label"]
+                for contributor in hit["_source"]["display"]["contributors"]
+            ]
+        )
         if len(hit["_source"]["display"]["production"]) > 0:
             dates = ", ".join(
                 [
@@ -96,6 +102,7 @@ def build_works_results_table(response: dict) -> rich.table.Table:
             score,
             f"[link={url}]{hit['_id']}[/link]",
             f"[link={url}]{title}[/link]",
+            contributors,
             dates,
             reference_number,
         )
