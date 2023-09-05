@@ -152,12 +152,12 @@ $ rank query [OPTIONS] COMMAND [ARGS]...
 
 **Commands**:
 
-* `get`: Get the prod queries from the API
+* `get`: Get the queries from the API
 * `list`: List the queries in the query directory
 
 ### `rank query get`
 
-Get the prod queries from the API
+Get the queries from the API
 
 Useful when you're working on a new relevance requirement, but don't
 want to start completely from scratch
@@ -173,7 +173,7 @@ $ rank query get [OPTIONS]
 
 **Options**:
 
-* `--target [production|staging|development]`: The target to get queries from  [default: Target.PRODUCTION]
+* `--api-url TEXT`: The target API to get queries from  [default: https://api.wellcomecollection.org/catalogue/v2]
 * `--all / --no-all`: Get all queries from the target  [default: no-all]
 * `--help`: Show this message and exit.
 
@@ -218,10 +218,10 @@ $ rank search [OPTIONS] COMMAND [ARGS]...
 **Options**:
 
 * `--search-terms TEXT`: The search terms to use
-* `--target [production|staging|development]`: The target context/environment to run the search against  [default: development]
 * `--content-type [works|images]`: The content type to search in
-* `--index TEXT`: The index to search in
-* `--query-path TEXT`: The query to run
+* `--query TEXT`: The query to test: a local file path or a URL of catalogue API search templates
+* `--index TEXT`: The index to run tests against
+* `--cluster [pipeline-prod|pipeline-stage|rank]`: The ElasticSearch cluster on which to run test queries
 * `--n INTEGER RANGE`: The number of results to return  [default: 10; 1<=x<=100]
 * `--help`: Show this message and exit.
 
@@ -337,8 +337,9 @@ $ rank test [OPTIONS] COMMAND [ARGS]...
 
 * `--test-id TEXT`: The ID of an individual test (or group of tests) to run.
 * `--content-type [works|images]`: The content type to run tests for
-* `--target [production|staging|development]`: The target to run tests against  [default: development]
+* `--query TEXT`: The query to test: a local file path or a URL of catalogue API search templates
 * `--index TEXT`: The index to run tests against
+* `--cluster [pipeline-prod|pipeline-stage|rank]`: The ElasticSearch cluster on which to run test queries
 * `--help`: Show this message and exit.
 
 **Commands**:
