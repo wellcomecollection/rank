@@ -6,8 +6,9 @@ import typer
 from elasticsearch import Elasticsearch
 
 from .. import (
+    ContentType,
     index_config_directory,
-    get_pipeline_search_templates,
+    get_pipeline_search_template,
     production_api_url,
 )
 from ..services import aws, elasticsearch
@@ -211,9 +212,8 @@ def replicate(
 ):
     """Reindex an index from a production cluster to the rank cluster"""
     context.meta["session"] = aws.get_session(context.meta["role_arn"])
-    context.meta["api_url"] = production_api_url
     pipeline_client = elasticsearch.pipeline_client(
-        context=context,
+        context=context, api_url=production_api_url
     )
     rank_client = context.meta["client"]
 
@@ -244,7 +244,9 @@ def replicate(
         ),
         abort=True,
     ):
-        search_templates = get_pipeline_search_templates(production_api_url)
+        search_templates = get_pipeline_search_template(
+            production_api_url, content_type=ContentType.works
+        )
         content_type = context.meta.get("content_type", "works")
         pipeline_date = search_templates[content_type]["index_date"]
 

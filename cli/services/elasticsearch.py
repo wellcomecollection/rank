@@ -1,17 +1,16 @@
 import typer
 from time import sleep
 
-
-from .. import get_pipeline_search_templates
 from elasticsearch import Elasticsearch
 
 from .aws import get_secrets
+from .. import get_pipeline_search_template
 
 
-def pipeline_client(context: typer.Context) -> Elasticsearch:
-    search_templates = get_pipeline_search_templates(context.meta["api_url"])
+def pipeline_client(context: typer.Context, api_url: str) -> Elasticsearch:
     content_type = context.meta.get("content_type", "works")
-    pipeline_date = search_templates[content_type]["index_date"]
+    search_templates = get_pipeline_search_template(api_url, content_type)
+    pipeline_date = search_templates["index_date"]
     secrets = get_secrets(
         session=context.meta["session"],
         secret_prefix=f"elasticsearch/pipeline_storage_{pipeline_date}/",

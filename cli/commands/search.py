@@ -1,6 +1,8 @@
 import json
+import os
 from datetime import datetime
 from typing import Optional
+from urllib.parse import urlparse
 
 import chevron
 import rich
@@ -8,15 +10,15 @@ import typer
 
 from .. import (
     ContentType,
+    Cluster,
     term_directory,
-    Target,
-    get_pipeline_search_templates,
+    get_pipeline_search_template,
+    production_api_url,
+    stage_api_url,
 )
 from ..services import aws, elasticsearch
 from . import (
-    prompt_user_to_choose_a_content_type,
     prompt_user_to_choose_a_local_query,
-    prompt_user_to_choose_a_target,
     prompt_user_to_choose_an_index,
 )
 
@@ -45,8 +47,8 @@ def build_results_table(
     response: dict, content_type: ContentType
 ) -> rich.table.Table:
     builder = {
-        ContentType.WORKS: build_works_results_table,
-        ContentType.IMAGES: build_images_results_table,
+        ContentType.works: build_works_results_table,
+        ContentType.images: build_images_results_table,
     }
     return builder[content_type](response)
 
@@ -150,25 +152,28 @@ def main(
         default=None,
         help="The search terms to use",
     ),
-    target: Optional[Target] = typer.Option(
-        default="development",
-        help="The target context/environment to run the search against",
-        case_sensitive=False,
-        show_choices=True,
-    ),
-    content_type: Optional[ContentType] = typer.Option(
-        default=None,
+    content_type: ContentType = typer.Option(
         help="The content type to search in",
-        case_sensitive=False,
         show_choices=True,
+        case_sensitive=False,
+        prompt=True,
+        default=None,
+    ),
+    query: Optional[str] = typer.Option(
+        help="The query to test: a local file path or a URL of catalogue API search templates",
+        default=None,
     ),
     index: Optional[str] = typer.Option(
+        help="The index to run tests against",
+        case_sensitive=False,
         default=None,
-        help="The index to search in",
     ),
-    query_path: Optional[str] = typer.Option(
+    cluster: Cluster = typer.Option(
+        help="The ElasticSearch cluster on which to run test queries",
+        show_choices=True,
+        case_sensitive=False,
+        prompt=True,
         default=None,
-        help="The query to run",
     ),
     n: Optional[int] = typer.Option(
         default=10,
@@ -179,38 +184,45 @@ def main(
 ):
     if context.invoked_subcommand is None:
         context.meta["session"] = aws.get_session(context.meta["role_arn"])
-        context.meta["target"] = prompt_user_to_choose_a_target(context, target)
-        context.meta["content_type"] = prompt_user_to_choose_a_content_type(
-            content_type
-        )
-        if context.meta["target"] == Target.DEVELOPMENT:
-            context.meta["client"] = elasticsearch.rank_client(context)
+        context.meta["content_type"] = content_type
+
+        if str(urlparse(query).scheme).startswith("http"):
+            search_template = get_pipeline_search_template(
+                api_url=query, content_type=context.meta["content_type"]
+            )
+            index = search_template["index"]
+            query = search_template["query"]
+        elif query and os.path.isfile(query):
+            with open(query) as file_contents:
+                query = file_contents
+        else:
             query_path = prompt_user_to_choose_a_local_query(
-                content_type=context.meta["content_type"]
+                query, content_type=context.meta["content_type"]
             )
             with open(query_path, "r", encoding="utf-8") as f:
-                query_template = json.dumps(json.load(f))
-            context.meta["index"] = prompt_user_to_choose_an_index(
-                client=context.meta["client"],
-                index=index,
-                content_type=context.meta["content_type"],
+                query = json.dumps(json.load(f))
+
+        if cluster == Cluster.pipeline_prod:
+            context.meta["client"] = elasticsearch.pipeline_client(
+                context, production_api_url
             )
-        else:
-            context.meta["client"] = elasticsearch.pipeline_client(context)
-            search_templates = get_pipeline_search_templates(
-                context.meta["api_url"]
+        elif cluster == Cluster.pipeline_stage:
+            context.meta["client"] = elasticsearch.pipeline_client(
+                context, stage_api_url
             )
-            context.meta["query_template"] = search_templates[
-                context.meta["content_type"]
-            ]["query"]
-            context.meta["index"] = search_templates[
-                context.meta["content_type"]
-            ]["index"]
+        elif cluster == Cluster.rank:
+            context.meta["client"] = elasticsearch.rank_client(context)
+
+        context.meta["index"] = prompt_user_to_choose_an_index(
+            client=context.meta["client"],
+            index=index,
+            content_type=context.meta["content_type"],
+        )
 
         if search_terms is None:
             search_terms = typer.prompt("What are you looking for?")
 
-        rendered_query = chevron.render(query_template, {"query": search_terms})
+        rendered_query = chevron.render(query, {"query": search_terms})
 
         response = context.meta["client"].search(
             index=context.meta["index"],
@@ -227,16 +239,15 @@ def main(
 def get_terms(
     context: typer.Context,
     content_type: ContentType = typer.Option(
-        None,
+        default=None,
+        show_choices=True,
+        prompt=True,
         help="The content type to find real search terms for",
     ),
 ):
     """Get a list of real search terms for a given content type"""
     context.meta["session"] = aws.get_session(context.meta["role_arn"])
     reporting_client = elasticsearch.reporting_client(context=context)
-
-    if content_type is None:
-        content_type = prompt_user_to_choose_a_content_type(content_type)
 
     # Page names and content types are currently the same but we don't want to
     # rely on that
