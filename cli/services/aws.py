@@ -3,18 +3,21 @@ import boto3
 
 
 def get_session(role_arn: str) -> boto3.session.Session:
-    sts_client = boto3.client("sts")
-    assumed_role = sts_client.assume_role(
-        RoleArn=role_arn,
-        RoleSessionName="rank-cli",
-    )
-    session = boto3.session.Session(
-        aws_access_key_id=assumed_role["Credentials"]["AccessKeyId"],
-        aws_secret_access_key=assumed_role["Credentials"]["SecretAccessKey"],
-        aws_session_token=assumed_role["Credentials"]["SessionToken"],
-        region_name="eu-west-1",
-    )
-    return session
+    if role_arn:
+        sts_client = boto3.client("sts")
+        assumed_role = sts_client.assume_role(
+            RoleArn=role_arn,
+            RoleSessionName="rank-cli",
+        )
+        session = boto3.session.Session(
+            aws_access_key_id=assumed_role["Credentials"]["AccessKeyId"],
+            aws_secret_access_key=assumed_role["Credentials"]["SecretAccessKey"],
+            aws_session_token=assumed_role["Credentials"]["SessionToken"],
+            region_name="eu-west-1",
+        )
+        return session
+    else:
+        return boto3.session.Session(region_name="eu-west-1")
 
 
 def get_secrets(
