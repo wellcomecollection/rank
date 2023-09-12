@@ -73,13 +73,13 @@ def main(
             query = search_template["query"]
         elif query and os.path.isfile(query):
             with open(query) as file_contents:
-                query = file_contents
+                query = file_contents.read()
         else:
             query_path = prompt_user_to_choose_a_local_query(
                 query, content_type=context.meta["content_type"]
             )
             with open(query_path, "r", encoding="utf-8") as f:
-                query = f
+                query = f.read()
 
         if cluster == Cluster.pipeline_prod:
             context.meta["client"] = elasticsearch.pipeline_client(
