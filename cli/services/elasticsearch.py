@@ -6,7 +6,9 @@ from elasticsearch import Elasticsearch
 from .aws import get_secrets
 
 
-def pipeline_client(context: typer.Context, pipeline_date: str) -> Elasticsearch:
+def pipeline_client(
+    context: typer.Context, pipeline_date: str
+) -> Elasticsearch:
     secrets = get_secrets(
         session=context.meta["session"],
         secret_prefix=f"elasticsearch/pipeline_storage_{pipeline_date}/",

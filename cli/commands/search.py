@@ -203,14 +203,26 @@ def main(
                 query = f.read()
 
         if cluster == Cluster.pipeline_prod:
-            prod_template = get_pipeline_search_template(production_api_url, context.meta["content_type"])
-            index = index if index else f"{content_type}-indexed-{prod_template['index_date']}"
+            prod_template = get_pipeline_search_template(
+                production_api_url, context.meta["content_type"]
+            )
+            index = (
+                index
+                if index
+                else f"{content_type}-indexed-{prod_template['index_date']}"
+            )
             context.meta["client"] = elasticsearch.pipeline_client(
                 context=context, pipeline_date=prod_template["index_date"]
             )
         elif cluster == Cluster.pipeline_stage:
-            stage_template = get_pipeline_search_template(stage_api_url, context.meta["content_type"])
-            index = index if index else f"{content_type}-indexed-{stage_template['index_date']}"
+            stage_template = get_pipeline_search_template(
+                stage_api_url, context.meta["content_type"]
+            )
+            index = (
+                index
+                if index
+                else f"{content_type}-indexed-{stage_template['index_date']}"
+            )
             context.meta["client"] = elasticsearch.pipeline_client(
                 context=context, pipeline_date=stage_template["index_date"]
             )
