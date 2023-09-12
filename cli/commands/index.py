@@ -212,8 +212,9 @@ def replicate(
 ):
     """Reindex an index from a production cluster to the rank cluster"""
     context.meta["session"] = aws.get_session(context.meta["role_arn"])
+    prod_template = get_pipeline_search_template(production_api_url, content_type=ContentType.works)
     pipeline_client = elasticsearch.pipeline_client(
-        context=context, api_url=production_api_url
+        context=context, pipeline_date=prod_template["index_date"]
     )
     rank_client = context.meta["client"]
 
