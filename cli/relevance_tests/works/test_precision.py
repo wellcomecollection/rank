@@ -16,13 +16,13 @@ test_cases = [
         ),
     ),
     PrecisionTestCase(
-        search_terms="DJmjW2cU",
-        expected_ids=["djmjw2cu"],
+        search_terms="UeMqQmB9",
+        expected_ids=["uemqqmb9"],
         description="Case insensitive IDs",
     ),
     PrecisionTestCase(
-        search_terms="2013i",
-        expected_ids=["djmjw2cu"],
+        search_terms="10020i",
+        expected_ids=["wwsmsnp9"],
         description="Reference number as ID",
     ),
     PrecisionTestCase(

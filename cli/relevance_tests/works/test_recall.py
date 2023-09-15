@@ -16,8 +16,8 @@ test_cases = [
         description="Two works with matching titles",
     ),
     RecallTestCase(
-        search_terms="2013i 2599i",
-        expected_ids=["djmjw2cu", "xxskepr5"],
+        search_terms="1008i 2599i",
+        expected_ids=["wbreezks", "xxskepr5"],
         description="Multiple IDs",
     ),
     RecallTestCase(
