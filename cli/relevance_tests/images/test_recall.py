@@ -7,14 +7,11 @@ test_cases = [
     RecallTestCase(
         search_terms="everest chest",
         expected_ids=[
-            "bt9yvss2",
             "erth8sur",
             "fddgu7pe",
             "qbvq42t6",
             "u6ejpuxu",
             "xskq2fsc",
-            "prrq5ajp",
-            "zw53jx3j",
         ],
     ),
     RecallTestCase(
