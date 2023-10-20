@@ -16,8 +16,8 @@ test_cases = [
         threshold_position=1000,
     ),
     RecallTestCase(
-        search_terms="conosceva",
-        expected_ids=["j3w6u4t2", "mt8bj5zk", "vhf56vvz"],
+        search_terms="ricerca",
+        expected_ids=["jjf2pvn5", "f7nbe4qb", "ejkxegqy", "avd99j4m"],
         description="italian stemming",
         threshold_position=1000,
     ),
