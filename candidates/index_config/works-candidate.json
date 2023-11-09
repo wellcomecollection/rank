@@ -13,6 +13,12 @@
             "type": "pattern_replace",
             "pattern": "/",
             "replacement": ""
+          },
+          "remove_punctuation": {
+            "type": "pattern_replace",
+            "_name": "Removes non-letter, non-numeric, and non-whitespace characters. Respects other character sets.",
+            "pattern": "[^\\p{L}\\p{Nd}\\s]",
+            "replacement": ""
           }
         },
         "filter": {
@@ -192,6 +198,16 @@
               "word_delimiter",
               "lowercase",
               "english_stemmer"
+            ]
+          },
+          "normalized_keyword": {
+            "char_filter": [
+              "remove_punctuation"
+            ],
+            "tokenizer": "keyword",
+            "filter": [
+              "asciifolding",
+              "lowercase"
             ]
           },
           "french": {
@@ -484,28 +500,28 @@
             "analyzer": "english"
           },
           "id": {
-            "type": "text",
-            "analyzer": "lowercase"
+            "type": "keyword",
+            "normalizer": "lowercase"
           },
           "identifiers.value": {
-            "type": "text",
-            "analyzer": "lowercase"
+            "type": "keyword",
+            "normalizer": "lowercase"
           },
           "images.id": {
-            "type": "text",
-            "analyzer": "lowercase"
+            "type": "keyword",
+            "normalizer": "lowercase"
           },
           "images.identifiers.value": {
             "type": "text",
             "analyzer": "lowercase"
           },
           "items.id": {
-            "type": "text",
-            "analyzer": "lowercase"
+            "type": "keyword",
+            "normalizer": "lowercase"
           },
           "items.identifiers.value": {
-            "type": "text",
-            "analyzer": "lowercase"
+            "type": "keyword",
+            "normalizer": "lowercase"
           },
           "languages.label": {
             "type": "text",
@@ -805,6 +821,10 @@
               "base": {
                 "type": "text",
                 "analyzer": "base"
+              },
+              "normalized_keyword": {
+                "type": "text",
+                "analyzer": "normalized_keyword"
               }
             }
           }
