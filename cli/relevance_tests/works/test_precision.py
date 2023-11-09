@@ -146,8 +146,8 @@ test_cases = [
     PrecisionTestCase(
         search_terms="The Secrets of Alchemy",
         expected_ids=["rtdee482"],
-        description="Case-insensitive partial titles"
-    )
+        description="Case-insensitive partial titles",
+    ),
 ]
 
 
