@@ -1,6 +1,7 @@
 import pytest
 
 from ..models import PrecisionTestCase
+from ..executors import do_test_precision
 
 test_cases = [
     PrecisionTestCase(
@@ -148,22 +149,4 @@ test_cases = [
     "test_case", [test_case.param for test_case in test_cases]
 )
 def test_precision(test_case: PrecisionTestCase, client, index, render_query):
-    expected_ids = test_case.expected_ids
-    response = client.search(
-        index=index,
-        query=render_query(test_case.search_terms),
-        size=len(expected_ids),
-        _source=False,
-    )
-    result_ids = [result["_id"] for result in response["hits"]["hits"]]
-
-    if not test_case.strict:
-        result_ids = set(result_ids)
-        expected_ids = set(expected_ids)
-
-    try:
-        assert result_ids == expected_ids
-    except AssertionError:
-        pytest.fail(
-           f"The expected IDs ({expected_ids}) did not match the results ({result_ids})"
-        )
+    return do_test_precision(test_case, client, index, render_query)

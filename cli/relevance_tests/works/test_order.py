@@ -2,6 +2,7 @@ import elasticsearch.helpers
 import pytest
 
 from ..models import OrderTestCase
+from ..executors import do_test_order
 
 test_cases = [
     OrderTestCase(
@@ -95,49 +96,4 @@ test_cases = [
     "test_case", [test_case.param for test_case in test_cases]
 )
 def test_order(test_case: OrderTestCase, client, index, render_query):
-    before_ids = set(test_case.before_ids)
-    after_ids = set(test_case.after_ids)
-    assert not before_ids.intersection(after_ids), "before and after IDs must be disjoint!"
-
-    results = elasticsearch.helpers.scan(client,
-        preserve_order=True,
-        index=index,
-        _source=False,
-        query={
-            "query": render_query(test_case.search_terms)
-        },
-    )
-
-    failures = []
-    for n, doc in enumerate(results, start=1):
-        doc_id = doc["_id"]
-
-        before_ids.discard(doc_id)
-
-        if before_ids and doc_id in after_ids:
-            failures.append((before_ids.copy(), doc_id))
-
-        after_ids.discard(doc_id)
-
-        # We don't mind if we don't see the after_ids
-        if not before_ids and not after_ids:
-            results.close()
-        if n >= test_case.threshold_position:
-            results.close()
-
-    try:
-        assert not before_ids
-        assert not after_ids
-    except AssertionError:
-        pytest.fail(
-            f"{before_ids.union(after_ids)} not found in search results.",
-            test_case.description
-        )
-
-    if failures:
-        failure_message = [
-            test_case.description,
-            "The following IDs were found in the wrong order: ",
-            *[f"{after_id} appeared before {', '.join(remaining_before)}"for remaining_before, after_id in failures]
-        ]
-        pytest.fail("\n".join(failure_message), pytrace=False)
+    return do_test_order(test_case, client, index, render_query)
