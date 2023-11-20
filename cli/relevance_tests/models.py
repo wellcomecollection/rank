@@ -51,16 +51,6 @@ class PrecisionTestCase(TestCase):
             "as long as they make up the first results."
         )
     )
-    threshold_position: Optional[int] = Field(
-        description=(
-            "The last possible position for the expected ID in the search "
-            "results. If None, the expected IDs must be the first results. If "
-            "specified, the expected IDs must appear at or before this "
-            "position, otherwise the test should fail. If the expected ID is "
-            "between the first and this position, the test should raise a "
-            "warning."
-        )
-    )
     strict: bool = Field(
         description=(
             "If True, the expected IDs must be the first results, in the "
@@ -71,10 +61,6 @@ class PrecisionTestCase(TestCase):
     )
 
     def __init__(self, **data):
-        # if the threshold position hasn't been specified, it should be
-        # the same as the number of expected IDs
-        if "threshold_position" not in data:
-            data["threshold_position"] = len(data["expected_ids"])
         super().__init__(**data)
 
     @model_validator(mode="after")
@@ -85,20 +71,6 @@ class PrecisionTestCase(TestCase):
             raise ValueError("expected_ids must be unique")
         return self
 
-    @model_validator(mode="after")
-    def check_threshold_position(self):
-        """Check that the threshold position is valid"""
-        if self.threshold_position is not None:
-            if self.threshold_position < 0:
-                raise ValueError(
-                    "threshold_position must be greater than or equal to 0"
-                )
-            if self.threshold_position < len(self.expected_ids):
-                raise ValueError(
-                    "threshold_position must be greater than the number of "
-                    "expected IDs"
-                )
-        return self
 
 
 class RecallTestCase(TestCase):
