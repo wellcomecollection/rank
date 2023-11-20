@@ -9,7 +9,7 @@ from .aws import get_secrets
 common_es_client_config = {
     "timeout": 10,
     "retry_on_timeout": True,
-    "max_retries": 5
+    "max_retries": 5,
 }
 
 

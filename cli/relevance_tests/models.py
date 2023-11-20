@@ -72,7 +72,6 @@ class PrecisionTestCase(TestCase):
         return self
 
 
-
 class RecallTestCase(TestCase):
     expected_ids: List[str] = Field(
         description=(

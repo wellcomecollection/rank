@@ -36,7 +36,9 @@ def do_test_recall(test_case: RecallTestCase, client, index, render_query):
         )
 
 
-def do_test_precision(test_case: PrecisionTestCase, client, index, render_query):
+def do_test_precision(
+    test_case: PrecisionTestCase, client, index, render_query
+):
     expected_ids = test_case.expected_ids
     response = client.search(
         index=index,
@@ -61,7 +63,9 @@ def do_test_precision(test_case: PrecisionTestCase, client, index, render_query)
 def do_test_order(test_case: OrderTestCase, client, index, render_query):
     before_ids = set(test_case.before_ids)
     after_ids = set(test_case.after_ids)
-    assert not before_ids.intersection(after_ids), "before and after IDs must be disjoint!"
+    assert not before_ids.intersection(
+        after_ids
+    ), "before and after IDs must be disjoint!"
 
     results = elasticsearch.helpers.scan(
         client,
@@ -69,9 +73,7 @@ def do_test_order(test_case: OrderTestCase, client, index, render_query):
         index=index,
         _source=False,
         size=scan_page_size,
-        query={
-            "query": render_query(test_case.search_terms)
-        },
+        query={"query": render_query(test_case.search_terms)},
     )
 
     failures = []
@@ -97,13 +99,16 @@ def do_test_order(test_case: OrderTestCase, client, index, render_query):
     except AssertionError:
         pytest.fail(
             f"{before_ids.union(after_ids)} not found in search results.",
-            test_case.description
+            test_case.description,
         )
 
     if failures:
         failure_message = [
             test_case.description,
             "The following IDs were found in the wrong order: ",
-            *[f"{after_id} appeared before {', '.join(remaining_before)}" for remaining_before, after_id in failures]
+            *[
+                f"{after_id} appeared before {', '.join(remaining_before)}"
+                for remaining_before, after_id in failures
+            ],
         ]
         pytest.fail("\n".join(failure_message), pytrace=False)
