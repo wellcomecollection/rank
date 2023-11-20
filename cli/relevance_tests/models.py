@@ -39,7 +39,9 @@ class TestCase(BaseModel):
         return pytest.param(
             self,
             id=self.id,
-            marks=[pytest.mark.xfail(strict=True)] if self.known_failure else [],
+            marks=[pytest.mark.xfail(strict=True)]
+            if self.known_failure
+            else [],
         )
 
 
