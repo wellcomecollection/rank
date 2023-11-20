@@ -644,68 +644,6 @@
                   }
                 }
               },
-              "partOf": {
-                "properties": {
-                  "id": {
-                    "type": "keyword",
-                    "normalizer": "lowercase"
-                  },
-                  "title": {
-                    "type": "text",
-                    "analyzer": "lowercase",
-                    "fields": {
-                      "arabic": {
-                        "type": "text",
-                        "analyzer": "arabic"
-                      },
-                      "bengali": {
-                        "type": "text",
-                        "analyzer": "bengali"
-                      },
-                      "english": {
-                        "type": "text",
-                        "analyzer": "english"
-                      },
-                      "french": {
-                        "type": "text",
-                        "analyzer": "french"
-                      },
-                      "german": {
-                        "type": "text",
-                        "analyzer": "german"
-                      },
-                      "hindi": {
-                        "type": "text",
-                        "analyzer": "hindi"
-                      },
-                      "italian": {
-                        "type": "text",
-                        "analyzer": "italian"
-                      },
-                      "persian": {
-                        "type": "text",
-                        "analyzer": "persian"
-                      },
-                      "spanish": {
-                        "type": "text",
-                        "analyzer": "spanish"
-                      },
-                      "swappable_characters": {
-                        "type": "text",
-                        "analyzer": "swappable_characters"
-                      },
-                      "cased": {
-                        "type": "text",
-                        "analyzer": "cased"
-                      },
-                      "base": {
-                        "type": "text",
-                        "analyzer": "base"
-                      }
-                    }
-                  }
-                }
-              },
               "physicalDescription": {
                 "type": "text",
                 "analyzer": "english"

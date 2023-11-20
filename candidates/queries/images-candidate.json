@@ -21,7 +21,6 @@
       "query.source.languages.label",
       "query.source.lettering.*",
       "query.source.notes.contents.*",
-      "query.source.partOf.title.*",
       "query.source.physicalDescription.*",
       "query.source.production.label.*^10.0",
       "query.source.subjects.concepts.label^10.0",
