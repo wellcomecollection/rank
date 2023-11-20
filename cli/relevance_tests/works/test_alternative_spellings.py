@@ -1,3 +1,4 @@
+import elasticsearch.helpers
 import pytest
 
 from ..models import RecallTestCase
@@ -228,18 +229,28 @@ test_cases = [
 def test_alternative_spellings(
     test_case: RecallTestCase, client, index, render_query
 ):
-    response = client.search(
+    expected_ids = set(test_case.expected_ids)
+    received_ids = set([])
+    results = elasticsearch.helpers.scan(client,
+        preserve_order=True,
         index=index,
-        query=render_query(test_case.search_terms),
-        size=test_case.threshold_position,
         _source=False,
+        query={
+            "query": render_query(test_case.search_terms),
+        },
     )
-    result_ids = [result["_id"] for result in response["hits"]["hits"]]
+    for doc in results:
+        received_ids.add(doc["_id"])
+        expected_ids.discard(doc["_id"])
+
+        if not expected_ids:
+            results.close()
+        if len(received_ids) >= test_case.threshold_position:
+            results.close()
 
     try:
-        missing_ids = set(test_case.expected_ids) - set(result_ids)
-        assert not missing_ids
+        assert not expected_ids
     except AssertionError:
         pytest.fail(
-            f"{missing_ids} not found in the search results: {result_ids}",
+            f"{expected_ids} not found in the search results: {received_ids}",
         )
