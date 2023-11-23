@@ -175,6 +175,10 @@ def main(
         prompt=True,
         default=None,
     ),
+    pipeline_date: Optional[str] = typer.Option(
+        help="An override for the pipeline date when a pipeline cluster is selected",
+        default=None
+    ),
     n: Optional[int] = typer.Option(
         default=10,
         help="The number of results to return",
@@ -202,7 +206,12 @@ def main(
             with open(query_path, "r", encoding="utf-8") as f:
                 query = f.read()
 
-        if cluster == Cluster.pipeline_prod:
+        if pipeline_date:
+            index = index if index else f"{content_type}-indexed-{pipeline_date}"
+            context.meta["client"] = elasticsearch.pipeline_client(
+                context=context, pipeline_date=pipeline_date
+            )
+        elif cluster == Cluster.pipeline_prod:
             prod_template = get_pipeline_search_template(
                 production_api_url, context.meta["content_type"]
             )
