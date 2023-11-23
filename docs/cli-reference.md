@@ -222,6 +222,7 @@ $ rank search [OPTIONS] COMMAND [ARGS]...
 * `--query TEXT`: The query to test: a local file path or a URL of catalogue API search templates
 * `--index TEXT`: The index to run tests against
 * `--cluster [pipeline-prod|pipeline-stage|rank]`: The ElasticSearch cluster on which to run test queries
+* `--pipeline-date TEXT`: An override for the pipeline date when a pipeline cluster is selected
 * `--n INTEGER RANGE`: The number of results to return  [default: 10; 1<=x<=100]
 * `--help`: Show this message and exit.
 
@@ -340,6 +341,7 @@ $ rank test [OPTIONS] COMMAND [ARGS]...
 * `--query TEXT`: The query to test: a local file path or a URL of catalogue API search templates
 * `--index TEXT`: The index to run tests against
 * `--cluster [pipeline-prod|pipeline-stage|rank]`: The ElasticSearch cluster on which to run test queries
+* `--pipeline-date TEXT`: An override for the pipeline date when a pipeline cluster is selected
 * `--help`: Show this message and exit.
 
 **Commands**:
