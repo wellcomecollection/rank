@@ -88,6 +88,12 @@ test_cases = [
         description="An exact matches in the title should appear before a misspelled match in the contributor and title. Also uses a filter",
         filter={"term": {"query.format.id": "h"}},
     ),
+    OrderTestCase(
+        search_terms="b16576111",
+        before_ids=["zmmbjkja"],
+        after_ids=["vburynen", "vgfa9dg6", "wgr6zsnc"],
+        description="Source identifiers of works appear before works which are linked to/from"
+    )
 ]
 
 
