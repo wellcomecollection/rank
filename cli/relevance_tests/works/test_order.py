@@ -1,6 +1,8 @@
+import elasticsearch.helpers
 import pytest
 
 from ..models import OrderTestCase
+from ..executors import do_test_order
 
 test_cases = [
     OrderTestCase(
@@ -94,38 +96,4 @@ test_cases = [
     "test_case", [test_case.param for test_case in test_cases]
 )
 def test_order(test_case: OrderTestCase, client, index, render_query):
-    response = client.search(
-        index=index,
-        query=render_query(test_case.search_terms),
-        size=test_case.threshold_position,
-        _source=False,
-    )
-    returned_ids = [hit["_id"] for hit in response["hits"]["hits"]]
-
-    # Check whether the IDs exist in the returned list
-    returned_id_set = set(returned_ids)
-    for document_id in test_case.before_ids:
-        if document_id not in returned_id_set:
-            pytest.fail(
-                f"{document_id} was not found in the results. "
-                f"{test_case.description}"
-            )
-
-    # Check whether all of the documents in the "after" list are after
-    # all the documents in the "before" list
-    wrong_ordered_id_pairs = []
-    for before_id in test_case.before_ids:
-        for after_id in test_case.after_ids:
-            if returned_ids.index(before_id) > returned_ids.index(after_id):
-                wrong_ordered_id_pairs.append((before_id, after_id))
-
-    if wrong_ordered_id_pairs:
-        failure_message = [
-            test_case.description,
-            "The following ID pairs were found in the wrong order: ",
-            *[
-                f"{after_id} appeared before {before_id}"
-                for before_id, after_id in wrong_ordered_id_pairs
-            ],
-        ]
-        pytest.fail("\n".join(failure_message), pytrace=False)
+    return do_test_order(test_case, client, index, render_query)
