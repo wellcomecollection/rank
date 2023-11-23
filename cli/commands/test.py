@@ -62,8 +62,8 @@ def main(
     ),
     pipeline_date: Optional[str] = typer.Option(
         help="An override for the pipeline date when a pipeline cluster is selected",
-        default=None
-    )
+        default=None,
+    ),
 ):
     """Run relevance tests"""
     if context.invoked_subcommand is None:
@@ -86,7 +86,9 @@ def main(
                 query = f.read()
 
         if pipeline_date:
-            index = index if index else f"{content_type}-indexed-{pipeline_date}"
+            index = (
+                index if index else f"{content_type}-indexed-{pipeline_date}"
+            )
             context.meta["client"] = elasticsearch.pipeline_client(
                 context=context, pipeline_date=pipeline_date
             )
