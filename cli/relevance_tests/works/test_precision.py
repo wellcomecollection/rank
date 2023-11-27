@@ -115,7 +115,6 @@ test_cases = [
             "Searching for a token without its possessive should match a "
             "document with"
         ),
-        known_failure=True,
     ),
     PrecisionTestCase(
         search_terms="sophies shell",
@@ -141,6 +140,11 @@ test_cases = [
             "prioritised over other single-word matches. See"
             "https://github.com/wellcomecollection/catalogue-api/issues/466"
         ),
+    ),
+    PrecisionTestCase(
+        search_terms="The Secrets of Alchemy",
+        expected_ids=["rtdee482"],
+        description="Case-insensitive partial titles",
     ),
 ]
 

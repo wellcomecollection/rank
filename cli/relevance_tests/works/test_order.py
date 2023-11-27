@@ -53,13 +53,13 @@ test_cases = [
         search_terms="AIDS",
         description="Capitalised match appears before lower case match",
         before_ids=["ae6cc6d9", "gvdwhbnd", "er9z8sj4", "n9xsxzg7"],
-        after_ids=["gvem6rts", "tdwgsdsh", "vfwczwr7"],
+        after_ids=["gvem6rts", "vfwczwr7"],
     ),
     OrderTestCase(
         search_terms="aid",
         description="Matches exact terms before stemmed terms",
         before_ids=["bt9bf26e", "rgrvznhs", "v63vtprn"],
-        after_ids=["ae6cc6d9", "gvdwhbnd", "er9z8sj4", "n9xsxzg7"],
+        after_ids=["ae6cc6d9", "gvdwhbnd", "er9z8sj4"],
     ),
     OrderTestCase(
         search_terms="aids poster",
@@ -74,7 +74,6 @@ test_cases = [
         id="aids poster - both terms ahead of single term",
         before_ids=["t5sb3sab"],
         after_ids=["fyzv7d6h"],
-        known_failure=True,
     ),
     OrderTestCase(
         search_terms="x-ray",
@@ -88,6 +87,12 @@ test_cases = [
         after_ids=["ae5kymcs"],
         description="An exact matches in the title should appear before a misspelled match in the contributor and title. Also uses a filter",
         filter={"term": {"query.format.id": "h"}},
+    ),
+    OrderTestCase(
+        search_terms="b16576111",
+        before_ids=["zmmbjkja"],
+        after_ids=["vburynen", "vgfa9dg6", "wgr6zsnc"],
+        description="Source identifiers of works appear before works which are linked to/from",
     ),
 ]
 

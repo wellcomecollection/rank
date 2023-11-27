@@ -18,8 +18,8 @@ test_cases = [
         threshold_position=1000,
     ),
     RecallTestCase(
-        search_terms="conosceva",
-        expected_ids=["j3w6u4t2", "mt8bj5zk", "vhf56vvz"],
+        search_terms="ricerca",
+        expected_ids=["jjf2pvn5", "f7nbe4qb", "ejkxegqy", "avd99j4m"],
         description="italian stemming",
         threshold_position=1000,
     ),
@@ -45,7 +45,6 @@ test_cases = [
             "k4k3jcvx",
             "yp67jjj5",
         ],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -59,7 +58,6 @@ test_cases = [
             "k4k3jcvx",
             "yp67jjj5",
         ],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -74,7 +72,6 @@ test_cases = [
             "pzbrggws",
             "zz45ck2v",
         ],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -89,7 +86,6 @@ test_cases = [
             "pzbrggws",
             "zz45ck2v",
         ],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -102,7 +98,6 @@ test_cases = [
             "y6qqmmeb",
             "m3hk4fkz",
         ],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -115,7 +110,6 @@ test_cases = [
             "y6qqmmeb",
             "m3hk4fkz",
         ],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -158,7 +152,6 @@ test_cases = [
             "mepptqy2",
             "a4sbkwqg",
         ],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -182,14 +175,12 @@ test_cases = [
         search_terms="neuues",
         description="uu is folded to match w and vv in the title",
         expected_ids=["ker2t6s4", "m9rdjx58", "nu5dyw37"],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
         search_terms="nevves",
         description="uu is folded to match w and vv in the title",
         expected_ids=["ker2t6s4", "m9rdjx58", "nu5dyw37"],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -202,7 +193,6 @@ test_cases = [
         threshold_position=1000,
         search_terms="al-tibb",
         expected_ids=["t4jqq9ue"],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
@@ -219,7 +209,6 @@ test_cases = [
         threshold_position=1000,
         search_terms="nujum",
         expected_ids=["m94cyux7"],
-        known_failure=True,
     ),
 ]
 

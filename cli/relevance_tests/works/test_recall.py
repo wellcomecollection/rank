@@ -40,7 +40,6 @@ test_cases = [
         search_terms="eugenics society annual reports",
         expected_ids=["k9w95csw", "asqf8kzb", "n499pzsr"],
         description="Matches archives without providing refnos",
-        known_failure=True,
     ),
     RecallTestCase(
         search_terms="لكشف",
