@@ -14,7 +14,7 @@ test_cases = [
     RecallTestCase(
         search_terms="G.G. Smyth",
         expected_ids=["tkm8r6vk"],
-        description="Query where both search terms are needed for meaningful results"
+        description="Query where both search terms are needed for meaningful results",
     ),
     RecallTestCase(
         search_terms="Atherosclerosis: an introduction to atherosclerosis",

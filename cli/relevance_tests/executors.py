@@ -10,7 +10,7 @@ def do_test_recall(test_case: RecallTestCase, client, index, render_query):
         index=index,
         _source=False,
         size=test_case.threshold_position,
-        query=render_query(test_case.search_terms)
+        query=render_query(test_case.search_terms),
     )["hits"]["hits"]
     print(len(results))
     for doc in results:
@@ -63,7 +63,7 @@ def do_test_order(test_case: OrderTestCase, client, index, render_query):
         index=index,
         _source=False,
         size=test_case.threshold_position,
-        query=render_query(test_case.search_terms)
+        query=render_query(test_case.search_terms),
     )["hits"]["hits"]
 
     failures = []
