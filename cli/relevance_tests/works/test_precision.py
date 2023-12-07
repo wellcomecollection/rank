@@ -88,7 +88,7 @@ test_cases = [
     ),
     PrecisionTestCase(
         search_terms="Hunterian wa/hmm",
-        expected_ids=["f3gpbk74"],
+        expected_ids=["f3gpbk74", "k2y5f657"],
         description="archive reference number and a word from the title",
     ),
     PrecisionTestCase(
