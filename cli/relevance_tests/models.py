@@ -87,7 +87,7 @@ class RecallTestCase(TestCase):
             "The last possible position for the expected ID in the search "
             "results",
         ),
-        default=10_000,
+        default=25,
     )
 
     @model_validator(mode="after")
@@ -115,7 +115,7 @@ class OrderTestCase(TestCase):
         ),
     )
 
-    threshold_position: ClassVar[int] = 10_000
+    threshold_position: ClassVar[int] = 100
 
     @model_validator(mode="after")
     def check_expected_ids(self):

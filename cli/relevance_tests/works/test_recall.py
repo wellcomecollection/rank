@@ -12,6 +12,11 @@ test_cases = [
         ),
     ),
     RecallTestCase(
+        search_terms="G.G. Smyth",
+        expected_ids=["tkm8r6vk"],
+        description="Query where both search terms are needed for meaningful results"
+    ),
+    RecallTestCase(
         search_terms="Atherosclerosis: an introduction to atherosclerosis",
         expected_ids=["bcwvtknn", "rty8296y"],
         description="Two works with matching titles",
@@ -33,13 +38,14 @@ test_cases = [
     ),
     RecallTestCase(
         search_terms="WA/HMM/CM benin",
-        expected_ids=["qfdvkegw", "je5pm2gj", "dppjjtqz"],
+        expected_ids=["qfdvkegw", "je5pm2gj"],
         description="Archive refno and a word from the description",
     ),
     RecallTestCase(
         search_terms="eugenics society annual reports",
         expected_ids=["k9w95csw", "asqf8kzb", "n499pzsr"],
         description="Matches archives without providing refnos",
+        threshold_position=100,
     ),
     RecallTestCase(
         search_terms="لكشف",

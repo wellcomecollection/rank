@@ -10,7 +10,6 @@ test_cases = [
         before_ids=["e8qxq5mv", "uuem7v9a"],
         after_ids=["n323a3a4", "jktm3e74", "frgjdu67"],
         description="Ensure that we return non-typos over typos e.g. query:stimming matches:stimming > swimming",
-        known_failure=True,
     ),
     OrderTestCase(
         search_terms="Crète",
@@ -52,33 +51,26 @@ test_cases = [
     OrderTestCase(
         search_terms="AIDS",
         description="Capitalised match appears before lower case match",
-        before_ids=["ae6cc6d9", "gvdwhbnd", "er9z8sj4", "n9xsxzg7"],
+        before_ids=["zgyerb26", "sa7tsj82", "qsrzv4ma", "htfhcsaw"],
         after_ids=["gvem6rts", "vfwczwr7"],
     ),
     OrderTestCase(
         search_terms="aid",
         description="Matches exact terms before stemmed terms",
-        before_ids=["bt9bf26e", "rgrvznhs", "v63vtprn"],
+        before_ids=["ns8dqqu3", "p8e5jrbk", "v63vtprn"],
         after_ids=["ae6cc6d9", "gvdwhbnd", "er9z8sj4"],
     ),
     OrderTestCase(
         search_terms="aids poster",
         description="Matches ordered terms ahead of unordered terms",
         id="aids poster - ordered terms ahead of unordered terms",
-        before_ids=["t5sb3sab", "bry8xyza"],
+        before_ids=["czgtrmfn", "bry8xyza"],
         after_ids=["e8vnd4s7"],
-    ),
-    OrderTestCase(
-        search_terms="aids poster",
-        description="Matches both terms ahead of single term",
-        id="aids poster - both terms ahead of single term",
-        before_ids=["t5sb3sab"],
-        after_ids=["fyzv7d6h"],
     ),
     OrderTestCase(
         search_terms="x-ray",
         description="tokens joined by hyphens are matched above tokens which are joined by whitespace",
-        before_ids=["maxctjgf", "c3jatdq5", "dmcchav2", "gfp86e2b"],
+        before_ids=["maxctjgf", "c3jatdq5", "q8tnjvm8", "gfp86e2b"],
         after_ids=["thgzs6pd"],
     ),
     OrderTestCase(

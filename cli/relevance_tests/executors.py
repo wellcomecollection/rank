@@ -1,38 +1,30 @@
-import elasticsearch.helpers
 import pytest
 
 from .models import RecallTestCase, PrecisionTestCase, OrderTestCase
-
-scan_page_size = 250
 
 
 def do_test_recall(test_case: RecallTestCase, client, index, render_query):
     expected_ids = set(test_case.expected_ids)
     received_ids = set([])
-    results = elasticsearch.helpers.scan(
-        client,
-        preserve_order=True,
+    results = client.search(
         index=index,
         _source=False,
-        size=scan_page_size,
-        query={
-            "query": render_query(test_case.search_terms),
-        },
-    )
+        size=test_case.threshold_position,
+        query=render_query(test_case.search_terms)
+    )["hits"]["hits"]
+    print(len(results))
     for doc in results:
         received_ids.add(doc["_id"])
         expected_ids.discard(doc["_id"])
 
         if not expected_ids:
-            results.close()
-        if len(received_ids) >= test_case.threshold_position:
-            results.close()
+            break
 
     try:
         assert not expected_ids
     except AssertionError:
         pytest.fail(
-            f"{expected_ids} not found in the search results: {received_ids}",
+            f"{expected_ids} not found in the search results",
         )
 
 
@@ -67,17 +59,15 @@ def do_test_order(test_case: OrderTestCase, client, index, render_query):
         after_ids
     ), "before and after IDs must be disjoint!"
 
-    results = elasticsearch.helpers.scan(
-        client,
-        preserve_order=True,
+    results = client.search(
         index=index,
         _source=False,
-        size=scan_page_size,
-        query={"query": render_query(test_case.search_terms)},
-    )
+        size=test_case.threshold_position,
+        query=render_query(test_case.search_terms)
+    )["hits"]["hits"]
 
     failures = []
-    for n, doc in enumerate(results, start=1):
+    for doc in results:
         doc_id = doc["_id"]
 
         before_ids.discard(doc_id)
@@ -88,17 +78,14 @@ def do_test_order(test_case: OrderTestCase, client, index, render_query):
         after_ids.discard(doc_id)
 
         # We don't mind if we don't see the after_ids
-        if not before_ids and not after_ids:
-            results.close()
-        if n >= test_case.threshold_position:
-            results.close()
+        if not before_ids:
+            break
 
     try:
         assert not before_ids
-        assert not after_ids
     except AssertionError:
         pytest.fail(
-            f"{before_ids.union(after_ids)} not found in search results.",
+            f"{before_ids} not found in search results.",
             test_case.description,
         )
 
