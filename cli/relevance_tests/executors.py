@@ -9,7 +9,7 @@ def do_test_recall(test_case: RecallTestCase, client, index, render_query):
     results = client.search(
         index=index,
         _source=False,
-        size=test_case.threshold_position,
+        size=max(test_case.threshold_position, len(expected_ids) + 1),
         query=render_query(test_case.search_terms),
     )["hits"]["hits"]
     print(len(results))
