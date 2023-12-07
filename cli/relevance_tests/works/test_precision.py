@@ -90,7 +90,6 @@ test_cases = [
         search_terms="Hunterian wa/hmm",
         expected_ids=["f3gpbk74"],
         description="archive reference number and a word from the title",
-        known_failure=True,
     ),
     PrecisionTestCase(
         search_terms="mammas favorites",
