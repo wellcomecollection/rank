@@ -151,5 +151,5 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", [test_case.param for test_case in test_cases]
 )
-def test_precision(test_case: PrecisionTestCase, client, index, render_query):
-    return do_test_precision(test_case, client, index, render_query)
+def test_precision(test_case: PrecisionTestCase, client, index, render_query, stable_sort_key):
+    return do_test_precision(test_case, client, index, render_query, stable_sort_key)

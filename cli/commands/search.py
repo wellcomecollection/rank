@@ -185,6 +185,10 @@ def main(
         min=1,
         max=100,
     ),
+    stable_sort_key: Optional[str] = typer.Option(
+        default="query.id",
+        help="A document property that can be used as a stable sort key"
+    )
 ):
     if context.invoked_subcommand is None:
         context.meta["session"] = aws.get_session(context.meta["role_arn"])
@@ -254,6 +258,10 @@ def main(
         response = context.meta["client"].search(
             index=context.meta["index"],
             query=json.loads(rendered_query),
+            sort=[
+                {"_score": "desc"},
+                {stable_sort_key: "asc"}
+            ],
             size=n,
             source=["display"],
         )
