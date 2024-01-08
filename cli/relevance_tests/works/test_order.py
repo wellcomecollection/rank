@@ -51,13 +51,13 @@ test_cases = [
     OrderTestCase(
         search_terms="AIDS",
         description="Capitalised match appears before lower case match",
-        before_ids=["zgyerb26", "sa7tsj82", "qsrzv4ma", "htfhcsaw"],
+        before_ids=["xn5p9d3v", "mr332fhn", "y3vcj449", "jfhq5hrv"],
         after_ids=["gvem6rts", "vfwczwr7"],
     ),
     OrderTestCase(
         search_terms="aid",
         description="Matches exact terms before stemmed terms",
-        before_ids=["ns8dqqu3", "p8e5jrbk", "v63vtprn"],
+        before_ids=["ns8dqqu3", "p8e5jrbk", "whvu96xr"],
         after_ids=["ae6cc6d9", "gvdwhbnd", "er9z8sj4"],
     ),
     OrderTestCase(
