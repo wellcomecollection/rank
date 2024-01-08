@@ -71,6 +71,11 @@ test_cases = [
         description="Matches stemmed arabic text",
         known_failure=True,
     ),
+    RecallTestCase(
+        search_terms="Joint War Committee of the British Red Cross Society and the Order of St. John of Jerusalem in England.",
+        expected_ids=["b3b5dvfy"],
+        description="Long phrase queries should work, and not time out",
+    )
 ]
 
 
