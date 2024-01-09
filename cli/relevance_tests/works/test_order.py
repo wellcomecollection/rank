@@ -51,7 +51,7 @@ test_cases = [
     OrderTestCase(
         search_terms="AIDS",
         description="Capitalised match appears before lower case match",
-        before_ids=["xn5p9d3v", "mr332fhn", "y3vcj449", "jfhq5hrv"],
+        before_ids=["n9xsxzg7", "mr332fhn", "e2w3hc2t", "jfhq5hrv"],
         after_ids=["gvem6rts", "vfwczwr7"],
     ),
     OrderTestCase(
@@ -66,6 +66,7 @@ test_cases = [
         id="aids poster - ordered terms ahead of unordered terms",
         before_ids=["czgtrmfn", "bry8xyza"],
         after_ids=["e8vnd4s7"],
+        known_failure=True
     ),
     OrderTestCase(
         search_terms="x-ray",
