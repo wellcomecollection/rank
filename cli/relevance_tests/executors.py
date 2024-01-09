@@ -3,7 +3,9 @@ import pytest
 from .models import RecallTestCase, PrecisionTestCase, OrderTestCase
 
 
-def do_test_recall(test_case: RecallTestCase, client, index, render_query, stable_sort_key):
+def do_test_recall(
+    test_case: RecallTestCase, client, index, render_query, stable_sort_key
+):
     expected_ids = set(test_case.expected_ids)
     received_ids = set([])
     results = client.search(
@@ -11,10 +13,7 @@ def do_test_recall(test_case: RecallTestCase, client, index, render_query, stabl
         _source=False,
         size=max(test_case.threshold_position, len(expected_ids) + 1),
         query=render_query(test_case.search_terms),
-        sort=[
-            {"_score": "desc"},
-            {stable_sort_key: "asc"}
-        ],
+        sort=[{"_score": "desc"}, {stable_sort_key: "asc"}],
     )["hits"]["hits"]
     print(len(results))
     for doc in results:
@@ -33,16 +32,13 @@ def do_test_recall(test_case: RecallTestCase, client, index, render_query, stabl
 
 
 def do_test_precision(
-        test_case: PrecisionTestCase, client, index, render_query, stable_sort_key
+    test_case: PrecisionTestCase, client, index, render_query, stable_sort_key
 ):
     expected_ids = test_case.expected_ids
     response = client.search(
         index=index,
         query=render_query(test_case.search_terms),
-        sort=[
-            {"_score": "desc"},
-            {stable_sort_key: "asc"}
-        ],
+        sort=[{"_score": "desc"}, {stable_sort_key: "asc"}],
         size=len(expected_ids),
         _source=False,
     )
@@ -60,7 +56,9 @@ def do_test_precision(
         )
 
 
-def do_test_order(test_case: OrderTestCase, client, index, render_query, stable_sort_key):
+def do_test_order(
+    test_case: OrderTestCase, client, index, render_query, stable_sort_key
+):
     before_ids = set(test_case.before_ids)
     after_ids = set(test_case.after_ids)
     assert not before_ids.intersection(
@@ -72,10 +70,7 @@ def do_test_order(test_case: OrderTestCase, client, index, render_query, stable_
         _source=False,
         size=test_case.threshold_position,
         query=render_query(test_case.search_terms),
-        sort=[
-            {"_score": "desc"},
-            {stable_sort_key: "asc"}
-        ]
+        sort=[{"_score": "desc"}, {stable_sort_key: "asc"}],
     )["hits"]["hits"]
 
     failures = []

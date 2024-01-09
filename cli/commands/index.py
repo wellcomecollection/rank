@@ -195,8 +195,8 @@ def get(
 def replicate(
     context: typer.Context,
     pipeline_date: str = typer.Option(
-      default=None,
-      help="The pipeline date from which to replicate, uses the production cluster if unspecified"
+        default=None,
+        help="The pipeline date from which to replicate, uses the production cluster if unspecified",
     ),
     source_index: str = typer.Option(
         default=None,

@@ -66,7 +66,7 @@ test_cases = [
         id="aids poster - ordered terms ahead of unordered terms",
         before_ids=["czgtrmfn", "bry8xyza"],
         after_ids=["e8vnd4s7"],
-        known_failure=True
+        known_failure=True,
     ),
     OrderTestCase(
         search_terms="x-ray",
@@ -93,5 +93,9 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", [test_case.param for test_case in test_cases]
 )
-def test_order(test_case: OrderTestCase, client, index, render_query, stable_sort_key):
-    return do_test_order(test_case, client, index, render_query, stable_sort_key)
+def test_order(
+    test_case: OrderTestCase, client, index, render_query, stable_sort_key
+):
+    return do_test_order(
+        test_case, client, index, render_query, stable_sort_key
+    )
