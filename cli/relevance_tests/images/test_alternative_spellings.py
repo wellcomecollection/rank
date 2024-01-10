@@ -30,4 +30,6 @@ test_cases = [
 def test_alternative_spellings(
     test_case: RecallTestCase, client, index, render_query, stable_sort_key
 ):
-    return do_test_recall(test_case, client, index, render_query, stable_sort_key)
+    return do_test_recall(
+        test_case, client, index, render_query, stable_sort_key
+    )
