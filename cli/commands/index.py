@@ -194,6 +194,10 @@ def get(
 @app.command()
 def replicate(
     context: typer.Context,
+    pipeline_date: str = typer.Option(
+        default=None,
+        help="The pipeline date from which to replicate, uses the production cluster if unspecified",
+    ),
     source_index: str = typer.Option(
         default=None,
         help=(
@@ -212,11 +216,14 @@ def replicate(
 ):
     """Reindex an index from a production cluster to the rank cluster"""
     context.meta["session"] = aws.get_session(context.meta["role_arn"])
-    prod_template = get_pipeline_search_template(
-        production_api_url, content_type=ContentType.works
-    )
+    if not pipeline_date:
+        prod_template = get_pipeline_search_template(
+            production_api_url, content_type=ContentType.works
+        )
+        pipeline_date = prod_template["index_date"]
+
     pipeline_client = elasticsearch.pipeline_client(
-        context=context, pipeline_date=prod_template["index_date"]
+        context=context, pipeline_date=pipeline_date
     )
     rank_client = context.meta["client"]
 
@@ -247,12 +254,6 @@ def replicate(
         ),
         abort=True,
     ):
-        search_templates = get_pipeline_search_template(
-            production_api_url, content_type=ContentType.works
-        )
-        content_type = context.meta.get("content_type", "works")
-        pipeline_date = search_templates[content_type]["index_date"]
-
         secrets = aws.get_secrets(
             session=context.meta["session"],
             secret_prefix=f"elasticsearch/pipeline_storage_{pipeline_date}/",

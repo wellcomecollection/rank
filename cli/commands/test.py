@@ -73,7 +73,7 @@ def main(
             search_template = get_pipeline_search_template(
                 api_url=query, content_type=context.meta["content_type"]
             )
-            index = search_template["index"]
+            index = index if index else search_template["index"]
             query = search_template["query"]
         elif query and os.path.isfile(query):
             with open(query) as file_contents:

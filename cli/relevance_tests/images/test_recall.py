@@ -55,5 +55,9 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", [test_case.param for test_case in test_cases]
 )
-def test_recall(test_case: RecallTestCase, client, index, render_query):
-    return do_test_recall(test_case, client, index, render_query)
+def test_recall(
+    test_case: RecallTestCase, client, index, render_query, stable_sort_key
+):
+    return do_test_recall(
+        test_case, client, index, render_query, stable_sort_key
+    )

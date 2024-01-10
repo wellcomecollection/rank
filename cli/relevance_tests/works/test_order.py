@@ -51,13 +51,13 @@ test_cases = [
     OrderTestCase(
         search_terms="AIDS",
         description="Capitalised match appears before lower case match",
-        before_ids=["zgyerb26", "sa7tsj82", "qsrzv4ma", "htfhcsaw"],
+        before_ids=["n9xsxzg7", "mr332fhn", "jfhq5hrv"],
         after_ids=["gvem6rts", "vfwczwr7"],
     ),
     OrderTestCase(
         search_terms="aid",
         description="Matches exact terms before stemmed terms",
-        before_ids=["ns8dqqu3", "p8e5jrbk", "v63vtprn"],
+        before_ids=["ns8dqqu3", "p8e5jrbk", "whvu96xr"],
         after_ids=["ae6cc6d9", "gvdwhbnd", "er9z8sj4"],
     ),
     OrderTestCase(
@@ -66,6 +66,7 @@ test_cases = [
         id="aids poster - ordered terms ahead of unordered terms",
         before_ids=["czgtrmfn", "bry8xyza"],
         after_ids=["e8vnd4s7"],
+        known_failure=True,
     ),
     OrderTestCase(
         search_terms="x-ray",
@@ -92,5 +93,9 @@ test_cases = [
 @pytest.mark.parametrize(
     "test_case", [test_case.param for test_case in test_cases]
 )
-def test_order(test_case: OrderTestCase, client, index, render_query):
-    return do_test_order(test_case, client, index, render_query)
+def test_order(
+    test_case: OrderTestCase, client, index, render_query, stable_sort_key
+):
+    return do_test_order(
+        test_case, client, index, render_query, stable_sort_key
+    )

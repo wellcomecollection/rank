@@ -59,6 +59,10 @@ class RankPlugin:
         return self._index
 
     @fixture()
+    def stable_sort_key(self):
+        return "query.id"
+
+    @fixture()
     def render_query(self):
         def _render_query(search_terms: str):
             rendered = chevron.render(

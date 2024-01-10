@@ -71,11 +71,20 @@ test_cases = [
         description="Matches stemmed arabic text",
         known_failure=True,
     ),
+    RecallTestCase(
+        search_terms="Joint War Committee of the British Red Cross Society and the Order of St. John of Jerusalem in England.",
+        expected_ids=["b3b5dvfy"],
+        description="Long phrase queries should work, and not time out",
+    ),
 ]
 
 
 @pytest.mark.parametrize(
     "test_case", [test_case.param for test_case in test_cases]
 )
-def test_recall(test_case: RecallTestCase, client, index, render_query):
-    return do_test_recall(test_case, client, index, render_query)
+def test_recall(
+    test_case: RecallTestCase, client, index, render_query, stable_sort_key
+):
+    return do_test_recall(
+        test_case, client, index, render_query, stable_sort_key
+    )
