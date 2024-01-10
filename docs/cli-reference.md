@@ -116,6 +116,7 @@ $ rank index replicate [OPTIONS]
 
 **Options**:
 
+* `--pipeline-date TEXT`: The pipeline date from which to replicate, uses the production cluster if unspecified
 * `--source-index TEXT`: The name of the index to replicate. If an index is not provided, you will be prompted to select one from the production cluster
 * `--dest-index TEXT`: The name of the index to create in the rank cluster. If an index is not provided, you will be prompted to select one from the rank cluster. The default is to use the same name as the source index
 * `--help`: Show this message and exit.
@@ -224,6 +225,7 @@ $ rank search [OPTIONS] COMMAND [ARGS]...
 * `--cluster [pipeline-prod|pipeline-stage|rank]`: The ElasticSearch cluster on which to run test queries
 * `--pipeline-date TEXT`: An override for the pipeline date when a pipeline cluster is selected
 * `--n INTEGER RANGE`: The number of results to return  [default: 10; 1<=x<=100]
+* `--stable-sort-key TEXT`: A document property that can be used as a stable sort key  [default: query.id]
 * `--help`: Show this message and exit.
 
 **Commands**:
