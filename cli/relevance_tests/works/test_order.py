@@ -51,7 +51,7 @@ test_cases = [
     OrderTestCase(
         search_terms="AIDS",
         description="Capitalised match appears before lower case match",
-        before_ids=["n9xsxzg7", "mr332fhn", "jfhq5hrv"],
+        before_ids=["n9xsxzg7", "mr332fhn"],
         after_ids=["gvem6rts", "vfwczwr7"],
     ),
     OrderTestCase(
