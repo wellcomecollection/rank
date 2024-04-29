@@ -85,8 +85,8 @@ test_cases = [
         search_terms="A true and perfect relation of the whole proceedings against the late most garnerous traitors",
         expected_ids=[],
         forbidden_ids=["r2s5nj96"],
-        description="Searches should not return irrelevant images of veterinary ailments"
-    )
+        description="Searches should not return irrelevant images of veterinary ailments",
+    ),
 ]
 
 
