@@ -6,3 +6,4 @@ See the [idealised workflows](idealised-workflows.md) for a high-level overview 
 
 See the [principles / FAQs](principles.md) for a discussion of the design decisions behind Rank.
 
+See [Search relevance tips](search_relevance_tips.md) for some techniques that are useful when debugging and developing 

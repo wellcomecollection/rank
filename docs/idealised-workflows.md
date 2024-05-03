@@ -75,6 +75,12 @@ rank task status
 
 Again, you'll be prompted to select the task you want to monitor.
 
+#### Alternative approach to copying production indices
+
+It's possible to [restore](https://www.elastic.co/guide/en/elasticsearch/reference/current/snapshots-restore-snapshot.html#restore-index-data-stream) the `works-indexed-*` index from one of the catalogue pipeline snapshots into the rank cluster - this is faster and lower-risk than the above method. You do this from Kibana in the rank cluster.
+
+Either approach will take all documents, including non-visible ones. If you were to perform a [reindex with a query](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-reindex.html#docs-reindex-select-query) on the replicated index into a new one, querying only for `type: Visible` documents, you would reduce the number of documents to be reindexed as you develop new mappings (as below).
+
 ### Developing a new index mapping
 
 It's usually helpful to use the existing index configuration (mappings + settings) as a starting point when developing something new. At least, it might help you determine where problems are coming from, and how to avoid making the same mistakes again. You can fetch a copy of the configuration for your newly-replicated index by running:
