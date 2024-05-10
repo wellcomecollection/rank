@@ -49,10 +49,16 @@ test_cases = [
         after_ids=["ptvgbenh", "sk78b6pr"],
     ),
     OrderTestCase(
-        search_terms="AIDS",
-        description="Capitalised match appears before lower case match",
-        before_ids=["n9xsxzg7", "e2w3hc2t"],
-        after_ids=["gvem6rts", "vfwczwr7"],
+        search_terms="AIDS diagnosis",
+        description="Case sensitive match appears before insensitive match (upper case)",
+        before_ids=["ruajmye9", "k3fr6kkp"],
+        after_ids=["dhpyj367", "x54kgj8b"],
+    ),
+    OrderTestCase(
+        search_terms="aids diagnosis",
+        description="Case sensitive match appears before insensitive match (lower case)",
+        before_ids=["dhpyj367", "x54kgj8b"],
+        after_ids=["ruajmye9", "k3fr6kkp"],
     ),
     OrderTestCase(
         search_terms="aid",
