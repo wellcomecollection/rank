@@ -7,6 +7,7 @@ def do_test_recall(
     test_case: RecallTestCase, client, index, render_query, stable_sort_key
 ):
     expected_ids = set(test_case.expected_ids)
+    forbidden_ids = set(test_case.forbidden_ids)
     received_ids = set([])
     results = client.search(
         index=index,
@@ -17,8 +18,13 @@ def do_test_recall(
     )["hits"]["hits"]
     print(len(results))
     for doc in results:
-        received_ids.add(doc["_id"])
-        expected_ids.discard(doc["_id"])
+        doc_id = doc["_id"]
+        try:
+            assert doc_id not in forbidden_ids
+        except AssertionError:
+            pytest.fail(f"Encountered a forbidden ID {doc_id}")
+        received_ids.add(doc_id)
+        expected_ids.discard(doc_id)
 
         if not expected_ids:
             break

@@ -81,6 +81,10 @@ class RecallTestCase(TestCase):
             "strict is set to True, these results can appear in any order."
         )
     )
+    forbidden_ids: Optional[List[str]] = Field(
+        description="The IDs which should definitely not be returned by the search",
+        default=[],
+    )
 
     threshold_position: Optional[int] = Field(
         description=(
@@ -92,8 +96,6 @@ class RecallTestCase(TestCase):
 
     @model_validator(mode="after")
     def check_expected_ids(self):
-        if len(self.expected_ids) == 0:
-            raise ValueError("expected_ids must not be empty")
         if len(self.expected_ids) != len(set(self.expected_ids)):
             raise ValueError("expected_ids must be unique")
         return self
