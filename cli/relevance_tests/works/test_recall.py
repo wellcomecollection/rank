@@ -77,7 +77,7 @@ test_cases = [
         description="Moderately long phrase queries should work, and not time out",
     ),
     RecallTestCase(
-        search_terms="Young Arthur 1741 1820 Rural oeconomy or Essays on the practical parts of husbandry Designed to explain several of the most important methods of conducting farms of various kinds including many useful hints to gentlemen farmers relative to the oeconomical management of their business Containing among other enquiries of that proportioned farm which is of all others the most profitable",
+        search_terms=":(Young Arthur 1741 1820 Rural oeconomy or Essays on the practical parts of husbandry Designed to explain several of the most important methods of conducting farms of various kinds including many useful hints to gentlemen farmers relative to the oeconomical management of their business Containing among other enquiries of that proportioned farm which is of all others the most profitable The best method of conducting farms that consist all of grass or all of arable land The means of keeping the most cattle the year round on a given quantity of land The cheapest way of manuring land Considerations on the oeconomical conduct of gentlemen farmers The comparative profit of farming different soils Of experimental agriculture Of the new husbandry Of the management of borders of arable fields Of periodical publications concerning rural oeconomics To which is added The rural Socrates being memoirs of a country philosopher by the author of The farmer s letters Two lines of quotation in Latin",
         expected_ids=["hpnp6nfy"],
         description="Extremely long phrase queries should work, and not time out",
     ),
