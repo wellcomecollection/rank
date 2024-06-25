@@ -16,7 +16,6 @@ def do_test_recall(
         query=render_query(test_case.search_terms),
         sort=[{"_score": "desc"}, {stable_sort_key: "asc"}],
     )["hits"]["hits"]
-    print(len(results))
     for doc in results:
         doc_id = doc["_id"]
         try:
