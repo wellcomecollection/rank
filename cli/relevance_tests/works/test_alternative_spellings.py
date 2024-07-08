@@ -187,7 +187,6 @@ test_cases = [
         search_terms="newes",
         description="w is folded to match uu and vv in the title",
         expected_ids=["zn4u6s2s", "nu5dyw37"],
-        known_failure=True,
     ),
     RecallTestCase(
         threshold_position=1000,
