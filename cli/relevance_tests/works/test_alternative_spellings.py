@@ -174,19 +174,19 @@ test_cases = [
         threshold_position=1000,
         search_terms="neuues",
         description="uu is folded to match w and vv in the title",
-        expected_ids=["zn4u6s2s", "nu5dyw37","ker2t6s4"],
+        expected_ids=["zn4u6s2s", "nu5dyw37", "ker2t6s4"],
     ),
     RecallTestCase(
         threshold_position=1000,
         search_terms="nevves",
         description="uu is folded to match w and vv in the title",
-        expected_ids=["zn4u6s2s", "nu5dyw37","ker2t6s4"],
+        expected_ids=["zn4u6s2s", "nu5dyw37", "ker2t6s4"],
     ),
     RecallTestCase(
         threshold_position=1000,
         search_terms="newes",
         description="w is folded to match uu and vv in the title",
-        expected_ids=["zn4u6s2s", "nu5dyw37","ker2t6s4"],
+        expected_ids=["zn4u6s2s", "nu5dyw37", "ker2t6s4"],
         known_failure=True,
     ),
     RecallTestCase(
