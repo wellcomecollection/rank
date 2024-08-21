@@ -145,6 +145,11 @@ test_cases = [
         expected_ids=["rtdee482"],
         description="Case-insensitive partial titles",
     ),
+    PrecisionTestCase(
+        search_terms="EPB/ENCY/1.v1",
+        expected_ids=["htbq7eqm"],
+        description="Exact match on shelfmark",
+    ),
 ]
 
 
