@@ -89,7 +89,13 @@ test_cases = [
     ),
     RecallTestCase(
         search_terms="EPB/ENCY",
-        expected_ids=["htbq7eqm","ctuhg29m","dsfbdtdz","eznj7hg9","thq463sd"],
+        expected_ids=[
+            "htbq7eqm",
+            "ctuhg29m",
+            "dsfbdtdz",
+            "eznj7hg9",
+            "thq463sd",
+        ],
         forbidden_ids=[],
         description="A partial shelfmark search should return results that have a partial matching shelfmark",
     ),
