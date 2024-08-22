@@ -97,7 +97,13 @@ test_cases = [
             "thq463sd",
         ],
         forbidden_ids=[],
-        description="A partial shelfmark search should return results that have a partial matching shelfmark",
+        description="A partial slash separated shelfmark search should return results that have a partial matching shelfmark",
+    ),
+    RecallTestCase(
+        search_terms="FTY.S",
+        expected_ids=["c5ktw2hd","tbknvqjq","xdcn5n25"],
+        forbidden_ids=[],
+        description="A partial dot separated shelfmark search should return results that have a partial matching shelfmark",
     ),
 ]
 
