@@ -101,7 +101,7 @@ test_cases = [
     ),
     RecallTestCase(
         search_terms="FTY.S",
-        expected_ids=["c5ktw2hd","tbknvqjq","xdcn5n25"],
+        expected_ids=["c5ktw2hd", "tbknvqjq", "xdcn5n25"],
         forbidden_ids=[],
         description="A partial dot separated shelfmark search should return results that have a partial matching shelfmark",
     ),
