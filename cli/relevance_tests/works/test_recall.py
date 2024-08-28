@@ -100,6 +100,24 @@ test_cases = [
         description="A partial slash separated shelfmark search should return results that have a partial matching shelfmark",
     ),
     RecallTestCase(
+        search_terms="EPB/ENCY/6.v3 EPB/ENCY/1.v5",
+        expected_ids=[
+            "htbq7eqm",
+            "xu3t38ue",
+        ],
+        forbidden_ids=[],
+        description="Multiple results can be returned for shelfmarks in the same query",
+    ),
+    RecallTestCase(
+        search_terms="i12613290 3324V",
+        expected_ids=[
+            "xu3t38ue",
+            "sweyu7qz",
+        ],
+        forbidden_ids=[],
+        description="IDs and shelfmarks can be mixed in the same query and return results",
+    ),
+    RecallTestCase(
         search_terms="FTY.S",
         expected_ids=["c5ktw2hd", "tbknvqjq", "xdcn5n25"],
         forbidden_ids=[],
