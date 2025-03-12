@@ -89,7 +89,7 @@ test_cases = [
     ),
     OrderTestCase(
         search_terms="b16576111",
-        before_ids=["zmmbjkja"],
+        before_ids=["gaqf2ffu"],
         after_ids=["vburynen", "vgfa9dg6", "wgr6zsnc"],
         description="Source identifiers of works appear before works which are linked to/from",
     ),
