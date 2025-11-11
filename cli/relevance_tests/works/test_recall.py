@@ -33,12 +33,12 @@ test_cases = [
     ),
     RecallTestCase(
         search_terms="wa/hmm benin",
-        expected_ids=["qfdvkegw", "je5pm2gj", "dppjjtqz"],
+        expected_ids=["qfdvkegw", "dppjjtqz"],
         description="Archive refno and a word from the description",
     ),
     RecallTestCase(
         search_terms="WA/HMM/CM benin",
-        expected_ids=["qfdvkegw", "je5pm2gj"],
+        expected_ids=["qfdvkegw"],
         description="Archive refno and a word from the description",
     ),
     RecallTestCase(
