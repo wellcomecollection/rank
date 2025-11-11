@@ -1,9 +1,8 @@
 FROM public.ecr.aws/docker/library/python:3.10 AS tooling
 
-ARG POETRY_VERSION=1.5.1
-RUN curl -sSL https://install.python-poetry.org | \
-    POETRY_HOME=/usr/local \
-    POETRY_VERSION=$POETRY_VERSION python3 -
+ENV UV_HOME=/root/.local
+ENV PATH="$UV_HOME/bin:$PATH"
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Install Terraform (for formatting)
 ARG TERRAFORM_VERSION=1.5.6
@@ -12,14 +11,16 @@ RUN wget -q -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TER
 
 WORKDIR /project
 
-COPY poetry.lock pyproject.toml ./
-RUN poetry config virtualenvs.create false && \
-    poetry install --no-cache --no-interaction --no-root
+ENV UV_PROJECT_ENVIRONMENT=.venv
+ENV PATH="/project/.venv/bin:$PATH"
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen
 
 COPY . ./
 
-RUN poetry install --no-cache --no-interaction --only-root
-RUN poetry build --format=wheel
+RUN uv sync --frozen
+RUN uv build --wheel
 
 FROM public.ecr.aws/docker/library/python:3.10-slim as rank
 

@@ -6,7 +6,8 @@ set -o pipefail
 ROOT=$(git rev-parse --show-toplevel)
 
 # Generate the CLI docs
-typer cli.main utils docs --name rank --output docs/cli-reference.md
+uv sync --frozen
+uv run typer cli.main utils docs --name rank --output docs/cli-reference.md
 
 # Only run this bit if we're in buildkite
 if [[ "${BUILDKITE:-}" ]]; then

@@ -5,9 +5,12 @@ set -o pipefail
 
 ROOT=$(git rev-parse --show-toplevel)
 
+# Ensure dependencies are installed
+uv sync --frozen
+
 # Run the formatters
-black $ROOT
-isort $ROOT/**/*.py
+uv run black $ROOT
+uv run isort $ROOT/**/*.py
 terraform fmt -recursive $ROOT
 
 # Only run this bit if we're in buildkite

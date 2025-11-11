@@ -14,12 +14,14 @@ pip install git+https://github.com/wellcomecollection/rank.git
 
 #### For development
 
-Install [`poetry`](https://python-poetry.org/docs/#installation), then run `poetry install` in the root of the repo. You can run the command with `poetry run rank`. 
+Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/), then run `uv sync` in the root of the repo. This creates a local `.venv/` with the project and development dependencies.
+
+Either activate the virtual environment (`source .venv/bin/activate`) or prefix commands with `uv run`.
 
 For example to run the works test against the pipeline-prod cluster, you can run the following command:
 
 ```console
-poetry run rank test \
+uv run rank test \
   --content-type=works \
   --cluster=pipeline-prod \
   --query=https://api.wellcomecollection.org/catalogue/v2

@@ -14,3 +14,7 @@ dist
 
 # data directory
 data/
+
+# Virtual environments
+.venv/
+venv/
