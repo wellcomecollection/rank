@@ -15,7 +15,7 @@ ENV UV_PROJECT_ENVIRONMENT=.venv
 ENV PATH="/project/.venv/bin:$PATH"
 
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen
+RUN uv sync --frozen --no-install-project
 
 COPY . ./
 
