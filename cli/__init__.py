@@ -60,6 +60,7 @@ def get_pipeline_search_template(
 
     return {
         "index": docs["index"],
+        "pipeline_date": docs["pipeline"],
         "index_date": re.search(
             rf"^{content_type}-indexed-(?P<date>\d{{4}}-\d{{2}}-\d{{2}}.?)",
             docs["index"],
