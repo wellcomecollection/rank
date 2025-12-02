@@ -102,7 +102,7 @@ def main(
                 else f"{content_type}-indexed-{prod_template['index_date']}"
             )
             context.meta["client"] = elasticsearch.pipeline_client(
-                context=context, pipeline_date=prod_template["index_date"]
+                context=context, pipeline_date=prod_template["pipeline_date"]
             )
         elif cluster == Cluster.pipeline_stage:
             stage_template = get_pipeline_search_template(
@@ -114,7 +114,7 @@ def main(
                 else f"{content_type}-indexed-{stage_template['index_date']}"
             )
             context.meta["client"] = elasticsearch.pipeline_client(
-                context=context, pipeline_date=stage_template["index_date"]
+                context=context, pipeline_date=stage_template["pipeline_date"]
             )
         elif cluster == Cluster.rank:
             context.meta["client"] = elasticsearch.rank_client(context)
@@ -137,7 +137,6 @@ def main(
             return_code = pytest.main(
                 [test_dir, "-k", test_id], plugins=[rank_plugin]
             )
-
         else:
             return_code = pytest.main([test_dir], plugins=[rank_plugin])
 
