@@ -4,6 +4,12 @@ from time import sleep
 from elasticsearch import Elasticsearch
 
 from .aws import get_secrets
+from .. import (
+    Cluster,
+    get_pipeline_search_template,
+    production_api_url,
+    stage_api_url
+)
 
 
 common_es_client_config = {
@@ -83,3 +89,28 @@ def wait_for_client(client: Elasticsearch):
             break
         except Exception:
             sleep(3)
+
+
+def _get_index_name(pipeline_date: str | None, cluster: Cluster | None, content_type: str):
+    if pipeline_date:
+        index_date = pipeline_date
+    else:
+        api_url = production_api_url if cluster == Cluster.pipeline_prod else stage_api_url
+        template = get_pipeline_search_template(api_url, content_type)
+        index_date = template['index_date']
+
+    return f"{content_type}-indexed-{index_date}"
+
+
+def _get_client(context: typer.Context, pipeline_date: str | None, cluster: Cluster | None, content_type: str) -> Elasticsearch:
+    if pipeline_date:
+        return pipeline_client(context=context, pipeline_date=pipeline_date)
+
+    if cluster == Cluster.rank:
+        return rank_client(context)
+
+    api_url = production_api_url if cluster == Cluster.pipeline_prod else stage_api_url
+    template = get_pipeline_search_template(api_url, content_type)
+    client = pipeline_client(context=context, pipeline_date=template["pipeline_date"])
+
+    return client
