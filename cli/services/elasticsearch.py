@@ -8,7 +8,7 @@ from .. import (
     Cluster,
     get_pipeline_search_template,
     production_api_url,
-    stage_api_url
+    stage_api_url,
 )
 
 
@@ -91,18 +91,29 @@ def wait_for_client(client: Elasticsearch):
             sleep(3)
 
 
-def _get_index_name(pipeline_date: str | None, cluster: Cluster | None, content_type: str):
+def _get_index_name(
+    pipeline_date: str | None, cluster: Cluster | None, content_type: str
+):
     if pipeline_date:
         index_date = pipeline_date
     else:
-        api_url = production_api_url if cluster == Cluster.pipeline_prod else stage_api_url
+        api_url = (
+            production_api_url
+            if cluster == Cluster.pipeline_prod
+            else stage_api_url
+        )
         template = get_pipeline_search_template(api_url, content_type)
-        index_date = template['index_date']
+        index_date = template["index_date"]
 
     return f"{content_type}-indexed-{index_date}"
 
 
-def _get_client(context: typer.Context, pipeline_date: str | None, cluster: Cluster | None, content_type: str) -> Elasticsearch:
+def _get_client(
+    context: typer.Context,
+    pipeline_date: str | None,
+    cluster: Cluster | None,
+    content_type: str,
+) -> Elasticsearch:
     if cluster is None and pipeline_date is None:
         raise ValueError("Must specify a cluster or a pipeline date.")
 
@@ -112,8 +123,14 @@ def _get_client(context: typer.Context, pipeline_date: str | None, cluster: Clus
     if cluster == Cluster.rank:
         return rank_client(context)
 
-    api_url = production_api_url if cluster == Cluster.pipeline_prod else stage_api_url
+    api_url = (
+        production_api_url
+        if cluster == Cluster.pipeline_prod
+        else stage_api_url
+    )
     template = get_pipeline_search_template(api_url, content_type)
-    client = pipeline_client(context=context, pipeline_date=template["pipeline_date"])
+    client = pipeline_client(
+        context=context, pipeline_date=template["pipeline_date"]
+    )
 
     return client

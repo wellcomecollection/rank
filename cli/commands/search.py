@@ -197,7 +197,6 @@ def main(
             search_template = get_pipeline_search_template(
                 api_url=query, content_type=context.meta["content_type"]
             )
-            index = index if index else search_template["index"]
             query = search_template["query"]
         elif query and os.path.isfile(query):
             with open(query) as file_contents:
@@ -211,8 +210,10 @@ def main(
 
         if index is None:
             index = _get_index_name(pipeline_date, cluster, content_type)
-        
-        context.meta["client"] = _get_client(context, pipeline_date, cluster, content_type)
+
+        context.meta["client"] = _get_client(
+            context, pipeline_date, cluster, content_type
+        )
 
         context.meta["index"] = prompt_user_to_choose_an_index(
             client=context.meta["client"],
