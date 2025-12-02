@@ -57,7 +57,7 @@ def get_pipeline_search_template(
         for template in search_templates
         if template["index"].startswith(content_type)
     )
-    
+
     return {
         "index": docs["index"],
         "pipeline_date": docs["pipeline"],
