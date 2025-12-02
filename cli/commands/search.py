@@ -13,14 +13,13 @@ from .. import (
     Cluster,
     term_directory,
     get_pipeline_search_template,
-    production_api_url,
-    stage_api_url,
 )
 from ..services import aws, elasticsearch
 from . import (
     prompt_user_to_choose_a_local_query,
     prompt_user_to_choose_an_index,
 )
+from ..services.elasticsearch import _get_client, _get_index_name
 
 app = typer.Typer(
     name="search",
@@ -210,40 +209,10 @@ def main(
             with open(query_path, "r", encoding="utf-8") as f:
                 query = f.read()
 
-        if pipeline_date:
-            index = (
-                index if index else f"{content_type}-indexed-{pipeline_date}"
-            )
-            context.meta["client"] = elasticsearch.pipeline_client(
-                context=context, pipeline_date=pipeline_date
-            )
-        elif cluster == Cluster.pipeline_prod:
-            prod_template = get_pipeline_search_template(
-                production_api_url, context.meta["content_type"]
-            )
-            index = (
-                index
-                if index
-                else f"{content_type}-indexed-{prod_template['index_date']}"
-            )
-
-            context.meta["client"] = elasticsearch.pipeline_client(
-                context=context, pipeline_date=prod_template["pipeline_date"]
-            )
-        elif cluster == Cluster.pipeline_stage:
-            stage_template = get_pipeline_search_template(
-                stage_api_url, context.meta["content_type"]
-            )
-            index = (
-                index
-                if index
-                else f"{content_type}-indexed-{stage_template['index_date']}"
-            )
-            context.meta["client"] = elasticsearch.pipeline_client(
-                context=context, pipeline_date=stage_template["pipeline_date"]
-            )
-        elif cluster == Cluster.rank:
-            context.meta["client"] = elasticsearch.rank_client(context)
+        if index is None:
+            index = _get_index_name(pipeline_date, cluster, content_type)
+        
+        context.meta["client"] = _get_client(context, pipeline_date, cluster, content_type)
 
         context.meta["index"] = prompt_user_to_choose_an_index(
             client=context.meta["client"],
