@@ -210,8 +210,10 @@ def main(
 
         if index is None:
             index = _get_index_name(pipeline_date, cluster, content_type)
-        
-        context.meta["client"] = _get_client(context, pipeline_date, cluster, content_type)
+
+        context.meta["client"] = _get_client(
+            context, pipeline_date, cluster, content_type
+        )
 
         context.meta["index"] = prompt_user_to_choose_an_index(
             client=context.meta["client"],

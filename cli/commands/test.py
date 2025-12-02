@@ -84,11 +84,13 @@ def main(
 
         if cluster is None and pipeline_date is None:
             raise ValueError("Must specify a cluster or a pipeline date.")
-        
+
         if index is None:
             index = _get_index_name(pipeline_date, cluster, content_type)
-        
-        context.meta["client"] = _get_client(context, pipeline_date, cluster, content_type)
+
+        context.meta["client"] = _get_client(
+            context, pipeline_date, cluster, content_type
+        )
         context.meta["index"] = prompt_user_to_choose_an_index(
             client=context.meta["client"],
             index=index,
