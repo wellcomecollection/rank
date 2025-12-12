@@ -1,5 +1,7 @@
-import typer
 from time import sleep
+from typing import Any
+
+import typer
 
 from elasticsearch import Elasticsearch
 
@@ -13,7 +15,7 @@ from .. import (
 )
 
 
-common_es_client_config = {
+common_es_client_config: dict[str, Any] = {
     "timeout": 30,
     "retry_on_timeout": True,
     "max_retries": 3,

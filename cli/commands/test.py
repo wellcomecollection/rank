@@ -25,6 +25,11 @@ app = typer.Typer(name="test", help="Run relevance tests")
 # This ensures that we get the right path for the relevance tests directory
 # regardless of where we are running the tool
 relevance_tests_spec = importlib.util.find_spec("cli.relevance_tests")
+if (
+    relevance_tests_spec is None
+    or relevance_tests_spec.submodule_search_locations is None
+):
+    raise RuntimeError("Unable to locate cli.relevance_tests")
 root_test_directory = Path(relevance_tests_spec.submodule_search_locations[0])
 
 
@@ -67,7 +72,7 @@ def main(
     if context.invoked_subcommand is None:
         context.meta["session"] = aws.get_session(context.meta["role_arn"])
         context.meta["content_type"] = content_type
-        if str(urlparse(query).scheme).startswith("http"):
+        if query is not None and str(urlparse(query).scheme).startswith("http"):
             search_template = get_pipeline_search_template(
                 api_url=query, content_type=context.meta["content_type"]
             )
@@ -105,10 +110,10 @@ def main(
 
         if test_id:
             return_code = pytest.main(
-                [test_dir, "-k", test_id], plugins=[rank_plugin]
+                [str(test_dir), "-k", test_id], plugins=[rank_plugin]
             )
         else:
-            return_code = pytest.main([test_dir], plugins=[rank_plugin])
+            return_code = pytest.main([str(test_dir)], plugins=[rank_plugin])
 
         raise typer.Exit(code=return_code)
 
@@ -116,4 +121,4 @@ def main(
 @app.command(name="list")
 def list_tests():
     """List all tests that can be run"""
-    pytest.main(["--collect-only", "--quiet", root_test_directory])
+    pytest.main(["--collect-only", "--quiet", str(root_test_directory)])

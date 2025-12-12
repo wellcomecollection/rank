@@ -193,7 +193,7 @@ def main(
         context.meta["session"] = aws.get_session(context.meta["role_arn"])
         context.meta["content_type"] = content_type
 
-        if str(urlparse(query).scheme).startswith("http"):
+        if query is not None and str(urlparse(query).scheme).startswith("http"):
             search_template = get_pipeline_search_template(
                 api_url=query, content_type=context.meta["content_type"]
             )
@@ -272,7 +272,7 @@ def get_terms(
             }
         },
         size=5000,
-        _source=["page.query.query"],
+        source_includes=["page.query.query"],
         sort=[
             {"@timestamp": {"order": "desc"}},
         ],

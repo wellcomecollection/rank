@@ -41,11 +41,37 @@ include = [
 [tool.uv]
 dev-dependencies = [
 	"ruff>=0.9.0,<0.10",
+	"mypy>=1.10.0,<2",
+	"types-requests>=2.31.0.20240106",
 	"typer-cli>=0.0.13,<0.1",
 ]
 
 [tool.ruff]
 line-length = 80
+
+[tool.mypy]
+python_version = "3.10"
+files = ["cli"]
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+plugins = ["pydantic.mypy"]
+
+# This repo depends on libraries that don't ship type hints.
+# We still want mypy to catch issues in our own code.
+ignore_missing_imports = true
+
+# Prevent accidentally type-checking virtualenvs and other generated folders
+exclude = [
+	"^\\.venv/",
+	"^venv/",
+	"^\\.mypy_cache/",
+	"^\\.pytest_cache/",
+	"^\\.git/",
+]
 
 [tool.pytest.ini_options]
 addopts = "--tb=short -r=N --no-header"

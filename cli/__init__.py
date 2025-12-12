@@ -66,9 +66,21 @@ def get_pipeline_search_template(
     return {
         "index": docs["index"],
         "pipeline_date": docs["pipeline"],
-        "index_date": re.search(
-            rf"^{content_type_value}-indexed-(?P<date>\d{{4}}-\d{{2}}-\d{{2}}.?)",
-            docs["index"],
-        ).group("date"),
+        "index_date": (
+            (
+                m := re.search(
+                    rf"^{content_type_value}-indexed-(?P<date>\d{{4}}-\d{{2}}-\d{{2}}.?)",
+                    docs["index"],
+                )
+            )
+            and m.group("date")
+        )
+        or (_raise_bad_index_format(docs["index"], content_type_value)),
         "query": docs["query"],
     }
+
+
+def _raise_bad_index_format(index: str, content_type_value: str) -> str:
+    raise ValueError(
+        f"Unexpected index format for {content_type_value!r}: {index!r}"
+    )
