@@ -44,7 +44,9 @@ for directory in [
     directory.mkdir(parents=True, exist_ok=True)
 
 
-def get_pipeline_search_template(api_url: str, content_type: ContentType) -> dict:
+def get_pipeline_search_template(
+    api_url: str, content_type: ContentType
+) -> dict:
     # `ContentType` is a `str`-backed Enum, but interpolating it (e.g. in an
     # f-string) produces values like "ContentType.works". We always want the
     # raw value, e.g. "works".

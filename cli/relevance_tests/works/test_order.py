@@ -1,4 +1,3 @@
-import elasticsearch.helpers
 import pytest
 
 from ..models import OrderTestCase

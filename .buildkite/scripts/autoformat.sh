@@ -6,8 +6,8 @@ set -o pipefail
 ROOT=$(git rev-parse --show-toplevel)
 
 # Run the formatters
-uv run black $ROOT
-uv run isort $ROOT/**/*.py
+uv run ruff format $ROOT
+uv run ruff check --fix $ROOT
 terraform fmt -recursive $ROOT
 
 # Only run this bit if we're in buildkite

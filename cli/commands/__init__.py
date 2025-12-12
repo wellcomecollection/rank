@@ -157,7 +157,7 @@ def prompt_user_to_choose_a_task(
         typer.echo("Select a task")
         task = beaupy.select(
             valid_tasks,
-            preprocessor=lambda x: f'{x["task_id"]} | {x["action"]}',
+            preprocessor=lambda x: f"{x['task_id']} | {x['action']}",
         )
         task_id = task["task_id"]
     else:

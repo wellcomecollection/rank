@@ -66,9 +66,9 @@ def do_test_order(
 ):
     before_ids = set(test_case.before_ids)
     after_ids = set(test_case.after_ids)
-    assert not before_ids.intersection(
-        after_ids
-    ), "before and after IDs must be disjoint!"
+    assert not before_ids.intersection(after_ids), (
+        "before and after IDs must be disjoint!"
+    )
 
     results = client.search(
         index=index,

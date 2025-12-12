@@ -26,7 +26,7 @@ def list_tasks(context: typer.Context):
     """List all tasks"""
     tasks = get_valid_tasks(client=context.meta["client"])
     for task in tasks:
-        typer.echo(f'{task["task_id"]} | {task["action"]}')
+        typer.echo(f"{task['task_id']} | {task['action']}")
 
 
 @app.command()
