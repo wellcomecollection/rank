@@ -23,6 +23,9 @@ dependencies = [
 [project.scripts]
 rank = "cli.main:app"
 
+[project.entry-points.pytest11]
+rank = "cli.pytest_plugin"
+
 [build-system]
 requires = ["hatchling>=1.21.0"]
 build-backend = "hatchling.build"
