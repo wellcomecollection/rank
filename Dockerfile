@@ -1,9 +1,7 @@
-FROM public.ecr.aws/docker/library/python:3.10 AS tooling
+FROM public.ecr.aws/docker/library/python:3.12 AS tooling
 
-ARG POETRY_VERSION=1.5.1
-RUN curl -sSL https://install.python-poetry.org | \
-    POETRY_HOME=/usr/local \
-    POETRY_VERSION=$POETRY_VERSION python3 -
+# Install uv
+RUN pip install --no-cache-dir uv
 
 # Install Terraform (for formatting)
 ARG TERRAFORM_VERSION=1.5.6
@@ -12,19 +10,27 @@ RUN wget -q -O /tmp/terraform.zip https://releases.hashicorp.com/terraform/${TER
 
 WORKDIR /project
 
-COPY poetry.lock pyproject.toml ./
-RUN poetry config virtualenvs.create false && \
-    poetry install --no-cache --no-interaction --no-root
+# Copy dependency files first for better Docker layer caching
+COPY pyproject.toml uv.lock README.md ./
 
+# Copy the package source needed for installation
+COPY cli/ ./cli/
+
+# Install project + dev dependencies into a local .venv (used by Buildkite tooling)
+RUN uv sync --frozen
+
+# Copy the rest of the repository (docs, infra, etc.) for tooling tasks
 COPY . ./
 
-RUN poetry install --no-cache --no-interaction --only-root
-RUN poetry build --format=wheel
+FROM public.ecr.aws/docker/library/python:3.12-slim AS rank
 
-FROM public.ecr.aws/docker/library/python:3.10-slim as rank
+WORKDIR /app
 
-COPY --from=tooling /project/dist/ ./dist
+# Copy dependency files and source for installation
+COPY pyproject.toml uv.lock README.md ./
+COPY cli/ ./cli/
 
-RUN pip install ./dist/*.whl
+RUN pip install --no-cache-dir uv && \
+  uv pip install --system .
 
 ENTRYPOINT ["rank"]

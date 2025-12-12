@@ -1,0 +1,69 @@
+name: "rank: Deploy"
+
+on:
+  workflow_call:
+    inputs:
+      deploy_tag:
+        description: "Docker image tag to deploy/retag (e.g., ref.<sha>)"
+        required: true
+        type: string
+    secrets:
+      RANK_CI_ROLE_ARN:
+        description: "Role ARN to assume for retagging ECR images"
+        required: true
+
+  workflow_dispatch:
+    inputs:
+      deploy_tag:
+        description: "Docker image tag to deploy/retag (e.g., ref.<sha>)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: eu-west-1
+  ECR_REPOSITORY: "weco/rank"
+
+jobs:
+  retag-latest:
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_TAG: ${{ inputs.deploy_tag || github.event.inputs.deploy_tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.RANK_CI_ROLE_ARN }}
+
+      - name: Retag image to latest
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          SOURCE_TAG="$DEPLOY_TAG"
+          TARGET_TAG="latest"
+
+          echo "Retagging $ECR_REPOSITORY:$SOURCE_TAG -> $ECR_REPOSITORY:$TARGET_TAG"
+
+          MANIFEST=$(aws ecr batch-get-image \
+            --repository-name "$ECR_REPOSITORY" \
+            --image-ids imageTag="$SOURCE_TAG" \
+            --query 'images[0].imageManifest' \
+            --output text)
+
+          if [[ -z "$MANIFEST" || "$MANIFEST" == "None" ]]; then
+            echo "Could not find an image manifest for tag: $SOURCE_TAG" >&2
+            exit 1
+          fi
+
+          aws ecr put-image \
+            --repository-name "$ECR_REPOSITORY" \
+            --image-tag "$TARGET_TAG" \
+            --image-manifest "$MANIFEST" >/dev/null
+
+          echo "Done."

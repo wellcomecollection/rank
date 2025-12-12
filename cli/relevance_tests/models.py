@@ -6,7 +6,8 @@ from pydantic import BaseModel, Field, model_validator
 
 class TestCase(BaseModel):
     id: Optional[str] = Field(
-        description="A unique identifier for the test case"
+        description="A unique identifier for the test case",
+        default=None,
     )
     search_terms: str = Field(
         description="The terms which will be searched for."
@@ -27,9 +28,9 @@ class TestCase(BaseModel):
         default=False,
     )
 
-    def __init__(self, **data):
+    def __init__(self, **data: object) -> None:
         # if an id hasn't been set, use the search terms
-        if "id" not in data:
+        if "id" not in data or data["id"] is None:
             data["id"] = data["search_terms"]
         super().__init__(**data)
 
@@ -62,7 +63,7 @@ class PrecisionTestCase(TestCase):
         default=False,
     )
 
-    def __init__(self, **data):
+    def __init__(self, **data: object) -> None:
         super().__init__(**data)
 
     @model_validator(mode="after")
@@ -81,15 +82,15 @@ class RecallTestCase(TestCase):
             "strict is set to True, these results can appear in any order."
         )
     )
-    forbidden_ids: Optional[List[str]] = Field(
+    forbidden_ids: List[str] = Field(
         description="The IDs which should definitely not be returned by the search",
-        default=[],
+        default_factory=list,
     )
 
-    threshold_position: Optional[int] = Field(
+    threshold_position: int = Field(
         description=(
             "The last possible position for the expected ID in the search "
-            "results",
+            "results"
         ),
         default=25,
     )

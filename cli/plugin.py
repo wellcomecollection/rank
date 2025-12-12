@@ -1,10 +1,13 @@
 import json
 import os
+from typing import Any, cast
 
 import chevron
 import typer
 from elasticsearch import Elasticsearch
 from pytest import StashKey, fixture, hookimpl
+
+from _pytest.terminal import TerminalReporter
 
 
 class RankPlugin:
@@ -21,9 +24,20 @@ class RankPlugin:
 
     @hookimpl()
     def pytest_configure(self, config):
-        terminal = config.pluginmanager.getplugin("terminal")
+        terminal_plugin = config.pluginmanager.getplugin("terminal")
+        if terminal_plugin is None:
+            return
 
-        class ShortPathReporter(terminal.TerminalReporter):
+        terminal = cast(Any, terminal_plugin)
+
+        # pytest's stubs mark TerminalReporter as @final, but we intentionally
+        # monkeypatch it here. Keeping the base class as Any avoids mypy
+        # complaining about subclassing a final class.
+        class ShortPathReporter(TerminalReporter):  # type: ignore[misc]
+            currentfspath: Any | None
+            _show_progress_info: Any
+            _tw: Any
+
             # This modifies the implementation at
             # https://github.com/pytest-dev/pytest/blob/7.4.0/src/_pytest/terminal.py#L426
             def write_fspath_result(
@@ -47,7 +61,7 @@ class RankPlugin:
 
     @hookimpl(tryfirst=True)
     def pytest_collection_modifyitems(self, session, config, items):
-        commonpath = os.path.commonpath([item.path for item in items])
+        commonpath = os.path.commonpath([str(item.path) for item in items])
         config.stash[RankPlugin.common_path_key] = commonpath
 
     @fixture(scope="session")

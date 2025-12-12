@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Any, Optional, cast
 
 import beaupy
 import typer
@@ -11,11 +11,16 @@ from .. import (
 )
 
 
-def get_valid_indices(client: Elasticsearch):
+def get_valid_indices(client: Elasticsearch) -> list[str]:
+    indices = cast(
+        list[dict[str, Any]],
+        client.cat.indices(format="json", h="index", s="index"),
+    )
     return [
         index["index"]
-        for index in client.cat.indices(format="json", h="index", s="index")
-        if not index["index"].startswith(".")
+        for index in indices
+        if isinstance(index.get("index"), str)
+        and not index["index"].startswith(".")
     ]
 
 
@@ -157,7 +162,7 @@ def prompt_user_to_choose_a_task(
         typer.echo("Select a task")
         task = beaupy.select(
             valid_tasks,
-            preprocessor=lambda x: f'{x["task_id"]} | {x["action"]}',
+            preprocessor=lambda x: f"{x['task_id']} | {x['action']}",
         )
         task_id = task["task_id"]
     else:

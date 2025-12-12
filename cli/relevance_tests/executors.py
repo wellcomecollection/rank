@@ -1,5 +1,7 @@
 import pytest
 
+from collections.abc import Collection
+
 from .models import RecallTestCase, PrecisionTestCase, OrderTestCase
 
 
@@ -8,7 +10,6 @@ def do_test_recall(
 ):
     expected_ids = set(test_case.expected_ids)
     forbidden_ids = set(test_case.forbidden_ids)
-    received_ids = set([])
     results = client.search(
         index=index,
         _source=False,
@@ -22,7 +23,6 @@ def do_test_recall(
             assert doc_id not in forbidden_ids
         except AssertionError:
             pytest.fail(f"Encountered a forbidden ID {doc_id}")
-        received_ids.add(doc_id)
         expected_ids.discard(doc_id)
 
         if not expected_ids:
@@ -49,12 +49,18 @@ def do_test_precision(
     )
     result_ids = [result["_id"] for result in response["hits"]["hits"]]
 
-    if not test_case.strict:
-        result_ids = set(result_ids)
-        expected_ids = set(expected_ids)
+    actual: Collection[str]
+    expected: Collection[str]
+
+    if test_case.strict:
+        actual = result_ids
+        expected = expected_ids
+    else:
+        actual = set(result_ids)
+        expected = set(expected_ids)
 
     try:
-        assert result_ids == expected_ids
+        assert actual == expected
     except AssertionError:
         pytest.fail(
             f"The expected IDs ({expected_ids}) did not match the results ({result_ids})"
@@ -66,9 +72,9 @@ def do_test_order(
 ):
     before_ids = set(test_case.before_ids)
     after_ids = set(test_case.after_ids)
-    assert not before_ids.intersection(
-        after_ids
-    ), "before and after IDs must be disjoint!"
+    assert not before_ids.intersection(after_ids), (
+        "before and after IDs must be disjoint!"
+    )
 
     results = client.search(
         index=index,
@@ -96,14 +102,17 @@ def do_test_order(
     try:
         assert not before_ids
     except AssertionError:
+        description = test_case.description or ""
+        description_suffix = f"\n\n{description}" if description else ""
         pytest.fail(
-            f"{before_ids} not found in search results.",
-            test_case.description,
+            f"{before_ids} not found in search results.{description_suffix}",
+            pytrace=False,
         )
 
     if failures:
+        description = test_case.description or ""
         failure_message = [
-            test_case.description,
+            description,
             "The following IDs were found in the wrong order: ",
             *[
                 f"{after_id} appeared before {', '.join(remaining_before)}"

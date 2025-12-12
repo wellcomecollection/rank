@@ -1,18 +1,21 @@
-import typer
 from time import sleep
+from typing import Any
+
+import typer
 
 from elasticsearch import Elasticsearch
 
 from .aws import get_secrets
 from .. import (
     Cluster,
+    ContentType,
     get_pipeline_search_template,
     production_api_url,
     stage_api_url,
 )
 
 
-common_es_client_config = {
+common_es_client_config: dict[str, Any] = {
     "timeout": 30,
     "retry_on_timeout": True,
     "max_retries": 3,
@@ -92,8 +95,12 @@ def wait_for_client(client: Elasticsearch):
 
 
 def _get_index_name(
-    pipeline_date: str | None, cluster: Cluster | None, content_type: str
+    pipeline_date: str | None,
+    cluster: Cluster | None,
+    content_type: ContentType,
 ):
+    content_type_value = content_type.value
+
     if pipeline_date:
         index_date = pipeline_date
     else:
@@ -105,14 +112,14 @@ def _get_index_name(
         template = get_pipeline_search_template(api_url, content_type)
         index_date = template["index_date"]
 
-    return f"{content_type}-indexed-{index_date}"
+    return f"{content_type_value}-indexed-{index_date}"
 
 
 def _get_client(
     context: typer.Context,
     pipeline_date: str | None,
     cluster: Cluster | None,
-    content_type: str,
+    content_type: ContentType,
 ) -> Elasticsearch:
     if cluster is None and pipeline_date is None:
         raise ValueError("Must specify a cluster or a pipeline date.")

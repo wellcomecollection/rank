@@ -1,41 +1,80 @@
-[tool.poetry]
+[project]
 name = "rank"
 version = "0.1.0"
 description = "A CLI for relevance testing our search services."
-authors = ["Wellcome Collection <digital@wellcomecollection.org>"]
-license = "MIT"
 readme = "README.md"
-packages = [{include = "cli"}]
+requires-python = ">=3.12,<4"
+license = { text = "MIT" }
+authors = [
+	{ name = "Wellcome Collection", email = "digital@wellcomecollection.org" },
+]
+dependencies = [
+	"typer[all]>=0.7.0,<0.8.0",
+	"pytest>=7.4.0,<8",
+	"elasticsearch>=8.10.0,<9",
+	"boto3>=1.28.16,<2",
+	"pydantic>=2.1.1,<3",
+	"chevron>=0.14.0,<0.15",
+	"requests>=2.31.0,<3",
+	"beaupy>=3.5.4,<4",
+	"click==8.1.8",
+]
 
-[tool.poetry.scripts]
+[project.scripts]
 rank = "cli.main:app"
 
-[tool.poetry.dependencies]
-python = "^3.10"
-typer = {extras = ["all"], version = "^0.7.0"}
-pytest = "^7.4.0"
-elasticsearch = "^8.10.0"
-boto3 = "^1.28.16"
-pydantic = "^2.1.1"
-chevron = "^0.14.0"
-requests = "^2.31.0"
-beaupy = "^3.5.4"
-click = "8.1.8"
-
-[tool.poetry.group.dev.dependencies]
-black = {extras = ["d"], version = "^23.7.0"}
-isort = "^5.12.0"
-typer-cli = "^0.0.13"
+[project.entry-points.pytest11]
+rank = "cli.pytest_plugin"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling>=1.21.0"]
+build-backend = "hatchling.build"
 
-[tool.isort]
-profile = "black"
+[tool.hatch.build.targets.wheel]
+packages = ["cli"]
 
-[tool.black]
+[tool.hatch.build.targets.sdist]
+include = [
+	"/cli",
+	"/docs",
+	"/README.md",
+	"/pyproject.toml",
+]
+
+[tool.uv]
+dev-dependencies = [
+	"ruff>=0.9.0,<0.10",
+	"mypy>=1.10.0,<2",
+	"types-requests>=2.31.0.20240106",
+	"typer-cli>=0.0.13,<0.1",
+]
+
+[tool.ruff]
 line-length = 80
+
+[tool.mypy]
+python_version = "3.12"
+files = ["cli"]
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+plugins = ["pydantic.mypy"]
+
+# This repo depends on libraries that don't ship type hints.
+# We still want mypy to catch issues in our own code.
+ignore_missing_imports = true
+
+# Prevent accidentally type-checking virtualenvs and other generated folders
+exclude = [
+	"^\\.venv/",
+	"^venv/",
+	"^\\.mypy_cache/",
+	"^\\.pytest_cache/",
+	"^\\.git/",
+]
 
 [tool.pytest.ini_options]
 addopts = "--tb=short -r=N --no-header"

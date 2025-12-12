@@ -63,4 +63,6 @@ def get(
         file_name = f"{content_type}-candidate.json"
         with open(query_directory / file_name, "w", encoding="utf-8") as f:
             json.dump(query, f, indent=2)
-        typer.echo(f"Saved {template['index']} to {query_directory/file_name}")
+        typer.echo(
+            f"Saved {template['index']} to {query_directory / file_name}"
+        )
