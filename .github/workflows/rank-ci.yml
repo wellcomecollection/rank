@@ -86,7 +86,7 @@ jobs:
           tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:ref.${{ github.sha }}
 
   deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs: [docker-image]
     uses: ./.github/workflows/rank-deploy.yml
     with:
