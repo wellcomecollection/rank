@@ -1,14 +1,9 @@
-data "terraform_remote_state" "aws_account_infrastructure" {
-  backend = "s3"
+data "aws_caller_identity" "current" {}
 
-  config = {
-    assume_role = {
-      role_arn = "arn:aws:iam::760097843905:role/platform-read_only"
-    }
-    bucket = "wellcomecollection-platform-infra"
-    key    = "terraform/aws-account-infrastructure/platform.tfstate"
-    region = "eu-west-1"
-  }
+locals {
+  # The OIDC provider must exist in the *same AWS account* as the role.
+  # This ARN format is stable when the provider URL is token.actions.githubusercontent.com.
+  github_oidc_provider_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"
 }
 
 # Configure the GitHub Provider

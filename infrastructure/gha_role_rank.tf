@@ -4,7 +4,7 @@ module "gha_rank_ci_role" {
   policy_document          = data.aws_iam_policy_document.gha_rank_ci.json
   github_repository        = "wellcomecollection/rank"
   role_name                = "rank-ci"
-  github_oidc_provider_arn = data.terraform_remote_state.aws_account_infrastructure.outputs.github_openid_connect_provider_arn
+  github_oidc_provider_arn = local.github_oidc_provider_arn
 }
 
 data "aws_iam_policy_document" "gha_rank_ci" {
