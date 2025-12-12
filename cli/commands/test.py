@@ -110,10 +110,14 @@ def main(
 
         if test_id:
             return_code = pytest.main(
-                [str(test_dir), "-k", test_id], plugins=[rank_plugin]
+                ["--run-relevance", str(test_dir), "-k", test_id],
+                plugins=[rank_plugin],
             )
         else:
-            return_code = pytest.main([str(test_dir)], plugins=[rank_plugin])
+            return_code = pytest.main(
+                ["--run-relevance", str(test_dir)],
+                plugins=[rank_plugin],
+            )
 
         raise typer.Exit(code=return_code)
 
@@ -121,4 +125,11 @@ def main(
 @app.command(name="list")
 def list_tests():
     """List all tests that can be run"""
-    pytest.main(["--collect-only", "--quiet", str(root_test_directory)])
+    pytest.main(
+        [
+            "--run-relevance",
+            "--collect-only",
+            "--quiet",
+            str(root_test_directory),
+        ]
+    )
