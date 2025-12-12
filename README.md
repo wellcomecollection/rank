@@ -20,7 +20,7 @@ Either activate the virtual environment (`source .venv/bin/activate`) or prefix 
 
 ## Usage
 
-Note that the tools uses the Wellcome Collection Catalogue `_elasticConfig` endpoint to determine which index to query against. The `--query` parameter should point to the base URL of the API you want to test against.
+Note that the tool uses the Wellcome Collection Catalogue `_elasticConfig` endpoint to determine which index to query against. The `--query` parameter should point to the base URL of the API you want to test against.
 
 See: https://api.wellcomecollection.org/catalogue/v2/_elasticConfig
 
@@ -33,7 +33,7 @@ uv run rank test \
   --query=https://api.wellcomecollection.org/catalogue/v2
 ```
 
-Or to taret a specific pipeline date:
+Or to target a specific pipeline date:
 
 ```console
 uv run rank test \
@@ -41,3 +41,35 @@ uv run rank test \
   --pipeline-date=2025-10-02 \
   --query=https://api.wellcomecollection.org/catalogue/v2
 ```
+
+## Deploying the Docker image (for local testing)
+
+`rank` is also published as a Docker image in our private ECR registry. There’s a helper script to build and push an image tag for you:
+
+```console
+./scripts/deploy_image.sh
+```
+
+By default this pushes the tag `dev`:
+
+- `756629837203.dkr.ecr.eu-west-1.amazonaws.com/weco/rank:dev`
+
+To push a different tag:
+
+```console
+./scripts/deploy_image.sh --tag my-tag
+```
+
+### Important: the `latest` tag is used by CI in other projects
+
+Other projects run `rank` in CI using the image tag `latest`:
+
+- `756629837203.dkr.ecr.eu-west-1.amazonaws.com/weco/rank:latest`
+
+Only push `latest` when you intentionally want to update what those projects will run in CI.
+
+### Prerequisites
+
+- Docker (with `buildx` available)
+- AWS credentials with access to the ECR repositories
+- The AWS CLI profile `catalogue-developer` (as referenced in `scripts/deploy_image.sh`)
