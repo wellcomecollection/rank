@@ -14,13 +14,30 @@ pip install git+https://github.com/wellcomecollection/rank.git
 
 #### For development
 
-Install [`poetry`](https://python-poetry.org/docs/#installation), then run `poetry install` in the root of the repo. You can run the command with `poetry run rank`. 
+Install [`uv`](https://docs.astral.sh/uv/getting-started/installation/), then run `uv sync` in the root of the repo. This creates a local `.venv/` with the project and development dependencies.
 
-For example to run the works test against the pipeline-prod cluster, you can run the following command:
+Either activate the virtual environment (`source .venv/bin/activate`) or prefix commands with `uv run`.
+
+## Usage
+
+Note that the tools uses the Wellcome Collection Catalogue `_elasticConfig` endpoint to determine which index to query against. The `--query` parameter should point to the base URL of the API you want to test against.
+
+See: https://api.wellcomecollection.org/catalogue/v2/_elasticConfig
+
+To run the works test against the pipeline-prod cluster, you can run the following command:
 
 ```console
-poetry run rank test \
+uv run rank test \
   --content-type=works \
   --cluster=pipeline-prod \
+  --query=https://api.wellcomecollection.org/catalogue/v2
+```
+
+Or to taret a specific pipeline date:
+
+```console
+uv run rank test \
+  --content-type=works \
+  --pipeline-date=2025-10-02 \
   --query=https://api.wellcomecollection.org/catalogue/v2
 ```

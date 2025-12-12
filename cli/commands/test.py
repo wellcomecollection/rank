@@ -66,7 +66,7 @@ def main(
     """Run relevance tests"""
     if context.invoked_subcommand is None:
         context.meta["session"] = aws.get_session(context.meta["role_arn"])
-        context.meta["content_type"] = content_type.value
+        context.meta["content_type"] = content_type
         if str(urlparse(query).scheme).startswith("http"):
             search_template = get_pipeline_search_template(
                 api_url=query, content_type=context.meta["content_type"]
@@ -101,7 +101,7 @@ def main(
             raise ValueError("The query did not contain valid JSON")
 
         rank_plugin = RankPlugin(context=context)
-        test_dir = root_test_directory / context.meta["content_type"]
+        test_dir = root_test_directory / context.meta["content_type"].value
 
         if test_id:
             return_code = pytest.main(
