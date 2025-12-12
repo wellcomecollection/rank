@@ -3,7 +3,7 @@ name = "rank"
 version = "0.1.0"
 description = "A CLI for relevance testing our search services."
 readme = "README.md"
-requires-python = ">=3.10,<4"
+requires-python = ">=3.12,<4"
 license = { text = "MIT" }
 authors = [
 	{ name = "Wellcome Collection", email = "digital@wellcomecollection.org" },
@@ -50,7 +50,7 @@ dev-dependencies = [
 line-length = 80
 
 [tool.mypy]
-python_version = "3.10"
+python_version = "3.12"
 files = ["cli"]
 warn_unused_configs = true
 warn_redundant_casts = true

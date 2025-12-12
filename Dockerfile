@@ -1,4 +1,4 @@
-FROM public.ecr.aws/docker/library/python:3.10 AS tooling
+FROM public.ecr.aws/docker/library/python:3.12 AS tooling
 
 # Install uv
 RUN pip install --no-cache-dir uv
@@ -22,7 +22,7 @@ RUN uv sync --frozen
 # Copy the rest of the repository (docs, infra, etc.) for tooling tasks
 COPY . ./
 
-FROM public.ecr.aws/docker/library/python:3.10-slim AS rank
+FROM public.ecr.aws/docker/library/python:3.12-slim AS rank
 
 WORKDIR /app
 

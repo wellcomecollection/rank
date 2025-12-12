@@ -4,7 +4,7 @@ A tool for testing search relevance.
 
 ## Installation
 
-_Python 3.10_ ([`pyenv`](https://github.com/pyenv/pyenv) recommended) is a prerequisite.
+_Python 3.12_ ([`pyenv`](https://github.com/pyenv/pyenv) recommended) is a prerequisite.
 
 #### For use
 You can install with `pip` (or [`pipx`](https://pypa.github.io/pipx/)) just by doing
