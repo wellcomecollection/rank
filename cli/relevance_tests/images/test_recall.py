@@ -16,7 +16,7 @@ test_cases = [
         ],
     ),
     RecallTestCase(
-        search_terms="Frederic Cayley Robinson",
+        search_terms="Frederick Cayley Robinson",
         expected_ids=[
             "avvynvp3",
             "b286u5hw",
