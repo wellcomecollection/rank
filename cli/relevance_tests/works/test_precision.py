@@ -82,8 +82,8 @@ test_cases = [
         description="Image ID matching",
     ),
     PrecisionTestCase(
-        search_terms="Oxford dictionary of national biography",
-        expected_ids=["ruedafcw"],
+        search_terms="One for a man, two for a horse",
+        expected_ids=["fhp5baxy"],
         description="Example of a known title's prefix, but not the full thing",
     ),
     PrecisionTestCase(
