@@ -13,8 +13,15 @@ test_cases = [
     ),
     RecallTestCase(
         search_terms="G.G. Smyth",
-        expected_ids=["tkm8r6vk"],
-        description="Query where both search terms are needed for meaningful results",
+        expected_ids=[
+            "zxrfvnb4"
+        ],  # the Sierra record; the CALM one has no Axiell successor
+        description=(
+            "Query where both search terms are needed for meaningful results. "
+            "Expects the Sierra manuscript record for MS.674: the CALM record "
+            "tkm8r6vk has no successor in the Axiell Collections pipeline "
+            "(wellcomecollection/platform#6541)."
+        ),
     ),
     RecallTestCase(
         search_terms="Atherosclerosis: an introduction to atherosclerosis",
