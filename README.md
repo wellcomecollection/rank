@@ -38,7 +38,7 @@ Or to target a specific pipeline date:
 ```console
 uv run rank test \
   --content-type=works \
-  --pipeline-date=2025-10-02 \
+  --pipeline-date=2026-09-30 \
   --query=https://api.wellcomecollection.org/catalogue/v2
 ```
 

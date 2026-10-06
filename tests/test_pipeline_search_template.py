@@ -23,8 +23,8 @@ def test_get_pipeline_search_template_extracts_index_date(
             {
                 "templates": [
                     {
-                        "index": "works-indexed-2025-10-02",
-                        "pipeline": "2025-10-02",
+                        "index": "works-indexed-2026-09-30",
+                        "pipeline": "2026-09-30",
                         "query": '{"query": {"match_all": {}}}',
                     }
                 ]
@@ -38,9 +38,9 @@ def test_get_pipeline_search_template_extracts_index_date(
         content_type=ContentType.works,
     )
 
-    assert tpl["index"] == "works-indexed-2025-10-02"
-    assert tpl["pipeline_date"] == "2025-10-02"
-    assert tpl["index_date"] == "2025-10-02"
+    assert tpl["index"] == "works-indexed-2026-09-30"
+    assert tpl["pipeline_date"] == "2026-09-30"
+    assert tpl["index_date"] == "2026-09-30"
 
 
 def test_get_pipeline_search_template_raises_on_unexpected_index_format(
@@ -52,7 +52,7 @@ def test_get_pipeline_search_template_raises_on_unexpected_index_format(
                 "templates": [
                     {
                         "index": "works-current",
-                        "pipeline": "2025-10-02",
+                        "pipeline": "2026-09-30",
                         "query": "{}",
                     }
                 ]
