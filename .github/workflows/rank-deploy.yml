@@ -33,9 +33,9 @@ jobs:
     env:
       DEPLOY_TAG: ${{ inputs.deploy_tag || github.event.inputs.deploy_tag }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: aws-actions/configure-aws-credentials@v4
+      - uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.RANK_CI_ROLE_ARN }}
