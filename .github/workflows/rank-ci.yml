@@ -65,15 +65,18 @@ jobs:
           push: false
 
       - name: Configure AWS credentials (OIDC)
+        if: github.event_name != 'pull_request'
         uses: aws-actions/configure-aws-credentials@v6
         with:
           aws-region: ${{ env.AWS_REGION }}
           role-to-assume: ${{ secrets.RANK_CI_ROLE_ARN }}
 
       - name: Login to Amazon ECR
+        if: github.event_name != 'pull_request'
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push image (ref.<sha>)
+        if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v7
         with:
           context: .
