@@ -1,0 +1,11 @@
+apiVersion: backplane/v1
+kind: Component
+metadata:
+  name: rank
+  title: rank
+  description: Search relevance tests run against the catalogue API's Elasticsearch queries
+spec:
+  type: application
+  owner: team:digital-platform
+  lifecycle: production
+  system: system:catalogue-api
